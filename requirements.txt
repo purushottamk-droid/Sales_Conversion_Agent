@@ -1,0 +1,14 @@
+# ── Google ADK ──────────────────────────────────────
+google-adk
+
+# ── BigQuery — Agent 1 ──────────────────────────────
+google-cloud-bigquery
+
+# ── Vertex AI — Agent 2 Gemini calls ────────────────
+google-cloud-aiplatform
+
+# ── Pydantic — Agent 2 output schema ────────────────
+pydantic
+
+# ── Environment variables ────────────────────────────
+python-dotenv

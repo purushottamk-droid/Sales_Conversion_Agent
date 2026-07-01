@@ -85,3 +85,20 @@ class AccountAnalysisResult(BaseModel):
             "Written as if briefing a sales manager."
         )
     )
+
+# Add only this at the bottom of your existing output_schema.py
+# Everything above stays unchanged
+
+class AllAccountsAnalysisResult(BaseModel):
+    """
+    Top level schema for Option A.
+    Gemini analyzes ALL accounts in one call.
+    Returns one AccountAnalysisResult per account.
+    Agent 3 reads ctx.session.state["account_analysis_results"]
+    """
+    accounts: List[AccountAnalysisResult] = Field(
+        description=(
+            "One AccountAnalysisResult for every account in account_details. "
+            "Do not skip any account."
+        )
+    )

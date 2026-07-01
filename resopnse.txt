@@ -1,0 +1,1175 @@
+[DataCollectionAgent] Starting for rep: 005DMO000000000300000
+[DataCollectionAgent] Fetched → quota_records=18 | opportunities=16 | calls=113
+
+[DataCollectionAgent] Done →
+  rep_quota_metrics : rep=Maya Chen | quota_records=18
+  account_details   : 16 accounts
+
+── rep_quota_metrics ──
+{
+  "sales_rep_id": "005DMO000000000300000",
+  "rep_name": "Maya Chen",
+  "rep_email": "maya.chen@northstar-demo.ai",
+  "quota_data": [
+    {
+      "REVENUE_TYPE": "Software",
+      "REP_EMAIL": "maya.chen@northstar-demo.ai",
+      "REP_NAME": "Maya Chen",
+      "RAMPED_CAPACITY": 116326.4,
+      "TARGET": 116326.4,
+      "QUOTA_PERIOD": "Monthly"
+    },
+    {
+      "REVENUE_TYPE": "Software",
+      "REP_EMAIL": "maya.chen@northstar-demo.ai",
+      "REP_NAME": "Maya Chen",
+      "RAMPED_CAPACITY": 115877.97,
+      "TARGET": 115877.97,
+      "QUOTA_PERIOD": "Monthly"
+    },
+    {
+      "REVENUE_TYPE": "Software",
+      "REP_EMAIL": "maya.chen@northstar-demo.ai",
+      "REP_NAME": "Maya Chen",
+      "RAMPED_CAPACITY": 102300.55,
+      "TARGET": 102300.55,
+      "QUOTA_PERIOD": "Monthly"
+    },
+    {
+      "REVENUE_TYPE": "Software",
+      "REP_EMAIL": "maya.chen@northstar-demo.ai",
+      "REP_NAME": "Maya Chen",
+      "RAMPED_CAPACITY": 120425.45,
+      "TARGET": 120425.45,
+      "QUOTA_PERIOD": "Monthly"
+    },
+    {
+      "REVENUE_TYPE": "Software",
+      "REP_EMAIL": "maya.chen@northstar-demo.ai",
+      "REP_NAME": "Maya Chen",
+      "RAMPED_CAPACITY": 111787.37,
+      "TARGET": 111787.37,
+      "QUOTA_PERIOD": "Monthly"
+    },
+    {
+      "REVENUE_TYPE": "Software",
+      "REP_EMAIL": "maya.chen@northstar-demo.ai",
+      "REP_NAME": "Maya Chen",
+      "RAMPED_CAPACITY": 109937.7,
+      "TARGET": 109937.7,
+      "QUOTA_PERIOD": "Monthly"
+    },
+    {
+      "REVENUE_TYPE": "Software",
+      "REP_EMAIL": "maya.chen@northstar-demo.ai",
+      "REP_NAME": "Maya Chen",
+      "RAMPED_CAPACITY": 102143.07,
+      "TARGET": 102143.07,
+      "QUOTA_PERIOD": "Monthly"
+    },
+    {
+      "REVENUE_TYPE": "Software",
+      "REP_EMAIL": "maya.chen@northstar-demo.ai",
+      "REP_NAME": "Maya Chen",
+      "RAMPED_CAPACITY": 125958.82,
+      "TARGET": 125958.82,
+      "QUOTA_PERIOD": "Monthly"
+    },
+    {
+      "REVENUE_TYPE": "Software",
+      "REP_EMAIL": "maya.chen@northstar-demo.ai",
+      "REP_NAME": "Maya Chen",
+      "RAMPED_CAPACITY": 126385.38,
+      "TARGET": 126385.38,
+      "QUOTA_PERIOD": "Monthly"
+    },
+    {
+      "REVENUE_TYPE": "Software",
+      "REP_EMAIL": "maya.chen@northstar-demo.ai",
+      "REP_NAME": "Maya Chen",
+      "RAMPED_CAPACITY": 122355.29,
+      "TARGET": 122355.29,
+      "QUOTA_PERIOD": "Monthly"
+    },
+    {
+      "REVENUE_TYPE": "Software",
+      "REP_EMAIL": "maya.chen@northstar-demo.ai",
+      "REP_NAME": "Maya Chen",
+      "RAMPED_CAPACITY": 106774.9,
+      "TARGET": 106774.9,
+      "QUOTA_PERIOD": "Monthly"
+    },
+    {
+      "REVENUE_TYPE": "Software",
+      "REP_EMAIL": "maya.chen@northstar-demo.ai",
+      "REP_NAME": "Maya Chen",
+      "RAMPED_CAPACITY": 121310.8,
+      "TARGET": 121310.8,
+      "QUOTA_PERIOD": "Monthly"
+    },
+    {
+      "REVENUE_TYPE": "Software",
+      "REP_EMAIL": "maya.chen@northstar-demo.ai",
+      "REP_NAME": "Maya Chen",
+      "RAMPED_CAPACITY": 101516.65,
+      "TARGET": 101516.65,
+      "QUOTA_PERIOD": "Monthly"
+    },
+    {
+      "REVENUE_TYPE": "Software",
+      "REP_EMAIL": "maya.chen@northstar-demo.ai",
+      "REP_NAME": "Maya Chen",
+      "RAMPED_CAPACITY": 100608.37,
+      "TARGET": 100608.37,
+      "QUOTA_PERIOD": "Monthly"
+    },
+    {
+      "REVENUE_TYPE": "Software",
+      "REP_EMAIL": "maya.chen@northstar-demo.ai",
+      "REP_NAME": "Maya Chen",
+      "RAMPED_CAPACITY": 124668.45,
+      "TARGET": 124668.45,
+      "QUOTA_PERIOD": "Monthly"
+    },
+    {
+      "REVENUE_TYPE": "Software",
+      "REP_EMAIL": "maya.chen@northstar-demo.ai",
+      "REP_NAME": "Maya Chen",
+      "RAMPED_CAPACITY": 119519.75,
+      "TARGET": 119519.75,
+      "QUOTA_PERIOD": "Monthly"
+    },
+    {
+      "REVENUE_TYPE": "Software",
+      "REP_EMAIL": "maya.chen@northstar-demo.ai",
+      "REP_NAME": "Maya Chen",
+      "RAMPED_CAPACITY": 109225.54,
+      "TARGET": 109225.54,
+      "QUOTA_PERIOD": "Monthly"
+    },
+    {
+      "REVENUE_TYPE": "Software",
+      "REP_EMAIL": "maya.chen@northstar-demo.ai",
+      "REP_NAME": "Maya Chen",
+      "RAMPED_CAPACITY": 100649.76,
+      "TARGET": 100649.76,
+      "QUOTA_PERIOD": "Monthly"
+    }
+  ]
+}
+
+── account_details (first account only) ──
+{
+  "account_id": "001DMO000000000200000",
+  "account_name": "Pioneer Logistics",
+  "opportunities": [
+    {
+      "opportunity_id": "006DMO000000000100000",
+      "opportunity_name": "Pioneer Logistics - Quality Management - 2025 Expansion",
+      "account_id": "001DMO000000000200000",
+      "account_name": "Pioneer Logistics",
+      "opportunity_stage": "Closed Won",
+      "close_date": "2025-03-09",
+      "risks": "Executive sponsor not yet confirmed",
+      "next_step": "Complete security review",
+      "deal_size": "Small",
+      "opportunity_type": "2 - Expansion",
+      "opportunity_source": "Google Ads",
+      "sales_rep_name": "Maya Chen",
+      "opportunity_owner_id": "005DMO000000000300000"
+    }
+  ],
+  "calls": [
+    {
+      "ID": 9.1e+18,
+      "CUSTOM_DATA": "{\"opportunity_id\": \"006DMO000000000100000\", \"account_id\": \"001DMO000000000200000\", \"account_name\": \"Pioneer Logistics\", \"sales_rep_id\": \"005DMO000000000300000\", \"sales_rep_name\": \"Maya Chen\", \"sales_rep_email\": \"maya.chen@northstar-demo.ai\", \"opportunity_stage\": \"Closed Won\", \"opportunity_arr\": 52823.0}",
+      "TITLE": "Close Plan Review - Pioneer Logistics - 006DMO000000000100000",
+      "PURPOSE": "Close plan review",
+      "SCHEDULED": "2025-03-07 12:45:00+00:00",
+      "COMPANY_QUESTION_COUNT": 5,
+      "BRIEF": "Dummy sanitized Gong call for opportunity 006DMO000000000100000 / account Pioneer Logistics. Maya Chen discussed Quality Management during close plan review with the customer. Key topics included budget approval timeline, decision criteria, timeline, stakeholder alignment, and next steps. Outcome: Closed won handoff.",
+      "CALL_OUTCOME_CATEGORY": "Positive",
+      "CALL_OUTCOME_NAME": "Closed won handoff",
+      "MEETING_STAGE_CONTEXT": "Closed Won",
+      "CUSTOMER_SENTIMENT": "Positive",
+      "PRIMARY_OBJECTION": "budget approval timeline",
+      "NEXT_STEP": "complete closed-won handoff and implementation kickoff",
+      "KEY_MEETING_DISCUSSIONS": "Business Pain: Pioneer Logistics needs Quality Management to improve operational visibility and reduce manual follow-up. | Decision Process: Maya Chen confirmed the active stage as Closed Won and mapped next approval owner for opportunity 006DMO000000000100000. | Objection: Customer raised budget approval timeline; response and owner were captured for follow-up. | Next Step: complete closed-won handoff and implementation kickoff before the target close date 2025-03-09. | Agent Signal: Sentiment is Positive; ARR impact is 52,823; conversion action is to focus on closed won handoff.",
+      "ACCOUNT_ID": "001DMO000000000200000",
+      "ACCOUNT_NAME": "Pioneer Logistics",
+      "OPPORTUNITY_ID": "006DMO000000000100000"
+    },
+    {
+      "ID": 9.1e+18,
+      "CUSTOM_DATA": "{\"opportunity_id\": \"006DMO000000000100000\", \"account_id\": \"001DMO000000000200000\", \"account_name\": \"Pioneer Logistics\", \"sales_rep_id\": \"005DMO000000000300000\", \"sales_rep_name\": \"Maya Chen\", \"sales_rep_email\": \"maya.chen@northstar-demo.ai\", \"opportunity_stage\": \"Closed Won\", \"opportunity_arr\": 52823.0}",
+      "TITLE": "Procurement Check-in - Pioneer Logistics - 006DMO000000000100000",
+      "PURPOSE": "Procurement check-in",
+      "SCHEDULED": "2025-02-20 13:30:00+00:00",
+      "COMPANY_QUESTION_COUNT": 10,
+      "BRIEF": "Dummy sanitized Gong call for opportunity 006DMO000000000100000 / account Pioneer Logistics. Maya Chen discussed Quality Management during procurement check-in with the customer. Key topics included IT bandwidth constraint, decision criteria, timeline, stakeholder alignment, and next steps. Outcome: Closed won handoff.",
+      "CALL_OUTCOME_CATEGORY": "Positive",
+      "CALL_OUTCOME_NAME": "Closed won handoff",
+      "MEETING_STAGE_CONTEXT": "Procurement",
+      "CUSTOMER_SENTIMENT": "Positive",
+      "PRIMARY_OBJECTION": "IT bandwidth constraint",
+      "NEXT_STEP": "confirm legal/procurement owner and signature date",
+      "KEY_MEETING_DISCUSSIONS": "Business Pain: Pioneer Logistics needs Quality Management to improve operational visibility and reduce manual follow-up. | Decision Process: Maya Chen confirmed the active stage as Procurement and mapped next approval owner for opportunity 006DMO000000000100000. | Objection: Customer raised IT bandwidth constraint; response and owner were captured for follow-up. | Next Step: confirm legal/procurement owner and signature date before the target close date 2025-03-09. | Agent Signal: Sentiment is Positive; ARR impact is 52,823; conversion action is to focus on closed won handoff.",
+      "ACCOUNT_ID": "001DMO000000000200000",
+      "ACCOUNT_NAME": "Pioneer Logistics",
+      "OPPORTUNITY_ID": "006DMO000000000100000"
+    },
+    {
+      "ID": 9.1e+18,
+      "CUSTOM_DATA": "{\"opportunity_id\": \"006DMO000000000100000\", \"account_id\": \"001DMO000000000200000\", \"account_name\": \"Pioneer Logistics\", \"sales_rep_id\": \"005DMO000000000300000\", \"sales_rep_name\": \"Maya Chen\", \"sales_rep_email\": \"maya.chen@northstar-demo.ai\", \"opportunity_stage\": \"Closed Won\", \"opportunity_arr\": 52823.0}",
+      "TITLE": "Procurement Check-in - Pioneer Logistics - 006DMO000000000100000",
+      "PURPOSE": "Procurement check-in",
+      "SCHEDULED": "2025-02-18 15:45:00+00:00",
+      "COMPANY_QUESTION_COUNT": 5,
+      "BRIEF": "Dummy sanitized Gong call for opportunity 006DMO000000000100000 / account Pioneer Logistics. Maya Chen discussed Quality Management during procurement check-in with the customer. Key topics included timeline confidence, decision criteria, timeline, stakeholder alignment, and next steps. Outcome: Procurement aligned.",
+      "CALL_OUTCOME_CATEGORY": "Neutral",
+      "CALL_OUTCOME_NAME": "Procurement aligned",
+      "MEETING_STAGE_CONTEXT": "Procurement",
+      "CUSTOMER_SENTIMENT": "Neutral",
+      "PRIMARY_OBJECTION": "timeline confidence",
+      "NEXT_STEP": "confirm legal/procurement owner and signature date",
+      "KEY_MEETING_DISCUSSIONS": "Business Pain: Pioneer Logistics needs Quality Management to improve operational visibility and reduce manual follow-up. | Decision Process: Maya Chen confirmed the active stage as Procurement and mapped next approval owner for opportunity 006DMO000000000100000. | Objection: Customer raised timeline confidence; response and owner were captured for follow-up. | Next Step: confirm legal/procurement owner and signature date before the target close date 2025-03-09. | Agent Signal: Sentiment is Neutral; ARR impact is 52,823; conversion action is to focus on procurement aligned.",
+      "ACCOUNT_ID": "001DMO000000000200000",
+      "ACCOUNT_NAME": "Pioneer Logistics",
+      "OPPORTUNITY_ID": "006DMO000000000100000"
+    },
+    {
+      "ID": 9.1e+18,
+      "CUSTOM_DATA": "{\"opportunity_id\": \"006DMO000000000100000\", \"account_id\": \"001DMO000000000200000\", \"account_name\": \"Pioneer Logistics\", \"sales_rep_id\": \"005DMO000000000300000\", \"sales_rep_name\": \"Maya Chen\", \"sales_rep_email\": \"maya.chen@northstar-demo.ai\", \"opportunity_stage\": \"Closed Won\", \"opportunity_arr\": 52823.0}",
+      "TITLE": "Technical Validation - Pioneer Logistics - 006DMO000000000100000",
+      "PURPOSE": "Technical validation",
+      "SCHEDULED": "2025-02-08 15:00:00+00:00",
+      "COMPANY_QUESTION_COUNT": 10,
+      "BRIEF": "Dummy sanitized Gong call for opportunity 006DMO000000000100000 / account Pioneer Logistics. Maya Chen discussed Quality Management during technical validation with the customer. Key topics included legacy data migration, decision criteria, timeline, stakeholder alignment, and next steps. Outcome: Procurement aligned.",
+      "CALL_OUTCOME_CATEGORY": "Positive",
+      "CALL_OUTCOME_NAME": "Procurement aligned",
+      "MEETING_STAGE_CONTEXT": "Evaluation",
+      "CUSTOMER_SENTIMENT": "Positive",
+      "PRIMARY_OBJECTION": "legacy data migration",
+      "NEXT_STEP": "complete integration validation",
+      "KEY_MEETING_DISCUSSIONS": "Business Pain: Pioneer Logistics needs Quality Management to improve operational visibility and reduce manual follow-up. | Decision Process: Maya Chen confirmed the active stage as Evaluation and mapped next approval owner for opportunity 006DMO000000000100000. | Objection: Customer raised legacy data migration; response and owner were captured for follow-up. | Next Step: complete integration validation before the target close date 2025-03-09. | Agent Signal: Sentiment is Positive; ARR impact is 52,823; conversion action is to focus on procurement aligned.",
+      "ACCOUNT_ID": "001DMO000000000200000",
+      "ACCOUNT_NAME": "Pioneer Logistics",
+      "OPPORTUNITY_ID": "006DMO000000000100000"
+    },
+    {
+      "ID": 9.1e+18,
+      "CUSTOM_DATA": "{\"opportunity_id\": \"006DMO000000000100000\", \"account_id\": \"001DMO000000000200000\", \"account_name\": \"Pioneer Logistics\", \"sales_rep_id\": \"005DMO000000000300000\", \"sales_rep_name\": \"Maya Chen\", \"sales_rep_email\": \"maya.chen@northstar-demo.ai\", \"opportunity_stage\": \"Closed Won\", \"opportunity_arr\": 52823.0}",
+      "TITLE": "Business Case Review - Pioneer Logistics - 006DMO000000000100000",
+      "PURPOSE": "Business case review",
+      "SCHEDULED": "2025-02-01 17:30:00+00:00",
+      "COMPANY_QUESTION_COUNT": 2,
+      "BRIEF": "Dummy sanitized Gong call for opportunity 006DMO000000000100000 / account Pioneer Logistics. Maya Chen discussed Quality Management during business case review with the customer. Key topics included executive sponsorship, decision criteria, timeline, stakeholder alignment, and next steps. Outcome: Business case approved.",
+      "CALL_OUTCOME_CATEGORY": "Neutral",
+      "CALL_OUTCOME_NAME": "Business case approved",
+      "MEETING_STAGE_CONTEXT": "Proposal",
+      "CUSTOMER_SENTIMENT": "Neutral",
+      "PRIMARY_OBJECTION": "executive sponsorship",
+      "NEXT_STEP": "send ROI case and budget summary",
+      "KEY_MEETING_DISCUSSIONS": "Business Pain: Pioneer Logistics needs Quality Management to improve operational visibility and reduce manual follow-up. | Decision Process: Maya Chen confirmed the active stage as Proposal and mapped next approval owner for opportunity 006DMO000000000100000. | Objection: Customer raised executive sponsorship; response and owner were captured for follow-up. | Next Step: send ROI case and budget summary before the target close date 2025-03-09. | Agent Signal: Sentiment is Neutral; ARR impact is 52,823; conversion action is to focus on business case approved.",
+      "ACCOUNT_ID": "001DMO000000000200000",
+      "ACCOUNT_NAME": "Pioneer Logistics",
+      "OPPORTUNITY_ID": "006DMO000000000100000"
+    },
+    {
+      "ID": 9.1e+18,
+      "CUSTOM_DATA": "{\"opportunity_id\": \"006DMO000000000100000\", \"account_id\": \"001DMO000000000200000\", \"account_name\": \"Pioneer Logistics\", \"sales_rep_id\": \"005DMO000000000300000\", \"sales_rep_name\": \"Maya Chen\", \"sales_rep_email\": \"maya.chen@northstar-demo.ai\", \"opportunity_stage\": \"Closed Won\", \"opportunity_arr\": 52823.0}",
+      "TITLE": "Business Case Review - Pioneer Logistics - 006DMO000000000100000",
+      "PURPOSE": "Business case review",
+      "SCHEDULED": "2025-01-24 11:45:00+00:00",
+      "COMPANY_QUESTION_COUNT": 2,
+      "BRIEF": "Dummy sanitized Gong call for opportunity 006DMO000000000100000 / account Pioneer Logistics. Maya Chen discussed Quality Management during business case review with the customer. Key topics included budget approval timeline, decision criteria, timeline, stakeholder alignment, and next steps. Outcome: Procurement aligned.",
+      "CALL_OUTCOME_CATEGORY": "Neutral",
+      "CALL_OUTCOME_NAME": "Procurement aligned",
+      "MEETING_STAGE_CONTEXT": "Proposal",
+      "CUSTOMER_SENTIMENT": "Neutral",
+      "PRIMARY_OBJECTION": "budget approval timeline",
+      "NEXT_STEP": "send ROI case and budget summary",
+      "KEY_MEETING_DISCUSSIONS": "Business Pain: Pioneer Logistics needs Quality Management to improve operational visibility and reduce manual follow-up. | Decision Process: Maya Chen confirmed the active stage as Proposal and mapped next approval owner for opportunity 006DMO000000000100000. | Objection: Customer raised budget approval timeline; response and owner were captured for follow-up. | Next Step: send ROI case and budget summary before the target close date 2025-03-09. | Agent Signal: Sentiment is Neutral; ARR impact is 52,823; conversion action is to focus on procurement aligned.",
+      "ACCOUNT_ID": "001DMO000000000200000",
+      "ACCOUNT_NAME": "Pioneer Logistics",
+      "OPPORTUNITY_ID": "006DMO000000000100000"
+    },
+    {
+      "ID": 9.1e+18,
+      "CUSTOM_DATA": "{\"opportunity_id\": \"006DMO000000000100000\", \"account_id\": \"001DMO000000000200000\", \"account_name\": \"Pioneer Logistics\", \"sales_rep_id\": \"005DMO000000000300000\", \"sales_rep_name\": \"Maya Chen\", \"sales_rep_email\": \"maya.chen@northstar-demo.ai\", \"opportunity_stage\": \"Closed Won\", \"opportunity_arr\": 52823.0}",
+      "TITLE": "Product Demo - Pioneer Logistics - 006DMO000000000100000",
+      "PURPOSE": "Demo",
+      "SCHEDULED": "2025-01-22 09:30:00+00:00",
+      "COMPANY_QUESTION_COUNT": 6,
+      "BRIEF": "Dummy sanitized Gong call for opportunity 006DMO000000000100000 / account Pioneer Logistics. Maya Chen discussed Quality Management during demo with the customer. Key topics included budget approval timeline, decision criteria, timeline, stakeholder alignment, and next steps. Outcome: Security approved.",
+      "CALL_OUTCOME_CATEGORY": "Neutral",
+      "CALL_OUTCOME_NAME": "Security approved",
+      "MEETING_STAGE_CONTEXT": "Demo",
+      "CUSTOMER_SENTIMENT": "Neutral",
+      "PRIMARY_OBJECTION": "budget approval timeline",
+      "NEXT_STEP": "share demo recording and confirm success criteria",
+      "KEY_MEETING_DISCUSSIONS": "Business Pain: Pioneer Logistics needs Quality Management to improve operational visibility and reduce manual follow-up. | Decision Process: Maya Chen confirmed the active stage as Demo and mapped next approval owner for opportunity 006DMO000000000100000. | Objection: Customer raised budget approval timeline; response and owner were captured for follow-up. | Next Step: share demo recording and confirm success criteria before the target close date 2025-03-09. | Agent Signal: Sentiment is Neutral; ARR impact is 52,823; conversion action is to focus on security approved.",
+      "ACCOUNT_ID": "001DMO000000000200000",
+      "ACCOUNT_NAME": "Pioneer Logistics",
+      "OPPORTUNITY_ID": "006DMO000000000100000"
+    },
+    {
+      "ID": 9.1e+18,
+      "CUSTOM_DATA": "{\"opportunity_id\": \"006DMO000000000100000\", \"account_id\": \"001DMO000000000200000\", \"account_name\": \"Pioneer Logistics\", \"sales_rep_id\": \"005DMO000000000300000\", \"sales_rep_name\": \"Maya Chen\", \"sales_rep_email\": \"maya.chen@northstar-demo.ai\", \"opportunity_stage\": \"Closed Won\", \"opportunity_arr\": 52823.0}",
+      "TITLE": "Discovery Call - Pioneer Logistics - 006DMO000000000100000",
+      "PURPOSE": "Discovery",
+      "SCHEDULED": "2025-01-19 14:45:00+00:00",
+      "COMPANY_QUESTION_COUNT": 11,
+      "BRIEF": "Dummy sanitized Gong call for opportunity 006DMO000000000100000 / account Pioneer Logistics. Maya Chen discussed Quality Management during discovery with the customer. Key topics included procurement documentation, decision criteria, timeline, stakeholder alignment, and next steps. Outcome: Champion confirmed.",
+      "CALL_OUTCOME_CATEGORY": "Positive",
+      "CALL_OUTCOME_NAME": "Champion confirmed",
+      "MEETING_STAGE_CONTEXT": "Discovery",
+      "CUSTOMER_SENTIMENT": "Positive",
+      "PRIMARY_OBJECTION": "procurement documentation",
+      "NEXT_STEP": "schedule tailored demo",
+      "KEY_MEETING_DISCUSSIONS": "Business Pain: Pioneer Logistics needs Quality Management to improve operational visibility and reduce manual follow-up. | Decision Process: Maya Chen confirmed the active stage as Discovery and mapped next approval owner for opportunity 006DMO000000000100000. | Objection: Customer raised procurement documentation; response and owner were captured for follow-up. | Next Step: schedule tailored demo before the target close date 2025-03-09. | Agent Signal: Sentiment is Positive; ARR impact is 52,823; conversion action is to focus on champion confirmed.",
+      "ACCOUNT_ID": "001DMO000000000200000",
+      "ACCOUNT_NAME": "Pioneer Logistics",
+      "OPPORTUNITY_ID": "006DMO000000000100000"
+    },
+    {
+      "ID": 9.1e+17,
+      "CUSTOM_DATA": "{\"opportunity_id\": \"006DMO000000000100000\", \"account_id\": \"001DMO000000000200000\", \"account_name\": \"Pioneer Logistics\", \"sales_rep_id\": \"005DMO000000000300000\", \"sales_rep_name\": \"Maya Chen\", \"sales_rep_email\": \"maya.chen@northstar-demo.ai\", \"opportunity_stage\": \"Closed Won\", \"opportunity_arr\": 52823.0}",
+      "TITLE": "Discovery Call - Pioneer Logistics - 006DMO000000000100000",
+      "PURPOSE": "Discovery",
+      "SCHEDULED": "2025-01-07 15:00:00+00:00",
+      "COMPANY_QUESTION_COUNT": 12,
+      "BRIEF": "Dummy sanitized Gong call for opportunity 006DMO000000000100000 / account Pioneer Logistics. Maya Chen discussed Quality Management during discovery with the customer. Key topics included budget approval timeline, decision criteria, timeline, stakeholder alignment, and next steps. Outcome: Business case approved.",
+      "CALL_OUTCOME_CATEGORY": "Neutral",
+      "CALL_OUTCOME_NAME": "Business case approved",
+      "MEETING_STAGE_CONTEXT": "Discovery",
+      "CUSTOMER_SENTIMENT": "Neutral",
+      "PRIMARY_OBJECTION": "budget approval timeline",
+      "NEXT_STEP": "schedule tailored demo",
+      "KEY_MEETING_DISCUSSIONS": "Business Pain: Pioneer Logistics needs Quality Management to improve operational visibility and reduce manual follow-up. | Decision Process: Maya Chen confirmed the active stage as Discovery and mapped next approval owner for opportunity 006DMO000000000100000. | Objection: Customer raised budget approval timeline; response and owner were captured for follow-up. | Next Step: schedule tailored demo before the target close date 2025-03-09. | Agent Signal: Sentiment is Neutral; ARR impact is 52,823; conversion action is to focus on business case approved.",
+      "ACCOUNT_ID": "001DMO000000000200000",
+      "ACCOUNT_NAME": "Pioneer Logistics",
+      "OPPORTUNITY_ID": "006DMO000000000100000"
+    }
+  ]
+}
+
+
+
+*************************
+[account_analysis_agent] {
+  "accounts": [
+    {
+      "account_id": "001DMO000000000200000",
+      "account_name": "Pioneer Logistics",
+      "deal_health": "healthy",
+      "conversion_score": 100,
+      "missed_commitments": [],
+      "customer_objections": [
+        {
+          "objection": "budget approval timeline",
+          "severity": "high"
+        },
+        {
+          "objection": "procurement documentation",
+          "severity": "low"
+        },
+        {
+          "objection": "executive sponsorship",
+          "severity": "low"
+        },
+        {
+          "objection": "legacy data migration",
+          "severity": "low"
+        },
+        {
+          "objection": "timeline confidence",
+          "severity": "low"
+        },
+        {
+          "objection": "IT bandwidth constraint",
+          "severity": "low"
+        }
+      ],
+      "communication_gaps": [
+        "Recurring objection: budget approval timeline"
+      ],
+      "recommended_action": "Confirm completion of 'complete closed-won handoff and implementation kickoff' for Quality Management.",
+      "analysis_summary": "The Pioneer Logistics account currently has a deal for Quality Management - 2025 Expansion at the Closed Won stage. The deal has successfully closed. Focus should now be on confirming post-win activities to ensure a smooth transition."
+    },
+    {
+      "account_id": "001DMO000000000200015",
+      "account_name": "Elmstone Chemicals",
+      "deal_health": "healthy",
+      "conversion_score": 100,
+      "missed_commitments": [],
+      "customer_objections": [
+        {
+          "objection": "change management risk",
+          "severity": "medium"
+        },
+        {
+          "objection": "pricing discount request",
+          "severity": "low"
+        },
+        {
+          "objection": "timeline confidence",
+          "severity": "low"
+        },
+        {
+          "objection": "legacy data migration",
+          "severity": "low"
+        },
+        {
+          "objection": "procurement documentation",
+          "severity": "low"
+        },
+        {
+          "objection": "executive sponsorship",
+          "severity": "low"
+        }
+      ],
+      "communication_gaps": [
+        "Recurring objection: change management risk"
+      ],
+      "recommended_action": "Confirm completion of 'complete closed-won handoff and implementation kickoff' for Incident Management.",
+      "analysis_summary": "The Elmstone Chemicals account currently has a deal for Incident Management - 2025 Upsell at the Closed Won stage. The deal has successfully closed. Focus should now be on confirming post-win activities to ensure a smooth transition."
+    },
+    {
+      "account_id": "001DMO000000000200030",
+      "account_name": "Greenline Utilities",
+      "deal_health": "healthy",
+      "conversion_score": 100,
+      "missed_commitments": [],
+      "customer_objections": [
+        {
+          "objection": "security review",
+          "severity": "medium"
+        },
+        {
+          "objection": "legacy data migration",
+          "severity": "low"
+        },
+        {
+          "objection": "timeline confidence",
+          "severity": "low"
+        },
+        {
+          "objection": "change management risk",
+          "severity": "low"
+        },
+        {
+          "objection": "budget approval timeline",
+          "severity": "low"
+        },
+        {
+          "objection": "procurement documentation",
+          "severity": "low"
+        },
+        {
+          "objection": "IT bandwidth constraint",
+          "severity": "low"
+        }
+      ],
+      "communication_gaps": [
+        "Recurring objection: security review"
+      ],
+      "recommended_action": "Confirm completion of 'complete closed-won handoff and implementation kickoff' for Quality Management.",
+      "analysis_summary": "The Greenline Utilities account currently has a deal for Quality Management - 2025 Renewal at the Closed Won stage. The deal has successfully closed. Focus should now be on confirming post-win activities to ensure a smooth transition."
+    },
+    {
+      "account_id": "001DMO000000000200045",
+      "account_name": "Delta Energy",
+      "deal_health": "healthy",
+      "conversion_score": 100,
+      "missed_commitments": [],
+      "customer_objections": [
+        {
+          "objection": "budget approval timeline",
+          "severity": "medium"
+        },
+        {
+          "objection": "legacy data migration",
+          "severity": "low"
+        },
+        {
+          "objection": "IT bandwidth constraint",
+          "severity": "low"
+        },
+        {
+          "objection": "pricing discount request",
+          "severity": "medium"
+        },
+        {
+          "objection": "procurement documentation",
+          "severity": "low"
+        }
+      ],
+      "communication_gaps": [
+        "Recurring objection: budget approval timeline",
+        "Recurring objection: pricing discount request"
+      ],
+      "recommended_action": "Confirm completion of 'complete closed-won handoff and implementation kickoff' for EHS Cloud Suite.",
+      "analysis_summary": "The Delta Energy account currently has a deal for EHS Cloud Suite - 2025 Upsell at the Closed Won stage. The deal has successfully closed. Focus should now be on confirming post-win activities to ensure a smooth transition."
+    },
+    {
+      "account_id": "001DMO000000000200060",
+      "account_name": "Zenith Labs",
+      "deal_health": "healthy",
+      "conversion_score": 100,
+      "missed_commitments": [],
+      "customer_objections": [
+        {
+          "objection": "integration complexity",
+          "severity": "low"
+        },
+        {
+          "objection": "timeline confidence",
+          "severity": "medium"
+        },
+        {
+          "objection": "IT bandwidth constraint",
+          "severity": "low"
+        },
+        {
+          "objection": "pricing discount request",
+          "severity": "low"
+        },
+        {
+          "objection": "change management risk",
+          "severity": "low"
+        },
+        {
+          "objection": "legacy data migration",
+          "severity": "medium"
+        }
+      ],
+      "communication_gaps": [
+        "Recurring objection: timeline confidence",
+        "Recurring objection: legacy data migration"
+      ],
+      "recommended_action": "Confirm completion of 'complete closed-won handoff and implementation kickoff' for Audit Automation.",
+      "analysis_summary": "The Zenith Labs account currently has a deal for Audit Automation - 2025 Expansion at the Closed Won stage. The deal has successfully closed. Focus should now be on confirming post-win activities to ensure a smooth transition."
+    },
+    {
+      "account_id": "001DMO000000000200075",
+      "account_name": "Maple Manufacturing",
+      "deal_health": "healthy",
+      "conversion_score": 100,
+      "missed_commitments": [],
+      "customer_objections": [
+        {
+          "objection": "pricing discount request",
+          "severity": "medium"
+        },
+        {
+          "objection": "legacy data migration",
+          "severity": "medium"
+        },
+        {
+          "objection": "executive sponsorship",
+          "severity": "low"
+        },
+        {
+          "objection": "budget approval timeline",
+          "severity": "low"
+        },
+        {
+          "objection": "integration complexity",
+          "severity": "low"
+        },
+        {
+          "objection": "procurement documentation",
+          "severity": "medium"
+        },
+        {
+          "objection": "IT bandwidth constraint",
+          "severity": "low"
+        }
+      ],
+      "communication_gaps": [
+        "Recurring objection: pricing discount request",
+        "Recurring objection: legacy data migration",
+        "Recurring objection: procurement documentation"
+      ],
+      "recommended_action": "Confirm completion of 'complete closed-won handoff and implementation kickoff' for Incident Management.",
+      "analysis_summary": "The Maple Manufacturing account currently has a deal for Incident Management - 2025 Upsell at the Closed Won stage. The deal has successfully closed. Focus should now be on confirming post-win activities to ensure a smooth transition."
+    },
+    {
+      "account_id": "001DMO000000000200090",
+      "account_name": "Summit Logistics",
+      "deal_health": "healthy",
+      "conversion_score": 100,
+      "missed_commitments": [],
+      "customer_objections": [
+        {
+          "objection": "security review",
+          "severity": "medium"
+        },
+        {
+          "objection": "integration complexity",
+          "severity": "low"
+        },
+        {
+          "objection": "executive sponsorship",
+          "severity": "low"
+        },
+        {
+          "objection": "budget approval timeline",
+          "severity": "low"
+        }
+      ],
+      "communication_gaps": [
+        "Recurring objection: security review"
+      ],
+      "recommended_action": "Confirm completion of 'complete closed-won handoff and implementation kickoff' for Sustainability Hub.",
+      "analysis_summary": "The Summit Logistics account currently has a deal for Sustainability Hub - 2025 New Business at the Closed Won stage. The deal has successfully closed. Focus should now be on confirming post-win activities to ensure a smooth transition."
+    },
+    {
+      "account_id": "001DMO000000000200105",
+      "account_name": "Summit Infrastructure",
+      "deal_health": "critical",
+      "conversion_score": 45,
+      "missed_commitments": [
+        {
+          "description": "share demo recording and confirm success criteria",
+          "call_date": "2026-03-04",
+          "status": "overdue"
+        },
+        {
+          "description": "share demo recording and confirm success criteria",
+          "call_date": "2026-05-19",
+          "status": "overdue"
+        },
+        {
+          "description": "submit security questionnaire response",
+          "call_date": "2026-06-04",
+          "status": "overdue"
+        },
+        {
+          "description": "send ROI case and budget summary",
+          "call_date": "2026-06-17",
+          "status": "overdue"
+        },
+        {
+          "description": "complete integration validation",
+          "call_date": "2026-06-23",
+          "status": "pending"
+        }
+      ],
+      "customer_objections": [
+        {
+          "objection": "executive sponsorship",
+          "severity": "low"
+        },
+        {
+          "objection": "integration complexity",
+          "severity": "low"
+        },
+        {
+          "objection": "timeline confidence",
+          "severity": "low"
+        },
+        {
+          "objection": "change management risk",
+          "severity": "low"
+        },
+        {
+          "objection": "pricing discount request",
+          "severity": "low"
+        },
+        {
+          "objection": "legacy data migration",
+          "severity": "low"
+        },
+        {
+          "objection": "security review",
+          "severity": "low"
+        }
+      ],
+      "communication_gaps": [],
+      "recommended_action": "Address overdue commitment: 'share demo recording and confirm success criteria' from call on 2026-03-04. Provide an update to the customer immediately.",
+      "analysis_summary": "The Summit Infrastructure account currently has a deal for Sustainability Hub - 2025 Upsell at the Evaluation stage. This deal is in a critical state with some mixed customer sentiment and significant overdue commitments. Urgent intervention is required to prevent it from being lost."
+    },
+    {
+      "account_id": "001DMO000000000200120",
+      "account_name": "Lumen Chemicals",
+      "deal_health": "at_risk",
+      "conversion_score": 30,
+      "missed_commitments": [
+        {
+          "description": "share demo recording and confirm success criteria",
+          "call_date": "2026-05-13",
+          "status": "overdue"
+        },
+        {
+          "description": "schedule tailored demo",
+          "call_date": "2026-02-03",
+          "status": "overdue"
+        },
+        {
+          "description": "schedule tailored demo",
+          "call_date": "2026-01-12",
+          "status": "overdue"
+        },
+        {
+          "description": "schedule tailored demo",
+          "call_date": "2025-10-27",
+          "status": "overdue"
+        },
+        {
+          "description": "schedule tailored demo",
+          "call_date": "2025-10-21",
+          "status": "overdue"
+        }
+      ],
+      "customer_objections": [
+        {
+          "objection": "IT bandwidth constraint",
+          "severity": "medium"
+        },
+        {
+          "objection": "integration complexity",
+          "severity": "low"
+        },
+        {
+          "objection": "executive sponsorship",
+          "severity": "low"
+        },
+        {
+          "objection": "legacy data migration",
+          "severity": "low"
+        }
+      ],
+      "communication_gaps": [
+        "Recurring objection: IT bandwidth constraint"
+      ],
+      "recommended_action": "Address overdue commitment: 'share demo recording and confirm success criteria' from call on 2026-05-13. Provide an update to the customer immediately.",
+      "analysis_summary": "The Lumen Chemicals account currently has a deal for Audit Automation - 2025 Renewal at the Discovery stage. The deal is at risk due to a positive customer sentiment and some recurring objections. Immediate action is needed to address these concerns and re-align with the customer."
+    },
+    {
+      "account_id": "001DMO000000000200135",
+      "account_name": "Zenith Retail Group",
+      "deal_health": "at_risk",
+      "conversion_score": 40,
+      "missed_commitments": [
+        {
+          "description": "send ROI case and budget summary",
+          "call_date": "2026-06-23",
+          "status": "overdue"
+        },
+        {
+          "description": "send ROI case and budget summary",
+          "call_date": "2026-06-13",
+          "status": "overdue"
+        },
+        {
+          "description": "share demo recording and confirm success criteria",
+          "call_date": "2026-03-30",
+          "status": "overdue"
+        },
+        {
+          "description": "schedule tailored demo",
+          "call_date": "2026-01-20",
+          "status": "overdue"
+        },
+        {
+          "description": "schedule tailored demo",
+          "call_date": "2025-11-18",
+          "status": "overdue"
+        }
+      ],
+      "customer_objections": [
+        {
+          "objection": "procurement documentation",
+          "severity": "low"
+        },
+        {
+          "objection": "timeline confidence",
+          "severity": "low"
+        },
+        {
+          "objection": "change management risk",
+          "severity": "low"
+        },
+        {
+          "objection": "integration complexity",
+          "severity": "low"
+        },
+        {
+          "objection": "executive sponsorship",
+          "severity": "low"
+        }
+      ],
+      "communication_gaps": [],
+      "recommended_action": "Address overdue commitment: 'send ROI case and budget summary' from call on 2026-06-23. Provide an update to the customer immediately.",
+      "analysis_summary": "The Zenith Retail Group account currently has a deal for EHS Cloud Suite - 2025 Renewal at the Proposal stage. The deal is at risk due to a neutral customer sentiment and some recurring objections. Immediate action is needed to address these concerns and re-align with the customer."
+    },
+    {
+      "account_id": "001DMO000000000200150",
+      "account_name": "Beacon Manufacturing",
+      "deal_health": "at_risk",
+      "conversion_score": 40,
+      "missed_commitments": [
+        {
+          "description": "send ROI case and budget summary",
+          "call_date": "2026-06-13",
+          "status": "overdue"
+        },
+        {
+          "description": "send ROI case and budget summary",
+          "call_date": "2026-06-12",
+          "status": "overdue"
+        },
+        {
+          "description": "send ROI case and budget summary",
+          "call_date": "2026-05-10",
+          "status": "overdue"
+        },
+        {
+          "description": "send ROI case and budget summary",
+          "call_date": "2026-04-06",
+          "status": "overdue"
+        },
+        {
+          "description": "share demo recording and confirm success criteria",
+          "call_date": "2026-03-22",
+          "status": "overdue"
+        },
+        {
+          "description": "share demo recording and confirm success criteria",
+          "call_date": "2026-03-20",
+          "status": "overdue"
+        },
+        {
+          "description": "schedule tailored demo",
+          "call_date": "2026-02-12",
+          "status": "overdue"
+        },
+        {
+          "description": "schedule tailored demo",
+          "call_date": "2026-01-24",
+          "status": "overdue"
+        }
+      ],
+      "customer_objections": [
+        {
+          "objection": "legacy data migration",
+          "severity": "low"
+        },
+        {
+          "objection": "security review",
+          "severity": "low"
+        },
+        {
+          "objection": "budget approval timeline",
+          "severity": "low"
+        },
+        {
+          "objection": "pricing discount request",
+          "severity": "low"
+        },
+        {
+          "objection": "executive sponsorship",
+          "severity": "low"
+        },
+        {
+          "objection": "timeline confidence",
+          "severity": "low"
+        },
+        {
+          "objection": "integration complexity",
+          "severity": "low"
+        }
+      ],
+      "communication_gaps": [],
+      "recommended_action": "Address overdue commitment: 'send ROI case and budget summary' from call on 2026-06-13. Provide an update to the customer immediately.",
+      "analysis_summary": "The Beacon Manufacturing account currently has a deal for Quality Management - 2025 Renewal at the Proposal stage. The deal is at risk due to a mixed customer sentiment and some recurring objections. Immediate action is needed to address these concerns and re-align with the customer."
+    },
+    {
+      "account_id": "001DMO000000000200165",
+      "account_name": "Westbridge Utilities",
+      "deal_health": "critical",
+      "conversion_score": 10,
+      "missed_commitments": [
+        {
+          "description": "schedule tailored demo",
+          "call_date": "2026-06-23",
+          "status": "pending"
+        },
+        {
+          "description": "share demo recording and confirm success criteria",
+          "call_date": "2026-06-11",
+          "status": "overdue"
+        },
+        {
+          "description": "schedule tailored demo",
+          "call_date": "2026-02-21",
+          "status": "overdue"
+        }
+      ],
+      "customer_objections": [
+        {
+          "objection": "security review",
+          "severity": "low"
+        },
+        {
+          "objection": "timeline confidence",
+          "severity": "low"
+        },
+        {
+          "objection": "budget approval timeline",
+          "severity": "low"
+        }
+      ],
+      "communication_gaps": [],
+      "recommended_action": "Address overdue commitment: 'share demo recording and confirm success criteria' from call on 2026-06-11. Provide an update to the customer immediately.",
+      "analysis_summary": "The Westbridge Utilities account currently has a deal for Sustainability Hub - 2026 Renewal at the Discovery stage. This deal is in a critical state with negative customer sentiment and significant overdue commitments. Urgent intervention is required to prevent it from being lost."
+    },
+    {
+      "account_id": "001DMO000000000200180",
+      "account_name": "BluePeak Logistics",
+      "deal_health": "critical",
+      "conversion_score": 50,
+      "missed_commitments": [
+        {
+          "description": "confirm legal/procurement owner and signature date",
+          "call_date": "2026-06-23",
+          "status": "pending"
+        },
+        {
+          "description": "send ROI case and budget summary",
+          "call_date": "2026-06-17",
+          "status": "overdue"
+        },
+        {
+          "description": "share demo recording and confirm success criteria",
+          "call_date": "2026-06-16",
+          "status": "overdue"
+        },
+        {
+          "description": "schedule tailored demo",
+          "call_date": "2026-06-14",
+          "status": "overdue"
+        },
+        {
+          "description": "complete integration validation",
+          "call_date": "2026-06-11",
+          "status": "overdue"
+        },
+        {
+          "description": "schedule tailored demo",
+          "call_date": "2026-04-21",
+          "status": "overdue"
+        }
+      ],
+      "customer_objections": [
+        {
+          "objection": "timeline confidence",
+          "severity": "medium"
+        },
+        {
+          "objection": "security review",
+          "severity": "medium"
+        },
+        {
+          "objection": "integration complexity",
+          "severity": "low"
+        },
+        {
+          "objection": "legacy data migration",
+          "severity": "low"
+        }
+      ],
+      "communication_gaps": [
+        "Recurring objection: timeline confidence",
+        "Recurring objection: security review"
+      ],
+      "recommended_action": "Address overdue commitment: 'send ROI case and budget summary' from call on 2026-06-17. Provide an update to the customer immediately.",
+      "analysis_summary": "The BluePeak Logistics account currently has a deal for Risk Intelligence - 2026 Cross-sell at the Procurement stage. This deal is in a critical state with some mixed customer sentiment and significant overdue commitments. Urgent intervention is required to prevent it from being lost."
+    },
+    {
+      "account_id": "001DMO000000000200195",
+      "account_name": "Orion Industries",
+      "deal_health": "critical",
+      "conversion_score": 0,
+      "missed_commitments": [
+        {
+          "description": "confirm next action",
+          "call_date": "2026-04-24",
+          "status": "overdue"
+        },
+        {
+          "description": "complete integration validation",
+          "call_date": "2026-04-19",
+          "status": "overdue"
+        },
+        {
+          "description": "send ROI case and budget summary",
+          "call_date": "2026-04-11",
+          "status": "overdue"
+        },
+        {
+          "description": "share demo recording and confirm success criteria",
+          "call_date": "2026-04-06",
+          "status": "overdue"
+        },
+        {
+          "description": "schedule tailored demo",
+          "call_date": "2026-04-02",
+          "status": "overdue"
+        }
+      ],
+      "customer_objections": [
+        {
+          "objection": "change management risk",
+          "severity": "low"
+        },
+        {
+          "objection": "executive sponsorship",
+          "severity": "low"
+        },
+        {
+          "objection": "legacy data migration",
+          "severity": "medium"
+        },
+        {
+          "objection": "budget approval timeline",
+          "severity": "low"
+        }
+      ],
+      "communication_gaps": [
+        "Recurring objection: legacy data migration"
+      ],
+      "recommended_action": "Analyze specific reasons for deal loss related to 'legacy data migration' and identify potential re-engagement strategies. Follow up with the customer to understand their final decision.",
+      "analysis_summary": "The Orion Industries account currently has a deal for Risk Intelligence - 2026 Upsell at the Closed Lost stage. Unfortunately, the deal was lost. A key factor was a recurring objection regarding 'legacy data migration'. It's crucial to analyze the reasons for the loss to improve future outcomes."
+    },
+    {
+      "account_id": "001DMO000000000200210",
+      "account_name": "Quartz Pharma",
+      "deal_health": "critical",
+      "conversion_score": 0,
+      "missed_commitments": [
+        {
+          "description": "share demo recording and confirm success criteria",
+          "call_date": "2026-06-15",
+          "status": "overdue"
+        },
+        {
+          "description": "complete integration validation",
+          "call_date": "2026-06-11",
+          "status": "overdue"
+        },
+        {
+          "description": "schedule tailored demo",
+          "call_date": "2026-06-06",
+          "status": "overdue"
+        },
+        {
+          "description": "send ROI case and budget summary",
+          "call_date": "2026-06-04",
+          "status": "overdue"
+        },
+        {
+          "description": "confirm next action",
+          "call_date": "2026-06-04",
+          "status": "overdue"
+        },
+        {
+          "description": "schedule tailored demo",
+          "call_date": "2026-06-04",
+          "status": "overdue"
+        }
+      ],
+      "customer_objections": [
+        {
+          "objection": "legacy data migration",
+          "severity": "medium"
+        },
+        {
+          "objection": "procurement documentation",
+          "severity": "low"
+        },
+        {
+          "objection": "integration complexity",
+          "severity": "medium"
+        },
+        {
+          "objection": "timeline confidence",
+          "severity": "low"
+        }
+      ],
+      "communication_gaps": [
+        "Recurring objection: legacy data migration",
+        "Recurring objection: integration complexity"
+      ],
+      "recommended_action": "Analyze specific reasons for deal loss related to 'legacy data migration' and identify potential re-engagement strategies. Follow up with the customer to understand their final decision.",
+      "analysis_summary": "The Quartz Pharma account currently has a deal for Quality Management - 2026 Expansion at the Closed Lost stage. Unfortunately, the deal was lost. A key factor was a recurring objection regarding 'legacy data migration'. It's crucial to analyze the reasons for the loss to improve future outcomes."
+    },
+    {
+      "account_id": "001DMO000000000200225",
+      "account_name": "Terra Holdings",
+      "deal_health": "critical",
+      "conversion_score": 25,
+      "missed_commitments": [
+        {
+          "description": "schedule tailored demo",
+          "call_date": "2026-06-20",
+          "status": "pending"
+        },
+        {
+          "description": "send ROI case and budget summary",
+          "call_date": "2026-06-19",
+          "status": "overdue"
+        },
+        {
+          "description": "share demo recording and confirm success criteria",
+          "call_date": "2026-06-17",
+          "status": "overdue"
+        },
+        {
+          "description": "share demo recording and confirm success criteria",
+          "call_date": "2026-06-05",
+          "status": "overdue"
+        }
+      ],
+      "customer_objections": [
+        {
+          "objection": "pricing discount request",
+          "severity": "low"
+        },
+        {
+          "objection": "IT bandwidth constraint",
+          "severity": "low"
+        },
+        {
+          "objection": "security review",
+          "severity": "low"
+        },
+        {
+          "objection": "change management risk",
+          "severity": "low"
+        }
+      ],
+      "communication_gaps": [],
+      "recommended_action": "Address overdue commitment: 'send ROI case and budget summary' from call on 2026-06-19. Provide an update to the customer immediately.",
+      "analysis_summary": "The Terra Holdings account currently has a deal for Audit Automation - 2026 Upsell at the Demo stage. This deal is in a critical state with some mixed customer sentiment and significant overdue commitments. Urgent intervention is required to prevent it from being lost."
+    }
+  ]
+}
+[rep_quota_analysis_agent] {
+  "sales_rep_id": "005DMO000000000300000",
+  "rep_name": "Maya Chen",
+  "rep_email": "maya.chen@northstar-demo.ai",
+  "total_periods_analyzed": 18,
+  "avg_target": 114232.14666666666,
+  "avg_ramped_capacity": 114232.14666666666,
+  "avg_gap_percentage": 0,
+  "capacity_trend": "stable",
+  "revenue_types_covered": [
+    "Software"
+  ],
+  "notable_periods": [],
+  "quota_health": "on_track",
+  "summary": "Maya Chen's quota performance consistently demonstrates that her ramped capacity precisely aligns with her monthly targets. All periods show a 0% gap, indicating she is reliably on track with her assigned quotas. This represents a highly stable and consistent performance against expectations."
+}
