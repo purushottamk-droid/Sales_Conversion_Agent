@@ -10,9 +10,7 @@ WHAT THIS AGENT DOES:
   schedule_review_meeting, Gmail API via message_rep) — both always
   gated behind explicit human confirmation before executing.
 
-  Wrapped in a resumable App so a paused confirmation, or an
-  interrupted run, can be resumed later via invocation_id rather than
-  restarting the whole pipeline.
+  
 
 SESSION STATE:
   
