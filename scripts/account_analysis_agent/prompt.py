@@ -1,12 +1,6 @@
 """
 prompt.py — Agent 2: Account Analysis Agent
-Manager said: "the prompt is the CRUCIAL part of this agent."
 
-Data comes from Agent 1 session state key: account_details
-Each account has:
-  - opportunities → from Salesforce (stage, risks, next_step, deal_size)
-  - calls         → from Gong (already processed — BRIEF, SENTIMENT,
-                    PRIMARY_OBJECTION, KEY_MEETING_DISCUSSIONS, NEXT_STEP)
 """
 import json
 

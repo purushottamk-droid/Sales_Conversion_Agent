@@ -1,7 +1,7 @@
 """
 output_schema.py — Agent 2: Account Analysis Agent
 Pydantic models for structured LLM output.
-Manager requirement: use Pydantic for output structure.
+
 """
 
 from pydantic import BaseModel, Field
