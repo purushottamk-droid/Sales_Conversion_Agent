@@ -38,6 +38,11 @@ class ActionRecord(BaseModel):
         description="Rep identifier this action relates to"
     )
 
+    rep_name: Optional[str] = Field(
+        default=None,
+        description="Rep's full name, copied from rep_assessment_result.rep_name, for readability in the audit trail"
+    )
+
     account_id: Optional[str] = Field(
         default=None,
         description="Account identifier, only set for message_rep actions tied to a specific account"

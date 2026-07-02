@@ -22,7 +22,7 @@ SESSION STATE:
 """
 
 from google.adk.agents import LlmAgent
-from google.adk.apps import App, ResumabilityConfig
+
 
 from .prompt import DECISION_ACTION_PROMPT
 from .tools import (
@@ -63,11 +63,3 @@ decision_action_agent = LlmAgent(
 )
 
 
-# Resumable App wrapper — lets a paused confirmation, or an interrupted
-# run, be resumed later via invocation_id instead of restarting from
-# Agent 1.
-app = App(
-    name="decision_action_app",
-    root_agent=decision_action_agent,
-    resumability_config=ResumabilityConfig(is_resumable=True),
-)

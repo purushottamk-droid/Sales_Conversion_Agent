@@ -22,6 +22,23 @@ import base64
 from email.mime.text import MIMEText
 
 
+def _format_html_email(rep_name: str, rep_id: str, body_text: str) -> str:
+    """
+    Wraps plain-text content (which arrives from the LLM with \n line breaks)
+    into basic HTML so Gmail renders it with proper line breaks/spacing
+    instead of a flat wall of text.
+    """
+    body_html = body_text.replace("\n", "<br>")
+    return f"""
+    <html><body>
+    <p>Hi,</p>
+    <p>Regarding <b>{rep_name}</b> (Rep ID: {rep_id}):</p>
+    <p>{body_html}</p>
+    <p>Please follow up at your earliest convenience.</p>
+    </body></html>
+    """
+
+
 # ---------------------------------------------------------------------
 # Helper — fixed scheduling rule (Option A, per manager's decision)
 # ---------------------------------------------------------------------
@@ -47,6 +64,7 @@ def _next_business_day_10am() -> tuple[str, str]:
 
 async def schedule_review_meeting(
     rep_id: str,
+    rep_name: str,
     rep_email: str,
     manager_email: str,
     reason: str,
@@ -68,7 +86,7 @@ async def schedule_review_meeting(
     actually sent.
     """
     if not tool_context.tool_confirmation.confirmed:
-        return {"status": "CANCELLED", "rep_id": rep_id}
+        return {"status": "CANCELLED", "rep_id": rep_id,"rep_name": rep_name}
 
     start_iso, end_iso = _next_business_day_10am()
 
@@ -76,7 +94,7 @@ async def schedule_review_meeting(
         service = build_calendar_service()
 
         event = {
-            "summary": f"Manager Review: {rep_id}",
+            "summary": f"Manager Review: {rep_name} ({rep_id})",
             "description": reason,
             "start": {"dateTime": start_iso, "timeZone": "Asia/Kolkata"},
             "end": {"dateTime": end_iso, "timeZone": "Asia/Kolkata"},
@@ -109,6 +127,7 @@ async def schedule_review_meeting(
             "status": "SCHEDULED",
             "type": "schedule_manager_review",
             "rep_id": rep_id,
+            "rep_name": rep_name,
             "rep_email": rep_email,
             "manager_email": manager_email,
             "reason": reason,
@@ -122,6 +141,7 @@ async def schedule_review_meeting(
             "status": "ERROR",
             "type": "schedule_manager_review",
             "rep_id": rep_id,
+            "rep_name": rep_name,
             "error_message": str(e),
         }
 
@@ -187,6 +207,7 @@ async def schedule_review_meeting(
 
 async def message_rep(
     rep_id: str,
+    rep_name: str,
     rep_email: str,
     account_ids: list[str],
     accounts_summary: str,
@@ -201,12 +222,14 @@ async def message_rep(
     Always requires human confirmation before sending.
     """
     if not tool_context.tool_confirmation.confirmed:
-        return {"status": "CANCELLED", "rep_id": rep_id, "account_ids": account_ids}
+        return {"status": "CANCELLED", "rep_id": rep_id, "rep_name": rep_name, "account_ids": account_ids}
 
     try:
         service = build_gmail_service()
         subject = "Action Required: Overdue Commitments Across Your Accounts"
-        mime_message = MIMEText(accounts_summary, "plain")
+        mime_message = MIMEText(
+            _format_html_email(rep_name, rep_id, accounts_summary), "html"
+        )
         mime_message["to"] = rep_email
         mime_message["subject"] = subject
         raw_message = base64.urlsafe_b64encode(mime_message.as_bytes()).decode()
@@ -222,6 +245,7 @@ async def message_rep(
             "status": "SENT",
             "type": "message_rep",
             "rep_id": rep_id,
+            "rep_name": rep_name,
             "account_ids": account_ids,
             "rep_email": rep_email,
             "subject": subject,
@@ -233,6 +257,7 @@ async def message_rep(
             "status": "ERROR",
             "type": "message_rep",
             "rep_id": rep_id,
+            "rep_name": rep_name,
             "account_ids": account_ids,
             "error_message": str(e),
         }
@@ -244,6 +269,7 @@ async def message_rep(
 
 async def notify_manager(
     rep_id: str,
+    rep_name: str, 
     manager_email: str,
     reason: str,
     tool_context: ToolContext,
@@ -255,13 +281,15 @@ async def notify_manager(
     Always requires human confirmation before sending.
     """
     if not tool_context.tool_confirmation.confirmed:
-        return {"status": "CANCELLED", "rep_id": rep_id}
+        return {"status": "CANCELLED", "rep_id": rep_id, "rep_name": rep_name}
 
     try:
         service = build_gmail_service()
 
-        subject = f"Multiple at-risk accounts — {rep_id}"
-        mime_message = MIMEText(reason, "plain")
+        subject = f"Multiple at-risk accounts — {rep_name} ({rep_id})"
+        mime_message = MIMEText(
+            _format_html_email(rep_name, rep_id, reason), "html"
+        )
         mime_message["to"] = manager_email
         mime_message["subject"] = subject
 
@@ -278,6 +306,7 @@ async def notify_manager(
             "status": "SENT",
             "type": "notify_manager",
             "rep_id": rep_id,
+            "rep_name": rep_name,
             "manager_email": manager_email,
             "subject": subject,
             "reason": reason,
@@ -289,6 +318,7 @@ async def notify_manager(
             "status": "ERROR",
             "type": "notify_manager",
             "rep_id": rep_id,
+            "rep_name": rep_name,
             "error_message": str(e),
         }
 
@@ -300,6 +330,7 @@ async def notify_manager(
 async def recommend_coaching(
     rep_id: str,
     manager_email: str,
+    rep_name: str,
     reason: str,
     tool_context: ToolContext,
 ) -> dict:
@@ -311,13 +342,15 @@ async def recommend_coaching(
     Always requires human confirmation before sending.
     """
     if not tool_context.tool_confirmation.confirmed:
-        return {"status": "CANCELLED", "rep_id": rep_id}
+        return {"status": "CANCELLED", "rep_id": rep_id, "rep_name": rep_name}
 
     try:
         service = build_gmail_service()
 
-        subject = f"Coaching recommended — {rep_id}"
-        mime_message = MIMEText(reason, "plain")
+        subject = f"Coaching recommended — {rep_name} ({rep_id})"
+        mime_message = MIMEText(
+            _format_html_email(rep_name, rep_id, reason), "html"
+        )
         mime_message["to"] = manager_email
         mime_message["subject"] = subject
 
@@ -334,6 +367,7 @@ async def recommend_coaching(
             "status": "SENT",
             "type": "recommend_coaching",
             "rep_id": rep_id,
+            "rep_name": rep_name,
             "manager_email": manager_email,
             "subject": subject,
             "reason": reason,
@@ -345,6 +379,7 @@ async def recommend_coaching(
             "status": "ERROR",
             "type": "recommend_coaching",
             "rep_id": rep_id,
+            "rep_name": rep_name,
             "error_message": str(e),
         }
 
@@ -353,15 +388,15 @@ async def recommend_coaching(
 # Register as FunctionTools — confirmation required for both
 # ---------------------------------------------------------------------
 
-schedule_review_meeting_tool = FunctionTool(
-    func=schedule_review_meeting,
-    require_confirmation=True,
-)
+# schedule_review_meeting_tool = FunctionTool(
+#     func=schedule_review_meeting,
+#     require_confirmation=True,
+# )
 
-message_rep_tool = FunctionTool(
-    func=message_rep,
-    require_confirmation=True,
-)
+# message_rep_tool = FunctionTool(
+#     func=message_rep,
+#     require_confirmation=True,
+# )
 
 schedule_review_meeting_tool = FunctionTool(
     func=schedule_review_meeting,

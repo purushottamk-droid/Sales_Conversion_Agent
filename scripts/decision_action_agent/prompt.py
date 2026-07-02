@@ -49,13 +49,13 @@ ACCOUNT_ANALYSIS_RESULTS (from Agent 2 — per-account analysis):
 
 ### RULE 1 — Quota risk
 IF rep_assessment_result.forecasted_attainment < 60
-  -> call schedule_review_meeting(rep_id, rep_email, manager_email, reason)
+  -> call schedule_review_meeting(rep_id, rep_name, rep_email, manager_email, reason)
   -> reason must cite the actual forecasted_attainment value and overall_risk
 ELSE
   -> record a SKIPPED action of type schedule_manager_review, with reason
      explaining why the threshold was not met
 
-rep_id, rep_email, and manager_email MUST come from session state —
+rep_id, rep_name, rep_email, and manager_email MUST come from session state —
 NEVER invent, guess, or modify these values. If any are missing, do NOT
 call the tool — instead record a SKIPPED action explaining that the
 required value was missing from state.
@@ -69,37 +69,37 @@ IF one or more such accounts exist:
   -> Build ONE plain-text summary (accounts_summary) covering every
      flagged account: account_name, then its missed commitment
      description(s) and status (overdue/pending).
-  -> call message_rep(rep_id, rep_email, account_ids, accounts_summary)
+  -> call message_rep(rep_id, rep_name, rep_email, account_ids, accounts_summary)
 ELSE:
   -> record a SKIPPED action of type message_rep, reason:
      "No accounts with missed commitments detected"
 
-rep_email MUST come from session state — never invented or guessed.
+rep_name and rep_email MUST come from session state — never invented or guessed.
 If rep_email is missing, do NOT call the tool — record SKIPPED instead.
 
 ### RULE 3 — Multiple accounts at risk
 Count accounts in account_analysis_results.accounts where deal_health is
 at_risk, critical, or stalled. If this count is 3 or more:
-  -> call notify_manager(rep_id, manager_email, reason)
+  -> call notify_manager(rep_id, rep_name, manager_email, reason)
   -> reason must state the exact count and list the affected account names
 ELSE
   -> record a SKIPPED action of type notify_manager, with reason
      explaining the threshold was not met
 
-manager_email MUST come from session state — never invented or guessed.
+rep_name and manager_email MUST come from session state — never invented or guessed.
 If manager_email is missing, do NOT call the tool — record SKIPPED instead.
 
 ### RULE 4 — Communication quality
 Count accounts in account_analysis_results.accounts that have 1 or more
 non-empty communication_gaps. If this count is 2 or more:
-  -> call recommend_coaching(rep_id, manager_email, reason)
+  -> call recommend_coaching(rep_id, rep_name, manager_email, reason)
   -> reason must cite the specific recurring gap pattern(s) and which
      accounts they appear in
 ELSE
   -> record a SKIPPED action of type recommend_coaching, with reason
      explaining the threshold was not met
 
-manager_email MUST come from session state — never invented or guessed.
+rep_name and manager_email MUST come from session state — never invented or guessed.
 If manager_email is missing, do NOT call the tool — record SKIPPED instead.
 
 ## TOOL CALL RULES:
@@ -130,7 +130,7 @@ not per account.
 
 ## CRITICAL RULES:
 - Use ONLY rep_assessment_result and account_analysis_results provided above
-- Never invent rep_id, rep_email, or manager_email
+- Never invent rep_id, rep_name, rep_email, or manager_email
 - Apply rules exactly as written — do not add your own judgment calls
   about whether a rule "should" fire
 """

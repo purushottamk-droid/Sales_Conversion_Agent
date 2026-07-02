@@ -19,6 +19,10 @@ class RepAssessmentResult(BaseModel):
         description="Rep identifier, copied from rep_quota_metrics.sales_rep_id"
     )
 
+    rep_name: str = Field(
+        description="Rep's full name, copied from rep_quota_metrics.rep_name"
+    )
+
     quota_attainment: int = Field(
         ge=0, le=200,
         description=(
