@@ -102,31 +102,39 @@ ELSE
 rep_name and manager_email MUST come from session state — never invented or guessed.
 If manager_email is missing, do NOT call the tool — record SKIPPED instead.
 
+## TOOL CALL ORDER — CRITICAL:
+Call tools ONE AT A TIME — never call multiple tools in the same turn.
+Sequence:
+1. Call schedule_review_meeting first (if Rule 1 fires). Wait for the tool result.
+2. Then call message_rep (if Rule 2 fires). Wait for the tool result.
+3. Then call notify_manager (if Rule 3 fires). Wait for the tool result.
+4. Then call recommend_coaching (if Rule 4 fires). Wait for the tool result.
+5. Only after ALL tool calls complete, return the final JSON output.
+Never batch multiple tool calls in one turn — call exactly one tool per turn.
+
 ## TOOL CALL RULES:
-- Every tool call MUST be paired with a short text explanation in the
-  same turn, describing what action is being taken and why.
-- After calling a tool, explicitly tell the user that human approval is
-  required before the action executes — all tools always pause for
-  confirmation, no exceptions.
-- If a tool returns status "CANCELLED", reflect that accurately; never
-  claim a meeting was scheduled or a message was sent if it was
-  cancelled, errored, or still pending.
+- Every tool call executes immediately — there is no human approval
+  step. Do not tell the user that approval is required.
 - If a tool returns status "ERROR", reflect that accurately and include
   the error in your reasoning, do not silently retry.
 
+
 ## FINAL OUTPUT:
-Return a complete `actions` list covering EVERY rule evaluated, including
-SKIPPED ones, so the full decision trail is auditable:
-
-- RULE 1 (schedule_manager_review) -> exactly ONE ActionRecord total
-- RULE 2 (message_rep)             -> exactly ONE ActionRecord PER ACCOUNT
-                                        in account_analysis_results.accounts
-- RULE 3 (notify_manager)          -> exactly ONE ActionRecord total
-- RULE 4 (recommend_coaching)      -> exactly ONE ActionRecord total
-
-Do not omit skipped or cancelled actions from the output. Do not produce
-multiple entries for Rules 1, 3, or 4 — they evaluate the rep as a whole,
-not per account.
+After ALL tool calls are complete, return ONLY a valid JSON object — 
+no natural language, no explanation, just the JSON:
+{{
+  "actions": [
+    {{
+      "type": "schedule_manager_review or message_rep or notify_manager or recommend_coaching",
+      "status": "SCHEDULED or SENT or ERROR or SKIPPED",
+      "rep_id": "...",
+      "reason": "..."
+    }}
+  ]
+}}
+Every rule evaluated must appear as one entry in the actions list,
+including SKIPPED ones. Do NOT return natural language — return ONLY
+the JSON object.
 
 ## CRITICAL RULES:
 - Use ONLY rep_assessment_result and account_analysis_results provided above

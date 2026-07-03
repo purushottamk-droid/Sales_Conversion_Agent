@@ -24,7 +24,7 @@ account_analysis_agent = LlmAgent(
     name="account_analysis_agent",
 
     # Gemini model — flash is fast and cost effective for this analysis
-    model="gemini-2.5-flash",
+    model="gemini-2.5-flash-lite",
 
     # The crucial prompt — tells Gemini exactly what to analyze
     # Gemini reads account_details from session state automatically

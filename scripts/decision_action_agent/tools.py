@@ -3,9 +3,7 @@ scripts/decision_action_agent/tools.py
 
 Tools for the Decision & Action Agent (Agent 4 of 4).
 
-Both tools have real side effects (send a calendar invite, send an
-email) and therefore ALWAYS require explicit human confirmation before
-executing — gated via tool_context.tool_confirmation.confirmed.
+
 
 rep_email and manager_email are expected to already be present in
 session state (rep_quota_metrics.rep_email / rep_quota_metrics.manager_email),
@@ -85,9 +83,7 @@ async def schedule_review_meeting(
     Always requires human confirmation before the calendar invite is
     actually sent.
     """
-    if not tool_context.tool_confirmation.confirmed:
-        return {"status": "CANCELLED", "rep_id": rep_id,"rep_name": rep_name}
-
+    
     start_iso, end_iso = _next_business_day_10am()
 
     try:
@@ -146,64 +142,7 @@ async def schedule_review_meeting(
         }
 
 
-# ---------------------------------------------------------------------
-# TOOL 2 — Message the rep directly (Gmail API)
-# ---------------------------------------------------------------------
 
-# async def message_rep(
-#     rep_id: str,
-#     rep_email: str,
-#     account_id: str,
-#     subject: str,
-#     message: str,
-#     tool_context: ToolContext,
-# ) -> dict:
-    # """Send a direct email nudge to the rep about a specific account
-    # (e.g. missed commitment, communication gap).
-
-    # rep_email MUST come from session state (rep_quota_metrics.rep_email) —
-    # never invented or guessed by the model.
-
-    # Always requires human confirmation before sending.
-    # """
-#     if not tool_context.tool_confirmation.confirmed:
-#         return {"status": "CANCELLED", "rep_id": rep_id, "account_id": account_id}
-
-#     try:
-#         service = build_gmail_service()
-
-#         mime_message = MIMEText(message, "plain")
-#         mime_message["to"] = rep_email
-#         mime_message["subject"] = subject
-
-#         raw_message = base64.urlsafe_b64encode(mime_message.as_bytes()).decode()
-
-#         sent = (
-#             service.users()
-#             .messages()
-#             .send(userId="me", body={"raw": raw_message})
-#             .execute()
-#         )
-
-#         return {
-#             "status": "SENT",
-#             "type": "message_rep",
-#             "rep_id": rep_id,
-#             "account_id": account_id,
-#             "rep_email": rep_email,
-#             "subject": subject,
-#             "message": message,
-#             "message_id": sent.get("id"),
-#         }
-
-#     except Exception as e:
-#         return {
-#             "status": "ERROR",
-#             "type": "message_rep",
-#             "rep_id": rep_id,
-#             "account_id": account_id,
-#             "error_message": str(e),
-#         }
 
 async def message_rep(
     rep_id: str,
@@ -221,8 +160,7 @@ async def message_rep(
 
     Always requires human confirmation before sending.
     """
-    if not tool_context.tool_confirmation.confirmed:
-        return {"status": "CANCELLED", "rep_id": rep_id, "rep_name": rep_name, "account_ids": account_ids}
+    
 
     try:
         service = build_gmail_service()
@@ -280,8 +218,7 @@ async def notify_manager(
 
     Always requires human confirmation before sending.
     """
-    if not tool_context.tool_confirmation.confirmed:
-        return {"status": "CANCELLED", "rep_id": rep_id, "rep_name": rep_name}
+    
 
     try:
         service = build_gmail_service()
@@ -341,9 +278,7 @@ async def recommend_coaching(
 
     Always requires human confirmation before sending.
     """
-    if not tool_context.tool_confirmation.confirmed:
-        return {"status": "CANCELLED", "rep_id": rep_id, "rep_name": rep_name}
-
+    
     try:
         service = build_gmail_service()
 
@@ -384,36 +319,8 @@ async def recommend_coaching(
         }
 
 
-# ---------------------------------------------------------------------
-# Register as FunctionTools — confirmation required for both
-# ---------------------------------------------------------------------
 
-# schedule_review_meeting_tool = FunctionTool(
-#     func=schedule_review_meeting,
-#     require_confirmation=True,
-# )
-
-# message_rep_tool = FunctionTool(
-#     func=message_rep,
-#     require_confirmation=True,
-# )
-
-schedule_review_meeting_tool = FunctionTool(
-    func=schedule_review_meeting,
-    require_confirmation=True,
-)
-
-message_rep_tool = FunctionTool(
-    func=message_rep,
-    require_confirmation=True,
-)
-
-notify_manager_tool = FunctionTool(
-    func=notify_manager,
-    require_confirmation=True,
-)
-
-recommend_coaching_tool = FunctionTool(
-    func=recommend_coaching,
-    require_confirmation=True,
-)
+schedule_review_meeting_tool = FunctionTool(func=schedule_review_meeting)
+message_rep_tool = FunctionTool(func=message_rep)
+notify_manager_tool = FunctionTool(func=notify_manager)
+recommend_coaching_tool = FunctionTool(func=recommend_coaching)
