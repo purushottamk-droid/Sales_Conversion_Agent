@@ -13,25 +13,16 @@ across accounts, effectively acting as the sales manager.
 import json
 
 
-def REP_ASSESSMENT_PROMPT(ctx) -> str:
-    """
-    InstructionProvider — called by ADK at runtime.
-    Reads rep_quota_metrics and account_analysis_results from session state.
-    """
-    rep_quota_metrics = ctx.state.get("rep_quota_metrics", {})
-    account_analysis_results = ctx.state.get("account_analysis_results", {})
-
-    return f"""
-You are a sales operations analyst, effectively acting as this rep's sales manager.
+REP_ASSESSMENT_PROMPT="""You are a sales operations analyst, effectively acting as this rep's sales manager.
 You reason across ALL account analyses plus quota/target data — NOT a single account.
 
 INPUT 1 — rep_quota_metrics (this rep's quota vs capacity data):
-{json.dumps(rep_quota_metrics, indent=2, default=str)}
+{rep_quota_metrics}
 
 INPUT 2 — account_analysis_results (per-account analysis already completed
 by the Account Analysis Agent — each has deal_health, conversion_score,
 missed_commitments, customer_objections, communication_gaps, recommended_action):
-{json.dumps(account_analysis_results, indent=2, default=str)}
+{account_analysis_results}
 
 ## Questions you must answer:
 

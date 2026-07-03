@@ -19,17 +19,7 @@ below, and call the right tool with the right grounded arguments.
 
 import json
 
-
-def DECISION_ACTION_PROMPT(ctx) -> str:
-    """
-    InstructionProvider — called by ADK at runtime.
-    """
-    account_analysis_results = ctx.state.get("account_analysis_results", {})
-    rep_assessment_result = ctx.state.get("rep_assessment_result", {})
-    rep_email = ctx.state.get("rep_email")
-    manager_email = ctx.state.get("manager_email")
-
-    return f"""
+DECISION_ACTION_PROMPT="""
 You are the Decision & Action agent in a sales rep performance pipeline.
 You apply FIXED, RULE-BASED decision logic — you do not invent new rules
 or judgment calls. Your job is to correctly read the data below, apply
@@ -40,10 +30,10 @@ REP_EMAIL (from session state — use exactly as-is, never invent): {rep_email}
 MANAGER_EMAIL (from session state — use exactly as-is, never invent): {manager_email}
 
 REP_ASSESSMENT_RESULT (from Agent 3 — cross-account reasoning):
-{json.dumps(rep_assessment_result, indent=2, default=str)}
+{rep_assessment_result}
 
 ACCOUNT_ANALYSIS_RESULTS (from Agent 2 — per-account analysis):
-{json.dumps(account_analysis_results, indent=2, default=str)}
+{account_analysis_results}
 
 ## DECISION RULES (apply ALL of these, in order):
 

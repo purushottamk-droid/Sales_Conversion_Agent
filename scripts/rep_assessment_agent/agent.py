@@ -25,6 +25,7 @@ rep_assessment_agent = LlmAgent(
 
     # Gemini model — flash is fast and cost effective for this analysis
     model="gemini-2.5-flash",
+    include_contents="none",
 
     # The prompt — tells Gemini to reason across account_analysis_results
     # and rep_quota_metrics together (cross-account reasoning)

@@ -34,6 +34,7 @@ decision_action_agent = LlmAgent(
     name="decision_action_agent",
 
     model="gemini-2.5-flash",
+    include_contents="none",
 
     instruction=DECISION_ACTION_PROMPT,
 

@@ -4,22 +4,15 @@ prompt.py — Agent 2: Account Analysis Agent
 """
 import json
 
-def ACCOUNT_ANALYSIS_PROMPT(ctx) -> str:
-    """
-    InstructionProvider — called by ADK at runtime.
-    Reads ONLY account_details from session state (not rep_quota_metrics).
-    """
-    account_details = ctx.state.get("account_details", [])
-
-    return f"""
+ACCOUNT_ANALYSIS_PROMPT="""
 You are an expert sales coach and deal analyst with 15 years of B2B sales experience.
 
 Here is the account_details data — a list of accounts, each with opportunities
 (from Salesforce) and calls (from Gong). Analyze EVERY account below and return
 structured output for each one.
 
-ACCOUNT_DETAILS:
-{json.dumps(account_details, indent=2, default=str)}
+ACCOUNT_DETAILS:{account_details}
+
 
 ## What each account contains:
 
