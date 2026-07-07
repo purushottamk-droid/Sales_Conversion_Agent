@@ -1,31 +1,29 @@
-
 """
 scripts/decision_action_agent/agent.py
 
-Agent 4 of 4 — Decision & Action Agent — Rules to Real Systems
+Decision & Action Agent — Rules to Real Systems
 
 WHAT THIS AGENT DOES:
-  Reads rep_assessment_result, account_analysis_results, and
-  rep_quota_metrics from session state. Applies fixed decision rules
-  (see prompt.py) and calls real-system tools (Calendar API via
-  schedule_review_meeting, Gmail API via message_rep) — both always
-  gated behind explicit human confirmation before executing.
+  Reads AllAccountsAnalysisResult from session state (produced by the
+  Account & Rep Assessment Agent). Applies fixed decision rules and calls
+  two real-system tools (Gmail API) to notify the manager and message the rep.
+  A third tool (create_salesforce_task) exists as a placeholder but is not
+  used in the current flow.
 
 SESSION STATE:
-  Reads  → ctx.session.state["account_analysis_results"] (Agent 2)
-  Reads  → ctx.session.state["rep_assessment_result"]    (Agent 3)
-  Writes → ctx.session.state["actions_taken"]             (final pipeline output)
+  Reads  → ctx.session.state["AllAccountsAnalysisResult"]  (previous agent)
+  Reads  → ctx.session.state["rep_email"]
+  Reads  → ctx.session.state["manager_email"]
+  Writes → ctx.session.state["actions_taken"]
 """
 
 from google.adk.agents import LlmAgent
-from google.genai import types as genai_types
 
 from .prompt import DECISION_ACTION_PROMPT
 from .tools import (
-    schedule_review_meeting_tool,
-    message_rep_tool,
     notify_manager_tool,
-    recommend_coaching_tool,
+    message_rep_tool,
+    create_salesforce_task_tool,
 )
 
 
@@ -38,17 +36,10 @@ decision_action_agent = LlmAgent(
     instruction=DECISION_ACTION_PROMPT,
 
     tools=[
-        schedule_review_meeting_tool,
-        message_rep_tool,
         notify_manager_tool,
-        recommend_coaching_tool,
+        message_rep_tool,
+        create_salesforce_task_tool,  # placeholder — not used in flow yet
     ],
 
-  
     output_key="actions_taken",
-
-    #Exclude conversation history from Gemini API call — sends only
-    # the current instruction + input, reducing token size and latency
-    include_contents='none', 
-
 )
