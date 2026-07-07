@@ -52,8 +52,9 @@ IF rep_assessment_result.forecasted_attainment < 60
   -> call schedule_review_meeting(rep_id, rep_name, rep_email, manager_email, reason)
   -> reason must cite the actual forecasted_attainment value and overall_risk
 ELSE
-  -> record a SKIPPED action of type schedule_manager_review, with reason
-     explaining why the threshold was not met
+  -> include in your final JSON output an entry with type "schedule_manager_review",
+     status "SKIPPED", and reason explaining why the threshold was not met.
+     Do NOT call any tool for this.
 
 rep_id, rep_name, rep_email, and manager_email MUST come from session state —
 NEVER invent, guess, or modify these values. If any are missing, do NOT
@@ -71,8 +72,9 @@ IF one or more such accounts exist:
      description(s) and status (overdue/pending).
   -> call message_rep(rep_id, rep_name, rep_email, account_ids, accounts_summary)
 ELSE:
-  -> record a SKIPPED action of type message_rep, reason:
-     "No accounts with missed commitments detected"
+  -> include in your final JSON output an entry with type "message_rep",
+     status "SKIPPED", reason: "No accounts with missed commitments detected".
+     Do NOT call any tool for this.
 
 rep_name and rep_email MUST come from session state — never invented or guessed.
 If rep_email is missing, do NOT call the tool — record SKIPPED instead.
@@ -83,8 +85,9 @@ at_risk, critical, or stalled. If this count is 3 or more:
   -> call notify_manager(rep_id, rep_name, manager_email, reason)
   -> reason must state the exact count and list the affected account names
 ELSE
-  -> record a SKIPPED action of type notify_manager, with reason
-     explaining the threshold was not met
+  -> include in your final JSON output an entry with type "notify_manager",
+     status "SKIPPED", and reason explaining the threshold was not met.
+     Do NOT call any tool for this.
 
 rep_name and manager_email MUST come from session state — never invented or guessed.
 If manager_email is missing, do NOT call the tool — record SKIPPED instead.
@@ -96,8 +99,9 @@ non-empty communication_gaps. If this count is 2 or more:
   -> reason must cite the specific recurring gap pattern(s) and which
      accounts they appear in
 ELSE
-  -> record a SKIPPED action of type recommend_coaching, with reason
-     explaining the threshold was not met
+  -> include in your final JSON output an entry with type "recommend_coaching",
+     status "SKIPPED", and reason explaining the threshold was not met.
+     Do NOT call any tool for this.
 
 rep_name and manager_email MUST come from session state — never invented or guessed.
 If manager_email is missing, do NOT call the tool — record SKIPPED instead.
@@ -141,4 +145,8 @@ the JSON object.
 - Never invent rep_id, rep_name, rep_email, or manager_email
 - Apply rules exactly as written — do not add your own judgment calls
   about whether a rule "should" fire
+- ALL entries go in the final JSON output — both executed tool results AND skipped rules.
+  Never call a tool to record a SKIPPED action — SKIPPED entries are JSON only.
+- The only valid tool calls are: schedule_review_meeting, message_rep, notify_manager, recommend_coaching
+- Never call any other function not in this list
 """

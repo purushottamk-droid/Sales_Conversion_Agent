@@ -47,4 +47,8 @@ decision_action_agent = LlmAgent(
   
     output_key="actions_taken",
 
+    #Exclude conversation history from Gemini API call — sends only
+    # the current instruction + input, reducing token size and latency
+    include_contents='none', 
+
 )
