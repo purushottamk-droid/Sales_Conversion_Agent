@@ -40,4 +40,8 @@ account_analysis_agent = LlmAgent(
     # Where LlmAgent writes the result in session state
     # Agent 3 reads ctx.session.state["account_analysis_results"]
     output_key="account_analysis_results",
+
+    #Exclude conversation history from Gemini API call — sends only
+    # the current instruction + input, reducing token size and latency
+    include_contents='none',    
 )

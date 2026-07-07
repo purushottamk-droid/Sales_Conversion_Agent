@@ -12,7 +12,7 @@ def ACCOUNT_ANALYSIS_PROMPT(ctx) -> str:
     account_details = ctx.state.get("account_details", [])
 
     return f"""
-You are an expert sales coach and deal analyst with 15 years of B2B sales experience.
+You are an expert sales coach and deal analyst with 15 years of B2B sales experience
 
 Here is the account_details data — a list of accounts, each with opportunities
 (from Salesforce) and calls (from Gong). Analyze EVERY account below and return

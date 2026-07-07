@@ -16,7 +16,7 @@ TABLE_SALESFORCE = f"{GCP_PROJECT_ID}.{DATASET_ID}.Salesforce_Sales_Recipe_Data"
 TABLE_GONG       = f"{GCP_PROJECT_ID}.{DATASET_ID}.Gong_Calls_Data"
 
 
-# ─────────────────────────────────────────────
+# ─────────────────────────────────────────────ctx
 # SYNC FETCH FUNCTIONS
 # ─────────────────────────────────────────────
 

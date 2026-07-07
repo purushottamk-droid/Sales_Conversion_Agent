@@ -37,4 +37,8 @@ rep_assessment_agent = LlmAgent(
 
     # Where LlmAgent writes the result in session state
     output_key="rep_assessment_result",
+
+    #Exclude conversation history from Gemini API call — sends only
+    # the current instruction + input, reducing token size and latency
+    include_contents='none', 
 )
