@@ -122,16 +122,20 @@ def _fetch_everstage_sync(rep_name: str) -> dict:
 def _fetch_salesforce_attainment_sync(sales_rep_id: str) -> dict:
     client = bigquery.Client(project=GCP_PROJECT_ID)
     query = f"""
-        SELECT
-            SUM(CASE
-                    WHEN DATE_TRUNC(`Opportunity Close Date`, MONTH) = DATE_TRUNC(CURRENT_DATE(), MONTH)
-                    THEN `Opportunity ARR` ELSE 0
-                END) AS closed_won_arr_current_month
-        FROM `{TABLE_SALESFORCE}`
-        WHERE `Opportunity Owner ID` = @sales_rep_id
-          AND `Opportunity is Won` = TRUE
-          AND `Opportunity Created Date` >= DATE(@pipeline_start)
-    """
+    SELECT
+        SUM(CASE
+                WHEN DATE_TRUNC(`Opportunity Close Date`, MONTH) = DATE_TRUNC(CURRENT_DATE(), MONTH)
+                THEN `Opportunity ARR` ELSE 0
+            END) AS closed_won_arr_current_month,
+        SUM(CASE
+                WHEN `Opportunity Close Date` >= DATE_TRUNC(DATE_SUB(CURRENT_DATE(), INTERVAL 3 MONTH), MONTH)
+                THEN `Opportunity ARR` ELSE 0
+            END) AS closed_won_arr_trailing_3_months
+    FROM `{TABLE_SALESFORCE}`
+    WHERE `Opportunity Owner ID` = @sales_rep_id
+      AND `Opportunity is Won` = TRUE
+      AND `Opportunity Created Date` >= DATE(@pipeline_start)
+"""
     job_config = bigquery.QueryJobConfig(
         query_parameters=[
             bigquery.ScalarQueryParameter("sales_rep_id", "STRING", sales_rep_id),
@@ -140,10 +144,11 @@ def _fetch_salesforce_attainment_sync(sales_rep_id: str) -> dict:
     )
     rows = list(client.query(query, job_config=job_config).result())
     if not rows:
-        return {"closed_won_arr_current_month": 0}
+        return {"closed_won_arr_current_month": 0, "closed_won_arr_trailing_3_months": 0}
     r = dict(rows[0])
     return {
         "closed_won_arr_current_month": r.get("closed_won_arr_current_month") or 0,
+        "closed_won_arr_trailing_3_months": r.get("closed_won_arr_trailing_3_months") or 0,
     }
 
 
@@ -182,7 +187,9 @@ def _fetch_salesforce_pipeline_sync(sales_rep_id: str) -> list[dict]:
             `Opportunity CBIs`                   AS cbi_raw_text,
             `Opportunity Manager Notes`          AS opportunity_manager_notes,
             `Sales Rep Name`                     AS sales_rep_name,
-            `Opportunity Previous Solution`      AS opportunity_previous_solution
+            `Opportunity Previous Solution`      AS opportunity_previous_solution,
+            `Opportunity Contact Name`           AS contact_name,
+            `Opportunity Contact Title`          AS contact_title,
         FROM `{TABLE_SALESFORCE}`
         WHERE `Opportunity Owner ID` = @sales_rep_id
           AND COALESCE(`Opportunity is Closed`, FALSE) = FALSE
@@ -203,7 +210,7 @@ def _fetch_salesforce_pipeline_sync(sales_rep_id: str) -> list[dict]:
 # ─────────────────────────────────────────────
 
 def _fetch_stage_benchmark_sync() -> dict:
-    """
+    """`Opportunity Previous Solution`
     Benchmark = average `Opportunity Days in Stage` across all historically
     Closed-Won opportunities, grouped by the stage they were won from.
     This reuses the existing generic "Opportunity Days in Stage" column
@@ -293,15 +300,49 @@ def build_historical_targets(everstage: dict) -> dict:
     }
 
 
-def build_quota_attainment(historical_targets: dict, attainment_actuals: dict) -> dict:
-    monthly_target = historical_targets.get("monthly_arr_target_past_3_months")
+def build_quota_attainment(everstage: dict, attainment_actuals: dict, pipeline_opps: list[dict]) -> dict:
+    """
+    3 attainment metrics per spec:
+      - monthly_attainment_pct   : this month's closed-won ARR vs this month's own target
+      - quarterly_attainment_pct : trailing 3 months closed-won ARR vs trailing 3 months' summed target
+      - pipeline_attainment_pct  : open pipeline ARR closing this month vs this month's target
+    """
+    today = date.today()
+    current_month_key = today.strftime("%Y-%m")
 
-    month_pct = None
-    if monthly_target:
-        month_pct = round(attainment_actuals["closed_won_arr_current_month"] / monthly_target * 100, 1)
+    # {"YYYY-MM": target} built from the monthly rows already fetched from Everstage
+    targets_by_month = {}
+    for r in everstage.get("monthly_rows", []):
+        sched = r.get("SCHEDULE_START")
+        tgt = r.get("TARGET")
+        if sched and tgt is not None:
+            key = sched.strftime("%Y-%m") if hasattr(sched, "strftime") else str(sched)[:7]
+            targets_by_month[key] = tgt
+
+    current_month_target = targets_by_month.get(current_month_key)
+    trailing_3_month_target = sum(targets_by_month.values()) if targets_by_month else None
+
+    monthly_pct = None
+    if current_month_target:
+        monthly_pct = round(attainment_actuals["closed_won_arr_current_month"] / current_month_target * 100, 1)
+
+    quarterly_pct = None
+    if trailing_3_month_target:
+        quarterly_pct = round(attainment_actuals["closed_won_arr_trailing_3_months"] / trailing_3_month_target * 100, 1)
+
+    pipeline_arr_current_month = sum(
+        o.get("deal_value_arr") or 0
+        for o in pipeline_opps
+        if o.get("close_date_target") and o["close_date_target"].strftime("%Y-%m") == current_month_key
+    )
+    pipeline_pct = None
+    if current_month_target:
+        pipeline_pct = round(pipeline_arr_current_month / current_month_target * 100, 1)
 
     return {
-        "current_month_attainment_pct": month_pct,
+        "monthly_attainment_pct": monthly_pct,
+        "quarterly_attainment_pct": quarterly_pct,
+        "pipeline_attainment_pct": pipeline_pct,
     }
 
 
@@ -410,7 +451,7 @@ def build_rep_profile(sales_rep_id: str, everstage: dict, attainment_actuals: di
                        gong_calls: list[dict]) -> dict:
 
     historical_targets = build_historical_targets(everstage)
-    quota_attainment = build_quota_attainment(historical_targets, attainment_actuals)
+    quota_attainment = build_quota_attainment(everstage, attainment_actuals, pipeline_opps)
 
     calls_by_opp: dict[str, list] = {}
     for call in gong_calls:
