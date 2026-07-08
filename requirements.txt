@@ -1,11 +1,19 @@
 # ── Google ADK ──────────────────────────────────────
 google-adk
 
-# ── BigQuery — Agent 1 ──────────────────────────────
+# ── BigQuery — Agent 1 (Everstage + Gong only) ──────
 google-cloud-bigquery
+
+# ── MCP client — Agent 1 Salesforce data source (custom GCP-hosted server) ─
+mcp
+httpx
 
 # ── Vertex AI — Agent 2 Gemini calls ────────────────
 google-cloud-aiplatform
+
+# ── Gmail/Calendar API — Agent 3 tools (auth/) ──────
+google-api-python-client
+google-auth-oauthlib
 
 # ── Pydantic — Agent 2 output schema ────────────────
 pydantic

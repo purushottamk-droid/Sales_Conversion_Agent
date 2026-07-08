@@ -5,6 +5,7 @@ __pycache__/
 oauth_final.json
 client_secret*.json
 venv/
+.venv/
 __pycache__/
 *.pyc
 .env

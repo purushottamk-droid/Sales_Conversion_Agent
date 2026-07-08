@@ -1,0 +1,87 @@
+"""
+salesforce_mcp_server/soql.py
+
+SOQL query construction + response-record parsing for the two tools this
+server exposes. FIELD_MAP is the single place mapping our clean field
+names to real Salesforce API field names — several are placeholders (see
+TODOs) since the actual Salesforce object schema hasn't been confirmed yet,
+only the BigQuery export's column aliases.
+
+Relationship fields (e.g. "Account.Name") come back from Salesforce's
+REST query API as NESTED objects, not flat dotted keys — parse_opportunity_record
+below walks the dotted path to handle that.
+"""
+
+# clean_name -> Salesforce API field path (dotted for relationship traversal)
+FIELD_MAP = {
+    "opportunity_id":               "Id",
+    "opportunity_name":              "Name",
+    "account_id":                    "AccountId",
+    "account_name":                  "Account.Name",
+    "industry":                      "Account.Industry",
+    "account_segment":               "Account.Segment__c",              # TODO: confirm real API name
+    "opportunity_type":              "Type",
+    "current_stage":                 "StageName",
+    "forecast_category":             "ForecastCategoryName",
+    "deal_value_arr":                "Amount",
+    "discount_pct":                  "Discount__c",                     # TODO: confirm real API name
+    "created_date":                  "CreatedDate",
+    "close_date_target":             "CloseDate",
+    "days_open":                     "Days_in_Pipeline__c",             # TODO: confirm real API name
+    "current_stage_duration_days":   "Days_in_Stage__c",                # TODO: confirm real API name
+    "days_since_last_touch":         "Days_Since_Last_Activity__c",     # TODO: confirm real API name
+    "next_step":                     "NextStep",
+    "risks":                         "Risks__c",                       # TODO: confirm real API name
+    "cbi_raw_text":                  "CBIs__c",                        # TODO: confirm real API name
+    "opportunity_manager_notes":     "Manager_Notes__c",               # TODO: confirm real API name
+    "sales_rep_name":                "Owner.Name",
+    "opportunity_previous_solution": "Previous_Solution__c",           # TODO: confirm real API name
+    "contact_name":                  "Contact_Name__c",                # TODO: confirm real API name (or a real Contact relationship)
+    "contact_title":                 "Contact_Title__c",               # TODO: confirm real API name
+    "is_won":                        "IsWon",
+    "is_closed":                     "IsClosed",
+}
+
+# Only needed for the WHERE clause itself, not part of the returned shape
+_OWNER_FIELD = "OwnerId"
+
+
+def _escape_soql_string(value: str) -> str:
+    """Minimal SOQL string escaping — Salesforce's REST query endpoint takes
+    a raw query string, not parameterized queries, so any interpolated
+    value needs its quotes/backslashes escaped by hand."""
+    return value.replace("\\", "\\\\").replace("'", "\\'")
+
+
+def build_opportunities_by_owner_soql(owner_id: str) -> str:
+    fields = ", ".join(sorted(set(FIELD_MAP.values())))
+    safe_owner_id = _escape_soql_string(owner_id)
+    return f"SELECT {fields} FROM Opportunity WHERE {_OWNER_FIELD} = '{safe_owner_id}'"
+
+
+def build_stage_benchmark_soql() -> str:
+    stage_field = FIELD_MAP["current_stage"]
+    duration_field = FIELD_MAP["current_stage_duration_days"]
+    won_field = FIELD_MAP["is_won"]
+    return (
+        f"SELECT {stage_field} stage, AVG({duration_field}) avgDays "
+        f"FROM Opportunity "
+        f"WHERE {won_field} = true AND {duration_field} != null "
+        f"GROUP BY {stage_field}"
+    )
+
+
+def _extract(record: dict, field_path: str):
+    """Walk a dotted relationship path (e.g. 'Account.Name') through the
+    nested dicts Salesforce's REST API returns for related objects."""
+    value = record
+    for part in field_path.split("."):
+        if value is None:
+            return None
+        value = value.get(part)
+    return value
+
+
+def parse_opportunity_record(record: dict) -> dict:
+    """Map one raw Salesforce query record into our clean field names."""
+    return {clean_name: _extract(record, api_field) for clean_name, api_field in FIELD_MAP.items()}

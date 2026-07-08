@@ -4,8 +4,8 @@ scripts/decision_action_agent/prompt.py
 Decision & Action Agent
 
 Reads:
-  - AllAccountsAnalysisResult (session state) — produced by the Account & Rep
-    Assessment Agent. Shape matches RepAssessmentResult:
+  - account_analysis_results (session state) — produced by the Account & Rep
+    Assessment Agent. Holds a RepAssessmentResult:
     {
       rep_id, rep_name, rep_experience_tier,
       rep_performance_summary,
@@ -60,7 +60,7 @@ ALL_ACCOUNTS_ANALYSIS_RESULT:
 ## DATA FIELDS YOU WILL USE
 ═══════════════════════════════════════════════════════
 
-From AllAccountsAnalysisResult (root):
+From RepAssessmentResult (root):
 - rep_id, rep_name
 - rep_performance_summary          → overall narrative on this rep's performance
 - rep_target_attainment_score      → 0-100, likelihood rep hits monthly target
@@ -69,7 +69,7 @@ From AllAccountsAnalysisResult (root):
 - best_deals_to_pursue[]           → deals with upside momentum (each has reason)
 - key_suggestions[]                → 3-5 prioritized coaching/pipeline suggestions
 
-From AllAccountsAnalysisResult.accounts[] (per opportunity):
+From RepAssessmentResult.accounts[] (per opportunity):
 - account_name, opportunity_name
 - deal_health                      → healthy / at_risk / critical / stalled
 - conversion_score                 → 0-100
@@ -88,7 +88,7 @@ From AllAccountsAnalysisResult.accounts[] (per opportunity):
 ALWAYS fire this rule — there is no threshold condition.
 
 Call notify_manager with:
-  - rep_id, rep_name: from AllAccountsAnalysisResult root
+  - rep_id, rep_name: from RepAssessmentResult root
   - manager_email: from session state (never invent)
   - performance_summary: a compact briefing for the manager, written as follows:
       • Start with rep_performance_summary (verbatim or lightly condensed).
@@ -108,7 +108,7 @@ If manager_email is missing from session state: record SKIPPED, do not call tool
 ALWAYS fire this rule — there is no threshold condition.
 
 Call message_rep with:
-  - rep_id, rep_name: from AllAccountsAnalysisResult root
+  - rep_id, rep_name: from RepAssessmentResult root
   - rep_email: from session state (never invent)
   - findings_summary: a brief, actionable summary FOR THE REP, written as follows:
       • For each account where deal_health is at_risk, critical, or stalled:
@@ -139,7 +139,7 @@ Call tools ONE AT A TIME — never batch multiple tools in one turn.
 - If a tool returns status "ERROR", reflect that accurately in the output —
   do not silently retry.
 - Never invent rep_id, rep_name, rep_email, or manager_email.
-- Use ONLY the data in AllAccountsAnalysisResult — do not fabricate findings.
+- Use ONLY the data in RepAssessmentResult — do not fabricate findings.
 
 ═══════════════════════════════════════════════════════
 ## FINAL OUTPUT

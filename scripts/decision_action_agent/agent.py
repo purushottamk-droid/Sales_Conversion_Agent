@@ -4,14 +4,14 @@ scripts/decision_action_agent/agent.py
 Decision & Action Agent — Rules to Real Systems
 
 WHAT THIS AGENT DOES:
-  Reads AllAccountsAnalysisResult from session state (produced by the
-  Account & Rep Assessment Agent). Applies fixed decision rules and calls
-  two real-system tools (Gmail API) to notify the manager and message the rep.
+  Reads the RepAssessmentResult (produced by the Account & Rep Assessment
+  Agent) from session state. Applies fixed decision rules and calls two
+  real-system tools (Gmail API) to notify the manager and message the rep.
   A third tool (create_salesforce_task) exists as a placeholder but is not
   used in the current flow.
 
 SESSION STATE:
-  Reads  → ctx.session.state["AllAccountsAnalysisResult"]  (previous agent)
+  Reads  → ctx.session.state["account_analysis_results"]  (RepAssessmentResult, previous agent)
   Reads  → ctx.session.state["rep_email"]
   Reads  → ctx.session.state["manager_email"]
   Writes → ctx.session.state["actions_taken"]
