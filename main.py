@@ -53,7 +53,8 @@ async def run(sales_rep_id: str):
             current_agent_start = now
         print(f"invocation_id: {event.invocation_id}")
         ###
-         
+        
+                
         if event.content and event.content.parts:
             for part in event.content.parts:
                 if hasattr(part, "text") and part.text:

@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 
 from google.adk.tools import FunctionTool, ToolContext
 
-from auth.auth import build_gmail_service, build_calendar_service
+from auth.auth import build_gmail_service
 
 import base64
 from email.mime.text import MIMEText
@@ -36,140 +36,49 @@ def _format_html_email(rep_name: str, rep_id: str, body_text: str) -> str:
     </body></html>
     """
 
-
-# ---------------------------------------------------------------------
-# Helper — fixed scheduling rule (Option A, per manager's decision)
-# ---------------------------------------------------------------------
-
-def _next_business_day_10am() -> tuple[str, str]:
+def _format_html_email_rep(rep_name: str, body_text: str) -> str:
     """
-    Returns (start_iso, end_iso) for a 30-min meeting at 10:00 AM
-    on the next business day (skips Sat/Sun).
+    Rep-specific email formatter — greets the rep by name directly
+    since this email goes TO the rep, not about them.
     """
-    now = datetime.now()
-    next_day = now + timedelta(days=1)
-    while next_day.weekday() >= 5:  # 5=Sat, 6=Sun
-        next_day += timedelta(days=1)
+    body_html = body_text.replace("\n", "<br>")
+    return f"""
+    <html><body>
+    <p>Hi {rep_name},</p>
+    <p>{body_html}</p>
+    <p>Please review and take action at your earliest convenience.</p>
+    </body></html>
+    """
 
-    start = next_day.replace(hour=10, minute=0, second=0, microsecond=0)
-    end = start + timedelta(minutes=30)
-    return start.isoformat(), end.isoformat()
-
-
-# ---------------------------------------------------------------------
-# TOOL 1 — Schedule manager review meeting (Calendar API)
-# ---------------------------------------------------------------------
-
-async def schedule_review_meeting(
+async def send_email_to_rep(
     rep_id: str,
     rep_name: str,
     rep_email: str,
-    manager_email: str,
-    reason: str,
+    email_body: str,
     tool_context: ToolContext,
 ) -> dict:
-    """Schedule a manager review meeting for an at-risk rep via Calendar API.
-
-    Both rep_email and manager_email are added as attendees, so this is
-    an actual review conversation between the rep and their manager —
-    not just a reminder for the manager alone.
-
-    rep_email and manager_email MUST come from session state
-    (rep_quota_metrics.rep_email / rep_quota_metrics.manager_email) —
-    never invented or guessed by the model.
-
-    Time is fixed: next business day at 10:00 AM, 30-minute meeting.
-
-    Always requires human confirmation before the calendar invite is
-    actually sent.
     """
-    
-    start_iso, end_iso = _next_business_day_10am()
+    Send a single consolidated email to the rep containing:
+    - Assigned actions (risk_action per account)
+    - Context (analysis_summary per account)
+    - Recent meeting summaries (BRIEF from last 1-2 Gong calls per account)
+    - Prescription for better conversion (opportunity_action per account)
 
-    try:
-        service = build_calendar_service()
-
-        event = {
-            "summary": f"Manager Review: {rep_name} ({rep_id})",
-            "description": reason,
-            "start": {"dateTime": start_iso, "timeZone": "Asia/Kolkata"},
-            "end": {"dateTime": end_iso, "timeZone": "Asia/Kolkata"},
-            "attendees": [
-                {"email": rep_email},
-                {"email": manager_email},
-            ],
-            "conferenceData": {
-                "createRequest": {
-                    "requestId": f"review-{rep_id}-{int(datetime.utcnow().timestamp())}",
-                    "conferenceSolutionKey": {"type": "hangoutsMeet"},
-                }
-            },
-        }
-
-        created_event = (
-            service.events()
-            .insert(calendarId="primary", body=event, conferenceDataVersion=1)
-            .execute()
-        )
-
-        event_id = created_event.get("id")
-        meet_link = None
-        if "conferenceData" in created_event:
-            for ep in created_event["conferenceData"].get("entryPoints", []):
-                if ep.get("entryPointType") == "video":
-                    meet_link = ep.get("uri")
-
-        return {
-            "status": "SCHEDULED",
-            "type": "schedule_manager_review",
-            "rep_id": rep_id,
-            "rep_name": rep_name,
-            "rep_email": rep_email,
-            "manager_email": manager_email,
-            "reason": reason,
-            "scheduled_time": start_iso,
-            "calendar_event_id": event_id,
-            "meet_link": meet_link,
-        }
-
-    except Exception as e:
-        return {
-            "status": "ERROR",
-            "type": "schedule_manager_review",
-            "rep_id": rep_id,
-            "rep_name": rep_name,
-            "error_message": str(e),
-        }
-
-
-
-
-async def message_rep(
-    rep_id: str,
-    rep_name: str,
-    rep_email: str,
-    account_ids: list[str],
-    accounts_summary: str,
-    tool_context: ToolContext,
-) -> dict:
-    """Send a direct email nudge to the rep about a specific account
-    (e.g. missed commitment, communication gap).
-
-    rep_email MUST come from session state (rep_quota_metrics.rep_email) —
-    never invented or guessed by the model.
-
-    Always requires human confirmation before sending.
+    rep_email MUST come from session state — never invented or guessed.
+    email_body is built by the LLM from account_analysis_results and
+    account_details and passed in as a fully formatted string.
     """
-    
-
     try:
         service = build_gmail_service()
-        subject = "Action Required: Overdue Commitments Across Your Accounts"
+
+        subject = f"Your Account Brief — Actions, Context & Prescriptions | {rep_name}"
+
         mime_message = MIMEText(
-            _format_html_email(rep_name, rep_id, accounts_summary), "html"
+            _format_html_email_rep(rep_name, email_body), "html"
         )
         mime_message["to"] = rep_email
         mime_message["subject"] = subject
+
         raw_message = base64.urlsafe_b64encode(mime_message.as_bytes()).decode()
 
         sent = (
@@ -181,10 +90,9 @@ async def message_rep(
 
         return {
             "status": "SENT",
-            "type": "message_rep",
+            "type": "send_email_to_rep",
             "rep_id": rep_id,
             "rep_name": rep_name,
-            "account_ids": account_ids,
             "rep_email": rep_email,
             "subject": subject,
             "message_id": sent.get("id"),
@@ -193,98 +101,38 @@ async def message_rep(
     except Exception as e:
         return {
             "status": "ERROR",
-            "type": "message_rep",
-            "rep_id": rep_id,
-            "rep_name": rep_name,
-            "account_ids": account_ids,
-            "error_message": str(e),
-        }
-
-
-# ---------------------------------------------------------------------
-# TOOL 3 — Notify manager about multiple at-risk accounts (Gmail API)
-# ---------------------------------------------------------------------
-
-async def notify_manager(
-    rep_id: str,
-    rep_name: str, 
-    manager_email: str,
-    reason: str,
-    tool_context: ToolContext,
-) -> dict:
-    """Notify the manager that this rep has multiple accounts at risk.
-
-    manager_email MUST come from session state — never invented or guessed.
-
-    Always requires human confirmation before sending.
-    """
-    
-
-    try:
-        service = build_gmail_service()
-
-        subject = f"Multiple at-risk accounts — {rep_name} ({rep_id})"
-        mime_message = MIMEText(
-            _format_html_email(rep_name, rep_id, reason), "html"
-        )
-        mime_message["to"] = manager_email
-        mime_message["subject"] = subject
-
-        raw_message = base64.urlsafe_b64encode(mime_message.as_bytes()).decode()
-
-        sent = (
-            service.users()
-            .messages()
-            .send(userId="me", body={"raw": raw_message})
-            .execute()
-        )
-
-        return {
-            "status": "SENT",
-            "type": "notify_manager",
-            "rep_id": rep_id,
-            "rep_name": rep_name,
-            "manager_email": manager_email,
-            "subject": subject,
-            "reason": reason,
-            "message_id": sent.get("id"),
-        }
-
-    except Exception as e:
-        return {
-            "status": "ERROR",
-            "type": "notify_manager",
+            "type": "send_email_to_rep",
             "rep_id": rep_id,
             "rep_name": rep_name,
             "error_message": str(e),
         }
 
 
-# ---------------------------------------------------------------------
-# TOOL 4 — Recommend coaching to manager (Gmail API)
-# ---------------------------------------------------------------------
-
-async def recommend_coaching(
+async def send_email_to_manager(
     rep_id: str,
-    manager_email: str,
     rep_name: str,
-    reason: str,
+    manager_email: str,
+    email_body: str,
     tool_context: ToolContext,
 ) -> dict:
-    """Recommend coaching for this rep to their manager, based on
-    recurring communication gaps across accounts.
+    """
+    Send a single consolidated email to the manager covering:
+    - Rep's quota risk (forecasted_attainment, overall_risk)
+    - At-risk accounts summary
+    - Recurring patterns across accounts
+    - Coaching signals
 
     manager_email MUST come from session state — never invented or guessed.
-
-    Always requires human confirmation before sending.
+    email_body is built by the LLM from rep_assessment_result and
+    account_analysis_results and passed in as a fully formatted string.
     """
-    
     try:
         service = build_gmail_service()
 
-        subject = f"Coaching recommended — {rep_name} ({rep_id})"
+        subject = f"Rep Performance Brief — {rep_name} ({rep_id})"
+
         mime_message = MIMEText(
-            _format_html_email(rep_name, rep_id, reason), "html"
+            _format_html_email(rep_name, rep_id, email_body), "html"
         )
         mime_message["to"] = manager_email
         mime_message["subject"] = subject
@@ -300,27 +148,22 @@ async def recommend_coaching(
 
         return {
             "status": "SENT",
-            "type": "recommend_coaching",
+            "type": "send_email_to_manager",
             "rep_id": rep_id,
             "rep_name": rep_name,
             "manager_email": manager_email,
             "subject": subject,
-            "reason": reason,
             "message_id": sent.get("id"),
         }
 
     except Exception as e:
         return {
             "status": "ERROR",
-            "type": "recommend_coaching",
+            "type": "send_email_to_manager",
             "rep_id": rep_id,
             "rep_name": rep_name,
             "error_message": str(e),
         }
 
-
-
-schedule_review_meeting_tool = FunctionTool(func=schedule_review_meeting)
-message_rep_tool = FunctionTool(func=message_rep)
-notify_manager_tool = FunctionTool(func=notify_manager)
-recommend_coaching_tool = FunctionTool(func=recommend_coaching)
+send_email_to_rep_tool = FunctionTool(func=send_email_to_rep)
+send_email_to_manager_tool = FunctionTool(func=send_email_to_manager)
