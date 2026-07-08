@@ -1,0 +1,11 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+.git
+.gitignore
+oauth_final.json
+client_secret_*.json
+sales_pipeline.db
+*.db

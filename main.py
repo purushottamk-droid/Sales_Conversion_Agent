@@ -6,7 +6,7 @@ step and no resumability — tools execute immediately.
 """
 from dotenv import load_dotenv
 load_dotenv()
-
+import time
 import asyncio
 from google.adk.runners import InMemoryRunner
 from google.genai import types
@@ -32,12 +32,28 @@ async def run(sales_rep_id: str):
 
     print(f"\n── Running pipeline for rep: {sales_rep_id} ──\n")
 
+    start_time = time.time()
+    agent_times = {}
+    current_agent = None
+    current_agent_start = None
+
     async for event in runner.run_async(
         user_id="test_user",
         session_id=session.id,
         new_message=types.Content(role="user", parts=[types.Part(text="start")]),
     ):
         print(f"[{event.author}]", end=" ")
+
+        ##process time
+        now = time.time()
+        if event.author != current_agent:
+            if current_agent is not None:
+                agent_times[current_agent] = now - current_agent_start
+            current_agent = event.author
+            current_agent_start = now
+        print(f"invocation_id: {event.invocation_id}")
+        ###
+         
         if event.content and event.content.parts:
             for part in event.content.parts:
                 if hasattr(part, "text") and part.text:
@@ -72,6 +88,15 @@ async def run(sales_rep_id: str):
                     print(f"{'─'*60}\n")
      
 
+    if current_agent is not None:
+        agent_times[current_agent] = time.time() - current_agent_start
+
+    end_time = time.time()
+    print(f"\n⏱  Total pipeline time: {end_time - start_time:.2f} seconds")
+    print("\n⏱  Per-agent duration:")
+    for author, duration in agent_times.items():
+        print(f"    {author}: {duration:.2f}s")
+    
     print("\n── Pipeline finished ──\n")
 
    

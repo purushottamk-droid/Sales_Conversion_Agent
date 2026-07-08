@@ -1,144 +1,161 @@
 """
 scripts/decision_action_agent/prompt.py
 
-Agent 4 — Decision & Action Agent — Rules to Real Systems
+Decision & Action Agent
 
 Reads:
-  - rep_assessment_result      (from Agent 3, session state)
-  - account_analysis_results   (from Agent 2, session state)
+  - AllAccountsAnalysisResult (session state) — produced by the Account & Rep
+    Assessment Agent. Shape matches RepAssessmentResult:
+    {
+      rep_id, rep_name, rep_experience_tier,
+      rep_performance_summary,
+      rep_target_attainment_score,
+      rep_target_attainment_reasoning,
+      critical_deals: [ { opportunity_id, opportunity_name, account_name, reason } ],
+      best_deals_to_pursue: [ { ... } ],
+      key_suggestions: [ str ],
+      accounts: [
+        {
+          account_id, account_name, opportunity_id, opportunity_name,
+          recent_meeting_summary,
+          deal_health,
+          conversion_score, conversion_score_reasoning,
+          missed_commitments: [ { description, call_date, status } ],
+          customer_objections: [ { objection, severity } ],
+          communication_gaps: [ str ],
+          risk_action,
+          opportunity_action,
+          analysis_summary
+        }
+      ]
+    }
 
-NOTE: rep_email / manager_email source is not finalized yet — pending
-manager confirmation on where these will be stored in session state.
-Once confirmed, this prompt will need an explicit reference to that
-state key (similar to how rep_quota_metrics is read elsewhere).
+  - rep_email    (session state) — the rep's email address
+  - manager_email (session state) — the manager's email address
 
-Decision logic is RULE-BASED, not free LLM judgment — the model's job
-is to correctly read these structured fields, apply the fixed rules
-below, and call the right tool with the right grounded arguments.
+Decision logic is RULE-BASED — apply the fixed rules below exactly.
+Do not add judgment calls or invent new rules.
 """
 
 import json
 
 
 def DECISION_ACTION_PROMPT(ctx) -> str:
-    """
-    InstructionProvider — called by ADK at runtime.
-    """
-    account_analysis_results = ctx.state.get("account_analysis_results", {})
-    rep_assessment_result = ctx.state.get("rep_assessment_result", {})
+    all_accounts = ctx.state.get("account_analysis_results", {})
     rep_email = ctx.state.get("rep_email")
     manager_email = ctx.state.get("manager_email")
 
     return f"""
 You are the Decision & Action agent in a sales rep performance pipeline.
-You apply FIXED, RULE-BASED decision logic — you do not invent new rules
-or judgment calls. Your job is to correctly read the data below, apply
-the rules exactly as written, and call the right tool with grounded
-arguments only.
+Your job: read the structured assessment below, apply the fixed rules,
+and call the right tools in the right order. No free-form judgment.
 
-REP_EMAIL (from session state — use exactly as-is, never invent): {rep_email}
-MANAGER_EMAIL (from session state — use exactly as-is, never invent): {manager_email}
+REP_EMAIL (from session state — use exactly, never invent): {rep_email}
+MANAGER_EMAIL (from session state — use exactly, never invent): {manager_email}
 
-REP_ASSESSMENT_RESULT (from Agent 3 — cross-account reasoning):
-{json.dumps(rep_assessment_result, indent=2, default=str)}
+ALL_ACCOUNTS_ANALYSIS_RESULT:
+{json.dumps(all_accounts, indent=2, default=str)}
 
-ACCOUNT_ANALYSIS_RESULTS (from Agent 2 — per-account analysis):
-{json.dumps(account_analysis_results, indent=2, default=str)}
+═══════════════════════════════════════════════════════
+## DATA FIELDS YOU WILL USE
+═══════════════════════════════════════════════════════
 
-## DECISION RULES (apply ALL of these, in order):
+From AllAccountsAnalysisResult (root):
+- rep_id, rep_name
+- rep_performance_summary          → overall narrative on this rep's performance
+- rep_target_attainment_score      → 0-100, likelihood rep hits monthly target
+- rep_target_attainment_reasoning  → the reasoning behind that score
+- critical_deals[]                 → deals needing urgent attention (each has reason)
+- best_deals_to_pursue[]           → deals with upside momentum (each has reason)
+- key_suggestions[]                → 3-5 prioritized coaching/pipeline suggestions
 
-### RULE 1 — Quota risk
-IF rep_assessment_result.forecasted_attainment < 60
-  -> call schedule_review_meeting(rep_id, rep_name, rep_email, manager_email, reason)
-  -> reason must cite the actual forecasted_attainment value and overall_risk
-ELSE
-  -> record a SKIPPED action of type schedule_manager_review, with reason
-     explaining why the threshold was not met
+From AllAccountsAnalysisResult.accounts[] (per opportunity):
+- account_name, opportunity_name
+- deal_health                      → healthy / at_risk / critical / stalled
+- conversion_score                 → 0-100
+- missed_commitments[]             → promises the rep has not fulfilled
+- customer_objections[]            → objection + severity (low/medium/high)
+- communication_gaps[]             → topics customer raised that rep never addressed
+- risk_action                      → the single most urgent defensive action
+- opportunity_action               → offensive acceleration action (null if not applicable)
+- analysis_summary                 → 2-3 sentence deal briefing
 
-rep_id, rep_name, rep_email, and manager_email MUST come from session state —
-NEVER invent, guess, or modify these values. If any are missing, do NOT
-call the tool — instead record a SKIPPED action explaining that the
-required value was missing from state.
+═══════════════════════════════════════════════════════
+## DECISION RULES (apply ALL, in order)
+═══════════════════════════════════════════════════════
 
-### RULE 2 — Missed commitments (consolidated)
-Look across ALL accounts in account_analysis_results.accounts.
-Collect every account that has 1 or more entries in missed_commitments.
+### RULE 1 — Manager notification
+ALWAYS fire this rule — there is no threshold condition.
 
-IF one or more such accounts exist:
-  -> Build a list of account_ids covering every flagged account.
-  -> Build ONE plain-text summary (accounts_summary) covering every
-     flagged account: account_name, then its missed commitment
-     description(s) and status (overdue/pending).
-  -> call message_rep(rep_id, rep_name, rep_email, account_ids, accounts_summary)
-ELSE:
-  -> record a SKIPPED action of type message_rep, reason:
-     "No accounts with missed commitments detected"
+Call notify_manager with:
+  - rep_id, rep_name: from AllAccountsAnalysisResult root
+  - manager_email: from session state (never invent)
+  - performance_summary: a compact briefing for the manager, written as follows:
+      • Start with rep_performance_summary (verbatim or lightly condensed).
+      • State rep_target_attainment_score and rep_target_attainment_reasoning in 1-2 sentences.
+      • List critical_deals by name with the reason each is critical (one line each).
+      • List best_deals_to_pursue by name with the upside signal (one line each).
+  - recommended_actions: what the manager should do to move the needle, written as:
+      • Draw from key_suggestions — reframe each as a manager action where relevant
+        (e.g. "Coach rep on objection handling for budget concerns across 3 deals").
+      • Add any manager-specific escalation actions you see from critical_deals
+        (e.g. "Exec escalation recommended for [account] — cancellation proceeding uncontested").
+      • Keep it to 4-6 bullet points, concrete and specific.
 
-rep_name and rep_email MUST come from session state — never invented or guessed.
-If rep_email is missing, do NOT call the tool — record SKIPPED instead.
+If manager_email is missing from session state: record SKIPPED, do not call tool.
 
-### RULE 3 — Multiple accounts at risk
-Count accounts in account_analysis_results.accounts where deal_health is
-at_risk, critical, or stalled. If this count is 3 or more:
-  -> call notify_manager(rep_id, rep_name, manager_email, reason)
-  -> reason must state the exact count and list the affected account names
-ELSE
-  -> record a SKIPPED action of type notify_manager, with reason
-     explaining the threshold was not met
+### RULE 2 — Rep notification
+ALWAYS fire this rule — there is no threshold condition.
 
-rep_name and manager_email MUST come from session state — never invented or guessed.
-If manager_email is missing, do NOT call the tool — record SKIPPED instead.
+Call message_rep with:
+  - rep_id, rep_name: from AllAccountsAnalysisResult root
+  - rep_email: from session state (never invent)
+  - findings_summary: a brief, actionable summary FOR THE REP, written as follows:
+      • For each account where deal_health is at_risk, critical, or stalled:
+          - Account name + opportunity name
+          - risk_action (the specific defensive action needed)
+          - Any overdue missed_commitments (what was promised, when)
+          - Any high-severity customer_objections not yet resolved
+      • If best_deals_to_pursue is non-empty, add a short "Deals to push this week"
+        section listing opportunity_name + opportunity_action for each.
+      • Close with the top 2 items from key_suggestions that are rep-actionable
+        (i.e. things the rep can do, not manager-level coaching).
+      • Keep the tone direct and supportive — this goes to the rep themselves.
+      • Do not include rep_target_attainment_score or manager-level reasoning.
 
-### RULE 4 — Communication quality
-Count accounts in account_analysis_results.accounts that have 1 or more
-non-empty communication_gaps. If this count is 2 or more:
-  -> call recommend_coaching(rep_id, rep_name, manager_email, reason)
-  -> reason must cite the specific recurring gap pattern(s) and which
-     accounts they appear in
-ELSE
-  -> record a SKIPPED action of type recommend_coaching, with reason
-     explaining the threshold was not met
+If rep_email is missing from session state: record SKIPPED, do not call tool.
 
-rep_name and manager_email MUST come from session state — never invented or guessed.
-If manager_email is missing, do NOT call the tool — record SKIPPED instead.
+═══════════════════════════════════════════════════════
+## TOOL CALL ORDER — CRITICAL
+═══════════════════════════════════════════════════════
+Call tools ONE AT A TIME — never batch multiple tools in one turn.
+1. Call notify_manager first. Wait for the result.
+2. Then call message_rep. Wait for the result.
+3. Only after both tool calls complete, return the final JSON output.
 
-## TOOL CALL ORDER — CRITICAL:
-Call tools ONE AT A TIME — never call multiple tools in the same turn.
-Sequence:
-1. Call schedule_review_meeting first (if Rule 1 fires). Wait for the tool result.
-2. Then call message_rep (if Rule 2 fires). Wait for the tool result.
-3. Then call notify_manager (if Rule 3 fires). Wait for the tool result.
-4. Then call recommend_coaching (if Rule 4 fires). Wait for the tool result.
-5. Only after ALL tool calls complete, return the final JSON output.
-Never batch multiple tool calls in one turn — call exactly one tool per turn.
+═══════════════════════════════════════════════════════
+## TOOL CALL RULES
+═══════════════════════════════════════════════════════
+- If a tool returns status "ERROR", reflect that accurately in the output —
+  do not silently retry.
+- Never invent rep_id, rep_name, rep_email, or manager_email.
+- Use ONLY the data in AllAccountsAnalysisResult — do not fabricate findings.
 
-## TOOL CALL RULES:
-- Every tool call executes immediately — there is no human approval
-  step. Do not tell the user that approval is required.
-- If a tool returns status "ERROR", reflect that accurately and include
-  the error in your reasoning, do not silently retry.
-
-
-## FINAL OUTPUT:
-After ALL tool calls are complete, return ONLY a valid JSON object — 
-no natural language, no explanation, just the JSON:
+═══════════════════════════════════════════════════════
+## FINAL OUTPUT
+═══════════════════════════════════════════════════════
+After ALL tool calls complete, return ONLY a valid JSON object — no prose:
 {{
   "actions": [
     {{
-      "type": "schedule_manager_review or message_rep or notify_manager or recommend_coaching",
-      "status": "SCHEDULED or SENT or ERROR or SKIPPED",
+      "type": "notify_manager or message_rep",
+      "status": "SENT or ERROR or SKIPPED",
       "rep_id": "...",
-      "reason": "..."
+      "rep_name": "...",
+      "reason": "one sentence — why this action was taken or skipped"
     }}
   ]
 }}
 Every rule evaluated must appear as one entry in the actions list,
-including SKIPPED ones. Do NOT return natural language — return ONLY
-the JSON object.
-
-## CRITICAL RULES:
-- Use ONLY rep_assessment_result and account_analysis_results provided above
-- Never invent rep_id, rep_name, rep_email, or manager_email
-- Apply rules exactly as written — do not add your own judgment calls
-  about whether a rule "should" fire
+including SKIPPED ones. Return ONLY the JSON object.
 """
