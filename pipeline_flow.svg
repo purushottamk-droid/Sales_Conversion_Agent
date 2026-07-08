@@ -1,0 +1,182 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1850" width="900" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#5F5E5A"/>
+    </marker>
+  </defs>
+
+  <rect x="40" y="40" width="260" height="180" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/>
+  <text x="170" y="66" text-anchor="middle" font-size="14" font-weight="500" fill="#0C447C">Salesforce</text>
+  <text x="170" y="84" text-anchor="middle" font-size="12" fill="#185FA5">Opportunities table</text>
+  <text x="60" y="116" font-size="12" fill="#185FA5">Opportunity stage</text>
+  <text x="60" y="134" font-size="12" fill="#185FA5">Deal size, risks</text>
+  <text x="60" y="152" font-size="12" fill="#185FA5">Next step</text>
+  <text x="60" y="170" font-size="12" fill="#185FA5">Close date, source</text>
+  <text x="60" y="188" font-size="12" fill="#185FA5">Account id, name</text>
+  <text x="60" y="206" font-size="12" fill="#185FA5">Opportunity owner id</text>
+
+  <rect x="320" y="40" width="260" height="180" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/>
+  <text x="450" y="66" text-anchor="middle" font-size="14" font-weight="500" fill="#0C447C">Gong</text>
+  <text x="450" y="84" text-anchor="middle" font-size="12" fill="#185FA5">Call transcripts</text>
+  <text x="340" y="116" font-size="12" fill="#185FA5">Brief, sentiment</text>
+  <text x="340" y="134" font-size="12" fill="#185FA5">Primary objection</text>
+  <text x="340" y="152" font-size="12" fill="#185FA5">Key discussions</text>
+  <text x="340" y="170" font-size="12" fill="#185FA5">Call outcome</text>
+  <text x="340" y="188" font-size="12" fill="#185FA5">Next step, scheduled</text>
+  <text x="340" y="206" font-size="12" fill="#185FA5">Account, opp id</text>
+
+  <rect x="600" y="40" width="260" height="180" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/>
+  <text x="730" y="66" text-anchor="middle" font-size="14" font-weight="500" fill="#0C447C">Everstage</text>
+  <text x="730" y="84" text-anchor="middle" font-size="12" fill="#185FA5">Quota &amp; targets</text>
+  <text x="620" y="116" font-size="12" fill="#185FA5">Target</text>
+  <text x="620" y="134" font-size="12" fill="#185FA5">Ramped capacity</text>
+  <text x="620" y="152" font-size="12" fill="#185FA5">Quota period</text>
+  <text x="620" y="170" font-size="12" fill="#185FA5">Revenue type</text>
+  <text x="620" y="188" font-size="12" fill="#185FA5">Rep email, name</text>
+
+  <line x1="170" y1="220" x2="370" y2="268" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
+  <line x1="450" y1="220" x2="450" y2="268" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
+  <line x1="730" y1="220" x2="530" y2="268" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
+
+  <rect x="270" y="270" width="360" height="70" rx="8" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+  <text x="450" y="298" text-anchor="middle" font-size="14" font-weight="500" fill="#2C2C2A">Agent 1 — Data Collection Agent</text>
+  <text x="450" y="318" text-anchor="middle" font-size="12" fill="#5F5E5A">Custom, non-LLM · joins BigQuery data</text>
+
+  <line x1="370" y1="340" x2="300" y2="378" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
+  <line x1="530" y1="340" x2="740" y2="378" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
+
+  <rect x="40" y="380" width="540" height="240" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+  <text x="310" y="406" text-anchor="middle" font-size="14" font-weight="500" fill="#085041">account_details</text>
+  <text x="310" y="424" text-anchor="middle" font-size="12" fill="#0F6E56">Opportunities + calls, grouped per account</text>
+  <text x="60" y="456" font-size="12" font-weight="500" fill="#085041">From Salesforce</text>
+  <text x="60" y="480" font-size="12" fill="#0F6E56">opportunity_stage</text>
+  <text x="60" y="498" font-size="12" fill="#0F6E56">risks</text>
+  <text x="60" y="516" font-size="12" fill="#0F6E56">next_step</text>
+  <text x="60" y="534" font-size="12" fill="#0F6E56">deal_size</text>
+  <text x="60" y="552" font-size="12" fill="#0F6E56">close_date, source</text>
+  <text x="60" y="570" font-size="12" fill="#0F6E56">account_id, name</text>
+  <text x="320" y="456" font-size="12" font-weight="500" fill="#085041">From Gong</text>
+  <text x="320" y="480" font-size="12" fill="#0F6E56">BRIEF</text>
+  <text x="320" y="498" font-size="12" fill="#0F6E56">CUSTOMER_SENTIMENT</text>
+  <text x="320" y="516" font-size="12" fill="#0F6E56">PRIMARY_OBJECTION</text>
+  <text x="320" y="534" font-size="12" fill="#0F6E56">KEY_MEETING_DISCUSSIONS</text>
+  <text x="320" y="552" font-size="12" fill="#0F6E56">CALL_OUTCOME_*, NEXT_STEP</text>
+  <text x="320" y="570" font-size="12" fill="#0F6E56">SCHEDULED</text>
+
+  <rect x="620" y="380" width="240" height="240" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+  <text x="740" y="406" text-anchor="middle" font-size="14" font-weight="500" fill="#085041">rep_quota_metrics</text>
+  <text x="740" y="424" text-anchor="middle" font-size="12" fill="#0F6E56">Everstage rep quota</text>
+  <text x="640" y="456" font-size="12" font-weight="500" fill="#085041">From Everstage</text>
+  <text x="640" y="480" font-size="12" fill="#0F6E56">TARGET</text>
+  <text x="640" y="498" font-size="12" fill="#0F6E56">RAMPED_CAPACITY</text>
+  <text x="640" y="516" font-size="12" fill="#0F6E56">QUOTA_PERIOD</text>
+  <text x="640" y="534" font-size="12" fill="#0F6E56">REVENUE_TYPE</text>
+  <text x="640" y="552" font-size="12" fill="#0F6E56">rep_email, rep_name</text>
+
+  <line x1="290" y1="620" x2="290" y2="668" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
+
+  <rect x="100" y="670" width="380" height="70" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/>
+  <text x="290" y="698" text-anchor="middle" font-size="14" font-weight="500" fill="#3C3489">Agent 2 — Account Analysis Agent</text>
+  <text x="290" y="718" text-anchor="middle" font-size="12" fill="#534AB7">Per-account structured analysis</text>
+
+  <line x1="290" y1="740" x2="290" y2="778" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
+
+  <rect x="40" y="780" width="540" height="200" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+  <text x="310" y="806" text-anchor="middle" font-size="14" font-weight="500" fill="#085041">account_analysis_results</text>
+  <text x="310" y="824" text-anchor="middle" font-size="12" fill="#0F6E56">Per-account deal reasoning</text>
+  <text x="60" y="856" font-size="12" fill="#0F6E56">deal_health</text>
+  <text x="60" y="874" font-size="12" fill="#0F6E56">conversion_score</text>
+  <text x="60" y="892" font-size="12" fill="#0F6E56">missed_commitments</text>
+  <text x="60" y="910" font-size="12" fill="#0F6E56">customer_objections</text>
+  <text x="320" y="856" font-size="12" fill="#0F6E56">communication_gaps</text>
+  <text x="320" y="874" font-size="12" fill="#0F6E56">recommended_action</text>
+  <text x="320" y="892" font-size="12" fill="#0F6E56">analysis_summary</text>
+  <text x="320" y="910" font-size="12" fill="#0F6E56">account_id, name</text>
+
+  <line x1="400" y1="980" x2="450" y2="1028" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
+
+  <path d="M 740 620 L 740 1060 L 692 1060" stroke="#5F5E5A" stroke-width="1" fill="none" marker-end="url(#arrow)"/>
+
+  <rect x="310" y="1030" width="380" height="70" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/>
+  <text x="500" y="1058" text-anchor="middle" font-size="14" font-weight="500" fill="#3C3489">Agent 3 — Rep Assessment Agent</text>
+  <text x="500" y="1078" text-anchor="middle" font-size="12" fill="#534AB7">Cross-account sales-manager rollup</text>
+
+  <line x1="500" y1="1100" x2="450" y2="1138" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
+
+  <rect x="200" y="1140" width="500" height="200" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+  <text x="450" y="1166" text-anchor="middle" font-size="14" font-weight="500" fill="#085041">rep_assessment_result</text>
+  <text x="450" y="1184" text-anchor="middle" font-size="12" fill="#0F6E56">Sales-manager verdict</text>
+  <text x="220" y="1216" font-size="12" fill="#0F6E56">quota_attainment</text>
+  <text x="220" y="1234" font-size="12" fill="#0F6E56">forecasted_attainment</text>
+  <text x="220" y="1252" font-size="12" fill="#0F6E56">overall_risk</text>
+  <text x="220" y="1270" font-size="12" fill="#0F6E56">rep_id, rep_name</text>
+  <text x="460" y="1216" font-size="12" fill="#0F6E56">patterns</text>
+  <text x="460" y="1234" font-size="12" fill="#0F6E56">needs_manager_attention</text>
+
+  <line x1="450" y1="1340" x2="450" y2="1388" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
+
+  <path d="M 40 880 L 20 880 L 20 1420 L 288 1420" stroke="#5F5E5A" stroke-width="1" fill="none" marker-end="url(#arrow)"/>
+
+  <rect x="650" y="1390" width="220" height="60" rx="8" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+  <text x="760" y="1414" text-anchor="middle" font-size="14" font-weight="500" fill="#2C2C2A">main.py session seed</text>
+  <text x="760" y="1434" text-anchor="middle" font-size="12" fill="#5F5E5A">rep_email, manager_email</text>
+
+  <line x1="650" y1="1420" x2="612" y2="1420" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
+
+  <rect x="290" y="1390" width="320" height="70" rx="8" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+  <text x="450" y="1418" text-anchor="middle" font-size="14" font-weight="500" fill="#712B13">Agent 4 — Decision &amp; Action Agent</text>
+  <text x="450" y="1438" text-anchor="middle" font-size="12" fill="#993C1D">4 fixed rules, no free judgment</text>
+
+  <line x1="330" y1="1460" x2="140" y2="1498" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
+  <line x1="410" y1="1460" x2="360" y2="1498" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
+  <line x1="490" y1="1460" x2="580" y2="1498" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
+  <line x1="570" y1="1460" x2="800" y2="1498" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
+
+  <text x="130" y="1486" font-size="11" font-style="italic" fill="#712B13">if rule fires</text>
+
+  <path d="M 290 1445 L 20 1445 L 20 1740 L 248 1740" stroke="#5F5E5A" stroke-width="1" fill="none" stroke-dasharray="4 3" marker-end="url(#arrow)"/>
+  <text x="30" y="1560" font-size="11" font-style="italic" fill="#712B13">if rule skipped</text>
+  <text x="30" y="1576" font-size="11" font-style="italic" fill="#712B13">(no tool call)</text>
+
+  <rect x="40" y="1500" width="200" height="160" rx="8" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+  <text x="140" y="1524" text-anchor="middle" font-size="14" font-weight="500" fill="#712B13">Manager review</text>
+  <text x="140" y="1544" text-anchor="middle" font-size="12" fill="#993C1D">Calendar API</text>
+  <text x="60" y="1576" font-size="12" fill="#993C1D">Rule 1 — fires when</text>
+  <text x="60" y="1594" font-size="12" fill="#993C1D">forecasted_attainment</text>
+  <text x="60" y="1612" font-size="12" fill="#993C1D">&lt; 60</text>
+  <text x="60" y="1642" font-size="12" font-weight="500" fill="#712B13">→ rep + manager</text>
+
+  <rect x="260" y="1500" width="200" height="160" rx="8" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+  <text x="360" y="1524" text-anchor="middle" font-size="14" font-weight="500" fill="#712B13">Message rep</text>
+  <text x="360" y="1544" text-anchor="middle" font-size="12" fill="#993C1D">Gmail API</text>
+  <text x="280" y="1576" font-size="12" fill="#993C1D">Rule 2 — fires when</text>
+  <text x="280" y="1594" font-size="12" fill="#993C1D">any account has</text>
+  <text x="280" y="1612" font-size="12" fill="#993C1D">missed_commitments</text>
+  <text x="280" y="1642" font-size="12" font-weight="500" fill="#712B13">→ rep only</text>
+
+  <rect x="480" y="1500" width="200" height="160" rx="8" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+  <text x="580" y="1524" text-anchor="middle" font-size="14" font-weight="500" fill="#712B13">Notify manager</text>
+  <text x="580" y="1544" text-anchor="middle" font-size="12" fill="#993C1D">Gmail API</text>
+  <text x="500" y="1576" font-size="12" fill="#993C1D">Rule 3 — fires when</text>
+  <text x="500" y="1594" font-size="12" fill="#993C1D">≥ 3 accounts are</text>
+  <text x="500" y="1612" font-size="12" fill="#993C1D">at-risk / critical</text>
+  <text x="500" y="1642" font-size="12" font-weight="500" fill="#712B13">→ manager only</text>
+
+  <rect x="700" y="1500" width="200" height="160" rx="8" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+  <text x="800" y="1524" text-anchor="middle" font-size="14" font-weight="500" fill="#712B13">Coaching nudge</text>
+  <text x="800" y="1544" text-anchor="middle" font-size="12" fill="#993C1D">Gmail API</text>
+  <text x="720" y="1576" font-size="12" fill="#993C1D">Rule 4 — fires when</text>
+  <text x="720" y="1594" font-size="12" fill="#993C1D">≥ 2 accounts have</text>
+  <text x="720" y="1612" font-size="12" fill="#993C1D">communication_gaps</text>
+  <text x="720" y="1642" font-size="12" font-weight="500" fill="#712B13">→ manager only</text>
+
+  <line x1="140" y1="1660" x2="380" y2="1708" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
+  <line x1="360" y1="1660" x2="430" y2="1708" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
+  <line x1="580" y1="1660" x2="470" y2="1708" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
+  <line x1="800" y1="1660" x2="520" y2="1708" stroke="#5F5E5A" stroke-width="1" marker-end="url(#arrow)"/>
+
+  <rect x="250" y="1710" width="400" height="100" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+  <text x="450" y="1740" text-anchor="middle" font-size="14" font-weight="500" fill="#085041">actions_taken</text>
+  <text x="450" y="1760" text-anchor="middle" font-size="12" fill="#0F6E56">Full audit trail — every rule evaluated</text>
+  <text x="450" y="1786" text-anchor="middle" font-size="12" fill="#0F6E56">SCHEDULED · SENT · CANCELLED · ERROR · SKIPPED</text>
+</svg>
