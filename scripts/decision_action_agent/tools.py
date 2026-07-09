@@ -19,6 +19,7 @@ import base64
 import json
 import os
 from email.mime.text import MIMEText
+from urllib.parse import urlsplit
 
 from google.adk.tools import FunctionTool, ToolContext
 from google.auth.transport import requests as google_auth_requests
@@ -32,6 +33,14 @@ from auth.auth import build_gmail_service
 # Agent — see scripts/data_collection_custom_agent/agent.py's
 # MCP_SALESFORCE_SERVER_URL / _call_mcp_tool for the reference pattern.
 MCP_SALESFORCE_SERVER_URL = os.environ.get("MCP_SALESFORCE_SERVER_URL", "https://your-cloud-run-service-url/sse")
+
+# Cloud Run's IAM proxy validates an identity token's `aud` claim against
+# the service's base URL only (scheme + host) — a token minted with the
+# /sse path as audience gets silently rejected with a 403, confirmed
+# directly against the deployed service. The SSE connection itself still
+# needs the full path, so these two are derived separately.
+_mcp_url_parts = urlsplit(MCP_SALESFORCE_SERVER_URL)
+MCP_SALESFORCE_SERVER_BASE_URL = f"{_mcp_url_parts.scheme}://{_mcp_url_parts.netloc}"
 
 
 async def _get_gcp_identity_token(audience: str) -> str:
@@ -52,7 +61,7 @@ async def _call_mcp_tool(tool_name: str, arguments: dict) -> dict:
     Cloud Run endpoint is IAM-gated (--no-allow-unauthenticated), confirmed
     via a real 403 without one. Mirrors the Data Collection Agent's
     _call_mcp_tool helper."""
-    identity_token = await _get_gcp_identity_token(MCP_SALESFORCE_SERVER_URL)
+    identity_token = await _get_gcp_identity_token(MCP_SALESFORCE_SERVER_BASE_URL)
     async with sse_client(MCP_SALESFORCE_SERVER_URL, headers={"Authorization": f"Bearer {identity_token}"}) as (read, write):
         async with ClientSession(read, write) as session:
             await session.initialize()

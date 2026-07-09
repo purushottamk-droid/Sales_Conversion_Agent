@@ -2,6 +2,7 @@ import asyncio
 import json
 import os
 from datetime import date
+from urllib.parse import urlsplit
 
 import httpx
 from google.adk.agents import BaseAgent
@@ -28,6 +29,14 @@ TABLE_GONG       = f"{GCP_PROJECT_ID}.{DATASET_ID}.Gong_Calls_Data"
 # reached over SSE — NOT from BigQuery. Only Gong and Everstage remain on
 # BigQuery.
 MCP_SALESFORCE_SERVER_URL = os.environ.get("MCP_SALESFORCE_SERVER_URL", "https://your-cloud-run-service-url/sse")
+
+# Cloud Run's IAM proxy validates an identity token's `aud` claim against
+# the service's base URL only (scheme + host) — a token minted with the
+# /sse path as audience gets silently rejected with a 403, confirmed
+# directly against the deployed service. The SSE connection itself still
+# needs the full path, so these two are derived separately.
+_mcp_url_parts = urlsplit(MCP_SALESFORCE_SERVER_URL)
+MCP_SALESFORCE_SERVER_BASE_URL = f"{_mcp_url_parts.scheme}://{_mcp_url_parts.netloc}"
 
 # Gong recency window — "last activity 1-2 months backwards"
 GONG_LOOKBACK_DAYS = 60
@@ -72,7 +81,7 @@ async def _call_mcp_tool(tool_name: str, arguments: dict) -> dict:
     Sends a GCP identity token — the Cloud Run endpoint is IAM-gated
     (--no-allow-unauthenticated), confirmed via a real 403 without one.
     """
-    identity_token = await _get_gcp_identity_token(MCP_SALESFORCE_SERVER_URL)
+    identity_token = await _get_gcp_identity_token(MCP_SALESFORCE_SERVER_BASE_URL)
     async with sse_client(MCP_SALESFORCE_SERVER_URL, headers={"Authorization": f"Bearer {identity_token}"}) as (read, write):
         async with ClientSession(read, write) as session:
             await session.initialize()
