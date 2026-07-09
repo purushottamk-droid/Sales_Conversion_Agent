@@ -13,6 +13,7 @@ callable by authenticated GCP identities, not the public internet.
 """
 
 import os
+from datetime import date, timedelta
 
 import httpx
 from mcp.server.fastmcp import FastMCP
@@ -86,6 +87,43 @@ async def get_stage_duration_benchmark() -> dict:
         for r in records
         if r.get("stage") and r.get("avgDays") is not None
     }
+
+
+@mcp.tool()
+async def create_task(account_id: str, owner_id: str, subject: str, description: str) -> dict:
+    """
+    Create a Salesforce Task anchored to an Account (WhatId), assigned to
+    a rep (OwnerId) — used for the expansion-whitespace nudge (see
+    account_analysis_agent's expansion_signal). Anchored to the Account
+    rather than any specific opportunity since the ask is about the
+    account's future, and the triggering Legacy Contract opportunity is
+    typically already closed and not part of the rep's active pipeline
+    view. Due 7 days out, Status "Not Started", Priority "Normal" — fixed
+    conventions, not currently configurable per call.
+    """
+    access_token, instance_url = await get_salesforce_session()
+    url = f"{instance_url}/services/data/{SALESFORCE_API_VERSION}/sobjects/Task/"
+    activity_date = (date.today() + timedelta(days=7)).isoformat()
+
+    body = {
+        "WhatId": account_id,
+        "OwnerId": owner_id,
+        "Subject": subject,
+        "Description": description,
+        "ActivityDate": activity_date,
+        "Status": "Not Started",
+        "Priority": "Normal",
+    }
+
+    async with httpx.AsyncClient(timeout=30) as client:
+        response = await client.post(
+            url,
+            json=body,
+            headers={"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"},
+        )
+        if response.is_error:
+            raise RuntimeError(f"Task creation failed ({response.status_code}): {response.text}")
+        return response.json()
 
 
 if __name__ == "__main__":

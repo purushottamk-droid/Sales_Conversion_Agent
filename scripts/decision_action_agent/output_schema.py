@@ -31,6 +31,20 @@ class ActionRecord(BaseModel):
         description="Rep's full name, for readability in the audit trail"
     )
 
+    account_id: Optional[str] = Field(
+        default=None,
+        description=(
+            "Account identifier this action relates to — only set for "
+            "create_salesforce_task, which is per-account (0 to N per run), "
+            "unlike notify_manager/message_rep which are once per rep."
+        )
+    )
+
+    account_name: Optional[str] = Field(
+        default=None,
+        description="Account name, for readability — only set for create_salesforce_task"
+    )
+
     reason: str = Field(
         description="One sentence — why this action was taken or skipped"
     )

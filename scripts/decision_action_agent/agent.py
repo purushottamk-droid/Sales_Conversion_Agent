@@ -5,10 +5,11 @@ Decision & Action Agent — Rules to Real Systems
 
 WHAT THIS AGENT DOES:
   Reads the RepAssessmentResult (produced by the Account & Rep Assessment
-  Agent) from session state. Applies fixed decision rules and calls two
-  real-system tools (Gmail API) to notify the manager and message the rep.
-  A third tool (create_salesforce_task) exists as a placeholder but is not
-  used in the current flow.
+  Agent) from session state. Applies fixed decision rules and calls three
+  real-system tools: Gmail (notify_manager, message_rep) and a Salesforce
+  Task write (create_salesforce_task) — the last one fires per-account for
+  the expansion-whitespace signal (Rule 3), unlike the other two which
+  fire once per rep.
 
 SESSION STATE:
   Reads  → ctx.session.state["account_analysis_results"]  (RepAssessmentResult, previous agent)
@@ -38,7 +39,7 @@ decision_action_agent = LlmAgent(
     tools=[
         notify_manager_tool,
         message_rep_tool,
-        create_salesforce_task_tool,  # placeholder — not used in flow yet
+        create_salesforce_task_tool,
     ],
 
     output_key="actions_taken",

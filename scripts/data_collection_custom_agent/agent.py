@@ -2,17 +2,14 @@ from __future__ import annotations
 
 import asyncio
 import json
-import os
 from datetime import date
 
 from google.adk.agents import BaseAgent
 from google.adk.events import Event
 from google.adk.runners import InMemoryRunner
-from google.auth.transport import requests as google_auth_requests
 from google.cloud import bigquery
-from google.oauth2 import id_token
-from mcp import ClientSession
-from mcp.client.sse import sse_client
+
+from scripts.salesforce_mcp_client import call_salesforce_mcp_tool
 
 # ─────────────────────────────────────────────
 # CONFIG
@@ -49,42 +46,10 @@ MAX_RECENT_CALLS_PER_OPPORTUNITY = 5
 #
 # Access to our own server is gated by Cloud Run IAM, not Salesforce
 # OAuth — Salesforce auth (JWT Bearer) happens server-side, inside
-# salesforce_mcp_server. This client just needs a GCP identity token.
+# salesforce_mcp_server. The client-side connection logic (GCP identity
+# token + MCP session) is shared with decision_action_agent's tools, so it
+# lives in scripts/salesforce_mcp_client.py rather than duplicated here.
 # ─────────────────────────────────────────────
-
-async def _get_gcp_identity_token(audience: str) -> str:
-    """
-    Fetch a GCP identity token scoped to our own Cloud Run service's URL,
-    using this pipeline's Application Default Credentials.
-    """
-    loop = asyncio.get_event_loop()
-    return await loop.run_in_executor(
-        None, id_token.fetch_id_token, google_auth_requests.Request(), audience
-    )
-
-
-async def _call_salesforce_mcp_tool(tool_name: str, arguments: dict):
-    """
-    Open an MCP client session over SSE against our own salesforce_mcp_server
-    Cloud Run service, call one tool, and return its parsed result.
-    """
-    server_url = os.environ["SALESFORCE_MCP_SERVER_URL"]
-    identity_token = await _get_gcp_identity_token(server_url)
-
-    async with sse_client(server_url, headers={"Authorization": f"Bearer {identity_token}"}) as (read, write):
-        async with ClientSession(read, write) as session:
-            await session.initialize()
-            result = await session.call_tool(tool_name, arguments)
-
-    if result.isError:
-        raise RuntimeError(f"MCP tool {tool_name!r} returned an error: {result.content}")
-
-    # FastMCP populates structuredContent for tools with a typed return
-    # (list[dict]/dict, as both our tools have) — fall back to parsing the
-    # text content block as JSON if a server ever only returns that.
-    if result.structuredContent is not None:
-        return result.structuredContent
-    return json.loads(result.content[0].text)
 
 
 def _parse_date(value) -> date | None:
@@ -151,7 +116,7 @@ async def _get_opportunities_by_owner(sales_rep_id: str) -> list[dict]:
 
     Calls the get_opportunities_by_owner tool on our own salesforce_mcp_server.
     """
-    raw_rows = await _call_salesforce_mcp_tool("get_opportunities_by_owner", {"owner_id": sales_rep_id})
+    raw_rows = await call_salesforce_mcp_tool("get_opportunities_by_owner", {"owner_id": sales_rep_id})
     return [_normalize_opportunity(r) for r in raw_rows]
 
 
@@ -164,7 +129,7 @@ async def _get_stage_duration_benchmark() -> dict:
     Calls the get_stage_duration_benchmark tool on our own salesforce_mcp_server.
     """
     try:
-        return await _call_salesforce_mcp_tool("get_stage_duration_benchmark", {})
+        return await call_salesforce_mcp_tool("get_stage_duration_benchmark", {})
     except Exception as e:
         print(f"[DataCollectionAgent] WARNING: get_stage_duration_benchmark call failed ({e}) — "
               f"velocity comparison will be skipped for this run.")
@@ -189,7 +154,7 @@ async def _get_opportunities_by_account(account_id: str) -> list[dict]:
 
     Calls the get_opportunities_by_account tool on our own salesforce_mcp_server.
     """
-    raw_rows = await _call_salesforce_mcp_tool("get_opportunities_by_account", {"account_id": account_id})
+    raw_rows = await call_salesforce_mcp_tool("get_opportunities_by_account", {"account_id": account_id})
     return [_normalize_opportunity(r) for r in raw_rows]
 
 

@@ -25,6 +25,7 @@ Reads:
           communication_gaps: [ str ],
           risk_action,
           opportunity_action,
+          expansion_signal,
           analysis_summary
         }
       ]
@@ -70,7 +71,7 @@ From RepAssessmentResult (root):
 - key_suggestions[]                → 3-5 prioritized coaching/pipeline suggestions
 
 From RepAssessmentResult.accounts[] (per opportunity):
-- account_name, opportunity_name
+- account_id, account_name, opportunity_name
 - deal_health                      → healthy / at_risk / critical / stalled
 - conversion_score                 → 0-100
 - missed_commitments[]             → promises the rep has not fulfilled
@@ -78,6 +79,7 @@ From RepAssessmentResult.accounts[] (per opportunity):
 - communication_gaps[]             → topics customer raised that rep never addressed
 - risk_action                      → the single most urgent defensive action
 - opportunity_action               → offensive acceleration action (null if not applicable)
+- expansion_signal                 → proactive upside signal (null if not applicable) — used only by RULE 3, never a risk signal
 - analysis_summary                 → 2-3 sentence deal briefing
 
 ═══════════════════════════════════════════════════════
@@ -125,20 +127,51 @@ Call message_rep with:
 
 If rep_email is missing from session state: record SKIPPED, do not call tool.
 
+### RULE 3 — Expansion-whitespace task creation
+This rule is PER-ACCOUNT, unlike Rules 1 and 2 — evaluate it separately
+for every entry in RepAssessmentResult.accounts[].
+
+For each account where expansion_signal is non-null:
+  Call create_salesforce_task with:
+    - rep_id: from RepAssessmentResult root
+    - account_id, account_name: from this account entry
+    - subject: a short line naming the account and the whitespace, e.g.
+      "Expansion opportunity: {{account_name}} — Legacy Contract, no
+      Upsell/Cross-sell open"
+    - description: the expansion_signal text verbatim (or lightly condensed
+      if it exceeds a few sentences) — this becomes the Salesforce Task's
+      Description field, so keep it self-contained and actionable.
+
+For every account where expansion_signal IS null: record SKIPPED for that
+account, reason: "No expansion-whitespace signal for this account."
+
+If any account is missing account_id: do NOT call the tool for that
+account — record SKIPPED, reason: "account_id missing from session state."
+
+This rule can produce ZERO, ONE, or MANY ActionRecords depending on how
+many accounts have a populated expansion_signal — do not consolidate
+multiple accounts into one call, and do not skip the rule entirely just
+because zero accounts qualify (still record it as evaluated, with no
+entries, if that's the case — see FINAL OUTPUT).
+
 ═══════════════════════════════════════════════════════
 ## TOOL CALL ORDER — CRITICAL
 ═══════════════════════════════════════════════════════
 Call tools ONE AT A TIME — never batch multiple tools in one turn.
 1. Call notify_manager first. Wait for the result.
 2. Then call message_rep. Wait for the result.
-3. Only after both tool calls complete, return the final JSON output.
+3. Then call create_salesforce_task once per qualifying account (RULE 3),
+   in the order accounts appear in RepAssessmentResult.accounts[]. Wait
+   for each result before the next call.
+4. Only after all tool calls complete, return the final JSON output.
 
 ═══════════════════════════════════════════════════════
 ## TOOL CALL RULES
 ═══════════════════════════════════════════════════════
 - If a tool returns status "ERROR", reflect that accurately in the output —
   do not silently retry.
-- Never invent rep_id, rep_name, rep_email, or manager_email.
+- Never invent rep_id, rep_name, rep_email, manager_email, account_id, or
+  account_name.
 - Use ONLY the data in RepAssessmentResult — do not fabricate findings.
 
 ═══════════════════════════════════════════════════════
@@ -148,14 +181,17 @@ After ALL tool calls complete, return ONLY a valid JSON object — no prose:
 {{
   "actions": [
     {{
-      "type": "notify_manager or message_rep",
+      "type": "notify_manager or message_rep or create_salesforce_task",
       "status": "SENT or ERROR or SKIPPED",
       "rep_id": "...",
       "rep_name": "...",
+      "account_id": "... (create_salesforce_task only, else omit)",
+      "account_name": "... (create_salesforce_task only, else omit)",
       "reason": "one sentence — why this action was taken or skipped"
     }}
   ]
 }}
 Every rule evaluated must appear as one entry in the actions list,
-including SKIPPED ones. Return ONLY the JSON object.
+including SKIPPED ones — this includes one entry per account for RULE 3,
+even accounts where expansion_signal was null. Return ONLY the JSON object.
 """

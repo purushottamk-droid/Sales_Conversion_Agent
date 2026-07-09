@@ -4,9 +4,11 @@ scripts/decision_action_agent/tools.py
 Tools for the Decision & Action Agent (Agent 3 of the pipeline).
 
 Three tools:
-  1. notify_manager  — Gmail email to the manager about rep performance + recommended actions
-  2. message_rep     — Gmail email to the rep with a brief of key findings
-  3. create_salesforce_task — placeholder, not wired into the agent flow yet
+  1. notify_manager         — Gmail email to the manager about rep performance + recommended actions
+  2. message_rep            — Gmail email to the rep with a brief of key findings
+  3. create_salesforce_task — Salesforce Task anchored to an Account, for the
+                               expansion-whitespace nudge (Rule 3) — calls our
+                               own GCP-hosted salesforce_mcp_server
 
 rep_email and manager_email are pulled from session state — never invented by the model.
 """
@@ -17,6 +19,7 @@ from email.mime.text import MIMEText
 from google.adk.tools import FunctionTool, ToolContext
 
 from auth.auth import build_gmail_service
+from scripts.salesforce_mcp_client import call_salesforce_mcp_tool
 
 
 def _build_mime_email(to: str, subject: str, body_html: str) -> str:
@@ -160,28 +163,52 @@ async def message_rep(
 
 
 # ---------------------------------------------------------------------
-# TOOL 3 — Create Salesforce task (placeholder — not used in flow yet)
+# TOOL 3 — Create Salesforce task (Rule 3 — expansion-whitespace nudge)
 # ---------------------------------------------------------------------
 
 async def create_salesforce_task(
     rep_id: str,
-    opportunity_id: str,
+    account_id: str,
+    account_name: str,
     subject: str,
     description: str,
     tool_context: ToolContext,
 ) -> dict:
-    """Placeholder for creating a Salesforce task against an opportunity.
+    """Create a Salesforce Task for the expansion-whitespace signal
+    (account_analysis_agent's expansion_signal) — anchored to the Account
+    (WhatId), assigned to the rep (OwnerId = rep_id, which is already a
+    real Salesforce User ID — see data_collection_custom_agent).
 
-    NOT wired into the agent decision flow yet — implementation pending.
+    Calls the create_task tool on our own salesforce_mcp_server.
     """
-    # TODO: implement Salesforce API integration
-    return {
-        "status": "NOT_IMPLEMENTED",
-        "type": "create_salesforce_task",
-        "rep_id": rep_id,
-        "opportunity_id": opportunity_id,
-        "subject": subject,
-    }
+    try:
+        result = await call_salesforce_mcp_tool(
+            "create_task",
+            {
+                "account_id": account_id,
+                "owner_id": rep_id,
+                "subject": subject,
+                "description": description,
+            },
+        )
+        return {
+            "status": "SENT",
+            "type": "create_salesforce_task",
+            "rep_id": rep_id,
+            "account_id": account_id,
+            "account_name": account_name,
+            "subject": subject,
+            "task_id": result.get("id"),
+        }
+    except Exception as e:
+        return {
+            "status": "ERROR",
+            "type": "create_salesforce_task",
+            "rep_id": rep_id,
+            "account_id": account_id,
+            "account_name": account_name,
+            "error_message": str(e),
+        }
 
 
 # ---------------------------------------------------------------------
