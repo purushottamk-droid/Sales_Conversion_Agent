@@ -82,15 +82,12 @@ def _normalize_opportunity(raw: dict) -> dict:
         "account_id":                    raw.get("account_id"),
         "account_name":                  raw.get("account_name"),
         "industry":                      raw.get("industry"),
-        "account_segment":               raw.get("account_segment"),
         "opportunity_type":              raw.get("opportunity_type"),
         "current_stage":                 raw.get("current_stage"),
         "forecast_category":             raw.get("forecast_category"),
         "deal_value_arr":                raw.get("deal_value_arr"),
-        "discount_pct":                  raw.get("discount_pct"),
         "created_date":                  _parse_date(raw.get("created_date")),
         "close_date_target":             _parse_date(raw.get("close_date_target")),
-        "days_open":                     raw.get("days_open"),
         "current_stage_duration_days":   raw.get("current_stage_duration_days"),
         "days_since_last_touch":         raw.get("days_since_last_touch"),
         "next_step":                     raw.get("next_step"),
@@ -98,25 +95,28 @@ def _normalize_opportunity(raw: dict) -> dict:
         "cbi_raw_text":                  raw.get("cbi_raw_text"),
         "opportunity_manager_notes":     raw.get("opportunity_manager_notes"),
         "sales_rep_name":                raw.get("sales_rep_name"),
-        "opportunity_previous_solution": raw.get("opportunity_previous_solution"),
         "contact_name":                  raw.get("contact_name"),
         "contact_title":                 raw.get("contact_title"),
         "is_won":                        bool(raw.get("is_won")),
         "is_closed":                     bool(raw.get("is_closed")),
+        "owner_id":                      raw.get("owner_id"),
     }
 
 
-async def _get_opportunities_by_owner(sales_rep_id: str) -> list[dict]:
+async def _get_opportunities_by_rep_name(sales_rep_name: str) -> list[dict]:
     """
     Replaces the 3 owner-scoped BigQuery queries this file used to run
     against Salesforce (identity lookup, attainment sum, open-pipeline
-    fetch). Fetched once here and reused by _resolve_rep_name /
-    _compute_attainment_from_opportunities / _filter_open_pipeline below,
-    instead of 3 separate round trips.
+    fetch). Fetched once here and reused by _compute_attainment_from_opportunities /
+    _filter_open_pipeline below, instead of 3 separate round trips.
 
-    Calls the get_opportunities_by_owner tool on our own salesforce_mcp_server.
+    Scoped by Sales_Rep_Name__c, not OwnerId — every Opportunity in this
+    org shares one OwnerId (a shared/integration user), so OwnerId can't
+    identify an individual rep; Sales_Rep_Name__c is the real per-rep field.
+
+    Calls the get_opportunities_by_rep_name tool on our own salesforce_mcp_server.
     """
-    result = await call_salesforce_mcp_tool("get_opportunities_by_owner", {"owner_id": sales_rep_id})
+    result = await call_salesforce_mcp_tool("get_opportunities_by_rep_name", {"rep_name": sales_rep_name})
     return [_normalize_opportunity(r) for r in result["opportunities"]]
 
 
@@ -195,16 +195,6 @@ async def _build_expansion_whitespace_map(pipeline_opps: list[dict]) -> dict[str
 # SQL used to do server-side, now applied to the one fetched opportunity list.
 # ─────────────────────────────────────────────
 
-def _resolve_rep_name(opportunities: list[dict], gong_fallback_name: str | None) -> str | None:
-    """Same precedence as before: Salesforce (now MCP) first, Gong fallback
-    only if the rep currently owns no opportunities."""
-    if opportunities:
-        first_name = opportunities[0].get("sales_rep_name")
-        if first_name:
-            return first_name
-    return gong_fallback_name
-
-
 def _shift_months(d: date, months: int) -> date:
     month_index = d.month - 1 + months
     year = d.year + month_index // 12
@@ -262,23 +252,6 @@ def _filter_open_pipeline(opportunities: list[dict]) -> list[dict]:
 # ─────────────────────────────────────────────
 # EVERSTAGE + GONG — unchanged, still BigQuery
 # ─────────────────────────────────────────────
-
-def _fetch_rep_name_from_gong_sync(sales_rep_id: str) -> str | None:
-    """Fallback rep-name lookup from Gong — used only when the rep
-    currently owns no Salesforce opportunities."""
-    client = bigquery.Client(project=GCP_PROJECT_ID)
-    query = f"""
-        SELECT SALES_REP_NAME AS rep_name
-        FROM `{TABLE_GONG}`
-        WHERE PRIMARY_USER_ID = @sales_rep_id
-        LIMIT 1
-    """
-    job_config = bigquery.QueryJobConfig(
-        query_parameters=[bigquery.ScalarQueryParameter("sales_rep_id", "STRING", sales_rep_id)]
-    )
-    rows = list(client.query(query, job_config=job_config).result())
-    return rows[0]["rep_name"] if rows else None
-
 
 def _fetch_everstage_sync(rep_name: str) -> dict:
     """
@@ -485,7 +458,6 @@ def build_gong_analytics(calls: list[dict]) -> dict:
 
 
 def build_opportunity_payload(opp: dict, stage_benchmarks: dict, calls_by_opp: dict) -> dict:
-    days_open = opp.get("days_open")
     stage_duration = opp.get("current_stage_duration_days")
     benchmark = stage_benchmarks.get(opp.get("current_stage"))
 
@@ -499,9 +471,7 @@ def build_opportunity_payload(opp: dict, stage_benchmarks: dict, calls_by_opp: d
         "current_stage": opp.get("current_stage"),
         "forecast_category": opp.get("forecast_category"),
         "deal_value_arr": opp.get("deal_value_arr") or 0,
-        "discount_pct": opp.get("discount_pct"),
         "timeline_and_velocity": {
-            "days_open": days_open,
             "current_stage_duration_days": stage_duration,
             "historical_stage_benchmark_days": benchmark,
             "close_date_target": opp.get("close_date_target").isoformat() if opp.get("close_date_target") else None,
@@ -518,7 +488,6 @@ def build_opportunity_payload(opp: dict, stage_benchmarks: dict, calls_by_opp: d
                 f"Salesforce contact of record: {opp.get('contact_name')} "
                 f"({opp.get('contact_title')})" if opp.get("contact_name") else None
             ),
-            "previous_solution": opp.get("opportunity_previous_solution"),
             "manager_notes": opp.get("opportunity_manager_notes"),
         },
         "engagement_signals": {
@@ -531,9 +500,16 @@ def build_opportunity_payload(opp: dict, stage_benchmarks: dict, calls_by_opp: d
     }
 
 
-def build_rep_profile(sales_rep_id: str, everstage: dict, attainment_actuals: dict,
+def build_rep_profile(rep_id: str | None, everstage: dict, attainment_actuals: dict,
                        pipeline_opps: list[dict], stage_benchmarks: dict,
                        gong_calls: list[dict], expansion_whitespace_map: dict[str, bool]) -> dict:
+    """
+    rep_id here is a real Salesforce User Id (from Opportunity.OwnerId),
+    resolved from this rep's own fetched opportunities purely so
+    decision_action_agent has a valid Id to assign Salesforce Tasks to —
+    it is NOT unique per rep in this org (every Opportunity shares one
+    OwnerId), unlike rep_name below, which is the actual per-rep identity.
+    """
 
     historical_targets = build_historical_targets(everstage)
     quota_attainment = build_quota_attainment(everstage, attainment_actuals, pipeline_opps)
@@ -550,13 +526,12 @@ def build_rep_profile(sales_rep_id: str, everstage: dict, attainment_actuals: di
             "account_id": opp.get("account_id"),
             "account_name": opp.get("account_name"),
             "industry": opp.get("industry"),
-            "account_segment": opp.get("account_segment"),
             "has_expansion_opportunity": expansion_whitespace_map.get(opp.get("account_id"), False),
             "opportunity_data": build_opportunity_payload(opp, stage_benchmarks, calls_by_opp),
         })
 
     return {
-        "rep_id": sales_rep_id,
+        "rep_id": rep_id,
         "rep_name": everstage.get("rep_name"),
         "rep_experience_tier": everstage.get("rep_experience_tier"),
         "historical_targets": historical_targets,
@@ -577,7 +552,7 @@ class DataCollectionAgent(BaseAgent):
     """
     Agent 1 — Custom non-LLM data collection agent.
 
-    Input  (session state): sales_rep_id
+    Input  (session state): sales_rep_name
     Output (session state):
         rep_performance_profile → full nested JSON (rep + quota + pipeline +
                                     per-account/opportunity + Gong analytics)
@@ -585,40 +560,46 @@ class DataCollectionAgent(BaseAgent):
 
     Salesforce data now comes from an MCP server (see the MCP section
     above) instead of BigQuery. Everstage and Gong are unchanged.
+
+    Scoped by Sales_Rep_Name__c, not a Salesforce User Id — every
+    Opportunity in this org shares one OwnerId (a shared/integration
+    user), so OwnerId can't identify an individual rep. Sales_Rep_Name__c
+    is the real per-rep field, so it's the input this agent takes directly
+    (no more resolving a name from an id — the caller already has it).
     """
 
     async def _run_async_impl(self, ctx):
 
-        sales_rep_id: str = ctx.session.state.get("sales_rep_id")
-        if not sales_rep_id:
-            raise ValueError("sales_rep_id not found in session state")
+        sales_rep_name: str = ctx.session.state.get("sales_rep_name")
+        if not sales_rep_name:
+            raise ValueError("sales_rep_name not found in session state")
 
-        print(f"\n[DataCollectionAgent] Starting for rep: {sales_rep_id}")
+        print(f"\n[DataCollectionAgent] Starting for rep: {sales_rep_name}")
 
         # Step 1: fetch this rep's full opportunity list from the Salesforce
-        # MCP server, and the Gong-fallback rep-name lookup, in parallel.
-        # The MCP fetch replaces 3 separate BigQuery queries (identity,
-        # attainment, pipeline) — all three are now derived below from this
-        # one list instead of separate round trips.
-        opportunities, gong_fallback_name = await asyncio.gather(
-            _get_opportunities_by_owner(sales_rep_id),
-            _run(_fetch_rep_name_from_gong_sync, sales_rep_id),
-        )
-        rep_name = _resolve_rep_name(opportunities, gong_fallback_name)
-        if not rep_name:
-            print(f"[DataCollectionAgent] WARNING: could not resolve rep_name for {sales_rep_id}")
-
-        # Step 2: Everstage targets (BigQuery, needs rep_name resolved above)
-        # and the stage-duration benchmark (MCP, org-wide) in parallel.
-        everstage, stage_benchmarks = await asyncio.gather(
-            _run(_fetch_everstage_sync, rep_name),
+        # MCP server, Everstage targets (BigQuery), and the org-wide
+        # stage-duration benchmark (MCP), all in parallel — rep_name is
+        # already known, no resolution step needed before the Everstage fetch.
+        opportunities, everstage, stage_benchmarks = await asyncio.gather(
+            _get_opportunities_by_rep_name(sales_rep_name),
+            _run(_fetch_everstage_sync, sales_rep_name),
             _get_stage_duration_benchmark(),
         )
 
         attainment_actuals = _compute_attainment_from_opportunities(opportunities)
         pipeline_opps = _filter_open_pipeline(opportunities)
 
-        # Step 3: Gong calls, scoped to the open opportunities just resolved
+        # A real Salesforce User Id for decision_action_agent to assign
+        # Tasks to — see build_rep_profile's docstring for why this can't
+        # be per-rep. Derived from whichever opportunities this rep has,
+        # falling back to the full (unfiltered) fetch if none are open.
+        owner_source = pipeline_opps or opportunities
+        rep_id = owner_source[0].get("owner_id") if owner_source else None
+        if not rep_id:
+            print(f"[DataCollectionAgent] WARNING: could not resolve a Salesforce owner_id for "
+                  f"{sales_rep_name} — this rep has zero opportunities in the org.")
+
+        # Step 2: Gong calls, scoped to the open opportunities just resolved
         # (unchanged — still BigQuery), and the expansion-whitespace check
         # per unique account (MCP, not owner-scoped), in parallel.
         opportunity_ids = [o["opportunity_id"] for o in pipeline_opps if o.get("opportunity_id")]
@@ -630,9 +611,9 @@ class DataCollectionAgent(BaseAgent):
         print(f"[DataCollectionAgent] Fetched → "
               f"open_opps={len(pipeline_opps)} | gong_calls={len(gong_calls)}")
 
-        # Step 4: assemble final nested profile
+        # Step 3: assemble final nested profile
         rep_performance_profile = build_rep_profile(
-            sales_rep_id, everstage, attainment_actuals,
+            rep_id, everstage, attainment_actuals,
             pipeline_opps, stage_benchmarks, gong_calls, expansion_whitespace_map,
         )
 
@@ -662,7 +643,7 @@ async def test():
     session = await session_service.create_session(
         app_name="sales_rep_pipeline",
         user_id="test_user",
-        state={"sales_rep_id": "005DMO000000000300000"},  # Maya Chen
+        state={"sales_rep_name": "Maya Chen"},
     )
 
     async for event in runner.run_async(

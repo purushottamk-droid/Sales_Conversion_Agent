@@ -15,16 +15,16 @@ def ACCOUNT_ANALYSIS_PROMPT(ctx) -> str:
         active_pipeline:    { total_open_pipeline_arr, open_opportunity_count },
         assigned_accounts: [
           {
-            account_id, account_name, industry, account_segment,
+            account_id, account_name, industry,
             has_expansion_opportunity,
             opportunity_data: {
               opportunity_id, opportunity_name, opportunity_type,
-              current_stage, forecast_category, deal_value_arr, discount_pct,
-              timeline_and_velocity: { days_open, current_stage_duration_days,
+              current_stage, forecast_category, deal_value_arr,
+              timeline_and_velocity: { current_stage_duration_days,
                 historical_stage_benchmark_days, close_date_target,
                 target_date_pushes },
               critical_business_issue: { cbi_identified, quantified_impact,
-                buyer_alignment, previous_solution, manager_notes },
+                buyer_alignment, manager_notes },
               engagement_signals: { days_since_last_touch, next_scheduled_event },
               risks, next_step,
               gong_interaction_analytics: {
@@ -71,7 +71,7 @@ REP_PERFORMANCE_PROFILE:
 - active_pipeline.open_opportunity_count               → count of open deals
 
 ### Salesforce opportunity fields, per assigned_accounts[i] (PRIMARY — reason from these first):
-- account_id, account_name, industry, account_segment
+- account_id, account_name, industry
 - has_expansion_opportunity → true if this account already has a Migration/
   Upsell/Cross Sell opportunity open anywhere (any owner) — used only by
   STEP 7 (expansion_signal), not a risk signal
@@ -80,8 +80,6 @@ REP_PERFORMANCE_PROFILE:
 - opportunity_data.current_stage      → current deal stage
 - opportunity_data.forecast_category  → Salesforce forecast category, additional signal only
 - opportunity_data.deal_value_arr     → ARR value of this deal
-- opportunity_data.discount_pct       → discount already offered
-- opportunity_data.timeline_and_velocity.days_open
 - opportunity_data.timeline_and_velocity.current_stage_duration_days
 - opportunity_data.timeline_and_velocity.historical_stage_benchmark_days
     → compare current_stage_duration_days to this: well past benchmark = stalling signal
@@ -89,7 +87,6 @@ REP_PERFORMANCE_PROFILE:
 - opportunity_data.critical_business_issue.cbi_identified   → the business problem driving this deal
 - opportunity_data.critical_business_issue.quantified_impact → $ or % impact of the problem, if known
 - opportunity_data.critical_business_issue.buyer_alignment  → who on the buyer side is engaged
-- opportunity_data.critical_business_issue.previous_solution → what they use/used today
 - opportunity_data.critical_business_issue.manager_notes    → the rep's own manager's notes on this deal
 - opportunity_data.engagement_signals.days_since_last_touch
 - opportunity_data.engagement_signals.next_scheduled_event
@@ -245,7 +242,7 @@ If conditions are not met, leave opportunity_action as null.
 ### STEP 7 — expansion_signal (proactive, NOT risk-based)
 ─────────────────────────────────────────────────────
 ONLY populate when BOTH of the following are true:
-  (a) This opportunity's opportunity_type is exactly "Legacy Contract"
+  (a) This opportunity's opportunity_type is exactly "6 - Legacy Contract"
   (b) has_expansion_opportunity (at the account level) is false
 
 When populated:

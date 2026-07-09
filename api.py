@@ -36,7 +36,7 @@ runner = Runner(
 
 class CreateSessionRequest(BaseModel):
     user_id: str
-    sales_rep_id: str
+    sales_rep_name: str
     rep_email: str
     manager_email: str
 
@@ -100,7 +100,10 @@ async def healthz():
 async def create_session(req: CreateSessionRequest):
     """
     Creates a session and seeds rep identity fields upfront:
-    - sales_rep_id  → Agent 1 uses this to query BigQuery
+    - sales_rep_name → Agent 1 uses this to query Salesforce (Sales_Rep_Name__c)
+                        and Everstage (REP_NAME) — Salesforce OwnerId can't
+                        identify an individual rep in this org, so the rep's
+                        name is the real per-rep key, not an Id.
     - rep_email     → Agent 4 uses this to message the rep
     - manager_email → Agent 4 uses this to notify the manager
     Call this FIRST before /agent/run.
@@ -109,7 +112,7 @@ async def create_session(req: CreateSessionRequest):
         app_name="sales_rep_pipeline",
         user_id=req.user_id,
         state={
-            "sales_rep_id":  req.sales_rep_id,
+            "sales_rep_name": req.sales_rep_name,
             "rep_email":     req.rep_email,
             "manager_email": req.manager_email,
         },

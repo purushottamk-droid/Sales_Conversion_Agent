@@ -27,7 +27,7 @@ except ImportError:
 from .salesforce_auth import get_salesforce_session
 from .soql import (
     build_opportunities_by_account_soql,
-    build_opportunities_by_owner_soql,
+    build_opportunities_by_rep_name_soql,
     build_stage_benchmark_soql,
     parse_opportunity_record,
 )
@@ -67,10 +67,13 @@ async def _run_soql(soql: str) -> list[dict]:
 
 
 @mcp.tool()
-async def get_opportunities_by_owner(owner_id: str) -> dict:
-    """Return every opportunity owned by this Salesforce user ID, in this
-    pipeline's clean field-name shape (see soql.FIELD_MAP), as
-    {"opportunities": [...]}.
+async def get_opportunities_by_rep_name(rep_name: str) -> dict:
+    """Return every opportunity belonging to this rep, in this pipeline's
+    clean field-name shape (see soql.FIELD_MAP), as {"opportunities": [...]}.
+
+    Scoped by Sales_Rep_Name__c, not OwnerId — every Opportunity in this
+    org shares one OwnerId (a shared/integration user), so OwnerId can't
+    identify an individual rep. Sales_Rep_Name__c is the real per-rep field.
 
     Wrapped in a dict rather than returned as a bare list — FastMCP emits
     one MCP content block PER LIST ITEM for bare list[...] return types
@@ -79,7 +82,7 @@ async def get_opportunities_by_owner(owner_id: str) -> dict:
     content[0]). Wrapping in a dict keeps the response as a single JSON
     object/content block regardless of list length.
     """
-    records = await _run_soql(build_opportunities_by_owner_soql(owner_id))
+    records = await _run_soql(build_opportunities_by_rep_name_soql(rep_name))
     return {"opportunities": [parse_opportunity_record(r) for r in records]}
 
 
@@ -88,7 +91,7 @@ async def get_opportunities_by_account(account_id: str) -> dict:
     """Return every opportunity on this Salesforce account ID, regardless
     of owner or open/closed status — used for expansion-whitespace
     detection, a different question than "this rep's own open pipeline."
-    Returns {"opportunities": [...]} — see get_opportunities_by_owner for
+    Returns {"opportunities": [...]} — see get_opportunities_by_rep_name for
     why this is a dict, not a bare list."""
     records = await _run_soql(build_opportunities_by_account_soql(account_id))
     return {"opportunities": [parse_opportunity_record(r) for r in records]}

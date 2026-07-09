@@ -42,7 +42,6 @@ async def test():
                         "account_id": "001DMO000000000200000",
                         "account_name": "Pioneer Logistics",
                         "industry": "Logistics",
-                        "account_segment": "Mid-Market",
                         "has_expansion_opportunity": False,
                         "opportunity_data": {
                             "opportunity_id": "006DMO000000000100000",
@@ -51,9 +50,7 @@ async def test():
                             "current_stage": "Evaluation",
                             "forecast_category": "Best Case",
                             "deal_value_arr": 18000,
-                            "discount_pct": 0,
                             "timeline_and_velocity": {
-                                "days_open": 34,
                                 "current_stage_duration_days": 12,
                                 "historical_stage_benchmark_days": 9,
                                 "close_date_target": "2026-07-25",
@@ -63,7 +60,6 @@ async def test():
                                 "cbi_identified": "Manual QA process causing shipment delays",
                                 "quantified_impact": "~$40K/month in late-delivery penalties",
                                 "buyer_alignment": "Salesforce contact of record: Dana Whit (VP Operations)",
-                                "previous_solution": "Spreadsheet-based tracking",
                                 "manager_notes": None,
                             },
                             "engagement_signals": {
@@ -100,18 +96,15 @@ async def test():
                         "account_id": "001DMO000000000300000",
                         "account_name": "Meridian Health Systems",
                         "industry": "Healthcare",
-                        "account_segment": "Enterprise",
                         "has_expansion_opportunity": False,
                         "opportunity_data": {
                             "opportunity_id": "006DMO000000000200000",
                             "opportunity_name": "Meridian Health Systems - Legacy Renewal",
-                            "opportunity_type": "Legacy Contract",
+                            "opportunity_type": "6 - Legacy Contract",
                             "current_stage": "Closed Won",
                             "forecast_category": "Closed",
                             "deal_value_arr": 12000,
-                            "discount_pct": None,
                             "timeline_and_velocity": {
-                                "days_open": None,
                                 "current_stage_duration_days": None,
                                 "historical_stage_benchmark_days": None,
                                 "close_date_target": "2024-01-15",
@@ -121,7 +114,6 @@ async def test():
                                 "cbi_identified": None,
                                 "quantified_impact": None,
                                 "buyer_alignment": "Salesforce contact of record: Priya Nair (Director of IT)",
-                                "previous_solution": None,
                                 "manager_notes": None,
                             },
                             "engagement_signals": {

@@ -14,7 +14,7 @@ from google.genai import types
 from scripts.SequentialAgent import root_agent
 
 
-async def run(sales_rep_id: str):
+async def run(sales_rep_name: str):
     runner = InMemoryRunner(
         agent=root_agent,
         app_name="sales_rep_pipeline",
@@ -24,13 +24,13 @@ async def run(sales_rep_id: str):
         app_name="sales_rep_pipeline",
         user_id="test_user",
         state={
-            "sales_rep_id": sales_rep_id,
+            "sales_rep_name": sales_rep_name,
             "rep_email": "kakadetalent@gmail.com",
             "manager_email": "kakade007k@gmail.com",
         }
     )
 
-    print(f"\n── Running pipeline for rep: {sales_rep_id} ──\n")
+    print(f"\n── Running pipeline for rep: {sales_rep_name} ──\n")
 
     start_time = time.time()
     agent_times = {}
@@ -103,4 +103,4 @@ async def run(sales_rep_id: str):
 
 
 if __name__ == "__main__":
-    asyncio.run(run("005DMO000000000300000"))  # Maya Chen's rep ID
+    asyncio.run(run("Maya Chen"))

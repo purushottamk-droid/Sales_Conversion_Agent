@@ -153,7 +153,7 @@ class AccountAnalysisResult(BaseModel):
         default=None,
         description=(
             "Populate ONLY when this opportunity's opportunity_type is "
-            "'Legacy Contract' AND has_expansion_opportunity is false — i.e. "
+            "'6 - Legacy Contract' AND has_expansion_opportunity is false — i.e. "
             "this account has no Migration/Upsell/Cross Sell opportunity open "
             "anywhere else. Name the account, state it's on a Legacy Contract "
             "with no expansion opportunity open, and suggest opening one — cite "

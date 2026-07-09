@@ -28,10 +28,8 @@ from .soql import FIELD_MAP
 SALESFORCE_API_VERSION = "v60.0"
 SAMPLE_SIZE = 100
 
-_MISSING_FIELDS = {"account_segment", "discount_pct", "days_open", "current_stage_duration_days"}
-
 # clean_name -> field path, plus the two undecided alternative candidates
-FIELDS_TO_CHECK = {k: v for k, v in FIELD_MAP.items() if k not in _MISSING_FIELDS}
+FIELDS_TO_CHECK = dict(FIELD_MAP)
 FIELDS_TO_CHECK["deal_value_arr__ARR__c_alt"] = "ARR__c"
 FIELDS_TO_CHECK["next_step__Next_Step__c_alt"] = "Next_Step__c"
 
