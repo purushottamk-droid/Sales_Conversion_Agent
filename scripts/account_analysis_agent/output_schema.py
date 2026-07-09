@@ -52,6 +52,10 @@ class AccountAnalysisResult(BaseModel):
         description="Name of this specific opportunity"
     )
 
+    opportunity_type:str = Field(
+        description="Opportunity type from the data"
+    )
+
     # ------------------------------------------------------------------
     # Recent Gong context
     # ------------------------------------------------------------------

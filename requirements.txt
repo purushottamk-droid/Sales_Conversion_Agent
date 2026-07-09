@@ -12,3 +12,5 @@ pydantic
 
 # ── Environment variables ────────────────────────────
 python-dotenv
+
+mcp

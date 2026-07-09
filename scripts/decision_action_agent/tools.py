@@ -6,17 +6,43 @@ Tools for the Decision & Action Agent (Agent 3 of the pipeline).
 Three tools:
   1. notify_manager  — Gmail email to the manager about rep performance + recommended actions
   2. message_rep     — Gmail email to the rep with a brief of key findings
-  3. create_salesforce_task — placeholder, not wired into the agent flow yet
+  3. create_salesforce_task — creates a Salesforce Task via the Salesforce
+     MCP server's create_task tool (Cloud Run endpoint, SSE, no client-side
+     auth — the endpoint handles authentication itself)
 
-rep_email and manager_email are pulled from session state — never invented by the model.
+rep_email and manager_email are pulled from session state — never invented
+by the model.
 """
 
 import base64
+import json
+import os
 from email.mime.text import MIMEText
 
 from google.adk.tools import FunctionTool, ToolContext
+from mcp import ClientSession
+from mcp.client.sse import sse_client
 
 from auth.auth import build_gmail_service
+
+# Same Salesforce MCP server (Cloud Run, SSE, no client-side auth) used by
+# the Data Collection Agent — see scripts/data_collection_agent/agent.py's
+# MCP_SALESFORCE_SERVER_URL / _call_mcp_tool for the reference pattern.
+MCP_SALESFORCE_SERVER_URL = os.environ.get("MCP_SALESFORCE_SERVER_URL", "https://your-cloud-run-service-url/sse")
+
+
+async def _call_mcp_tool(tool_name: str, arguments: dict) -> dict:
+    """Opens an SSE session to the Salesforce MCP server, calls one tool,
+    and returns its parsed JSON result. No auth headers — the Cloud Run
+    endpoint handles authentication itself. Mirrors the Data Collection
+    Agent's _call_mcp_tool helper."""
+    async with sse_client(MCP_SALESFORCE_SERVER_URL) as (read, write):
+        async with ClientSession(read, write) as session:
+            await session.initialize()
+            result = await session.call_tool(tool_name, arguments)
+            if result.isError:
+                raise RuntimeError(f"MCP tool '{tool_name}' returned an error: {result.content}")
+            return json.loads(result.content[0].text)
 
 
 def _build_mime_email(to: str, subject: str, body_html: str) -> str:
@@ -160,28 +186,52 @@ async def message_rep(
 
 
 # ---------------------------------------------------------------------
-# TOOL 3 — Create Salesforce task (placeholder — not used in flow yet)
+# TOOL 3 — Create Salesforce task (Salesforce MCP server, create_task)
 # ---------------------------------------------------------------------
 
 async def create_salesforce_task(
     rep_id: str,
-    opportunity_id: str,
+    account_id: str,
     subject: str,
     description: str,
     tool_context: ToolContext,
 ) -> dict:
-    """Placeholder for creating a Salesforce task against an opportunity.
+    """Create a Salesforce Task via the Salesforce MCP server's create_task
+    tool. Anchored to the Account (not a specific Opportunity) — matches
+    create_task's own design on the server side. rep_id is passed through
+    as the task owner (OwnerId).
 
-    NOT wired into the agent decision flow yet — implementation pending.
+    WHEN THIS TOOL SHOULD BE CALLED, AND WITH WHAT ARGUMENTS, IS DECIDED BY
+    THE AGENT'S PROMPT — see prompt.py's placeholder rule. This tool itself
+    has no judgment; it just executes the create_task call it's given.
     """
-    # TODO: implement Salesforce API integration
-    return {
-        "status": "NOT_IMPLEMENTED",
-        "type": "create_salesforce_task",
-        "rep_id": rep_id,
-        "opportunity_id": opportunity_id,
-        "subject": subject,
-    }
+    try:
+        mcp_result = await _call_mcp_tool(
+            "create_task",
+            {
+                "account_id": account_id,
+                "owner_id": rep_id,
+                "subject": subject,
+                "description": description,
+            },
+        )
+        return {
+            "status": "SENT",
+            "type": "create_salesforce_task",
+            "rep_id": rep_id,
+            "account_id": account_id,
+            "subject": subject,
+            "salesforce_task_id": mcp_result.get("id"),
+        }
+
+    except Exception as e:
+        return {
+            "status": "ERROR",
+            "type": "create_salesforce_task",
+            "rep_id": rep_id,
+            "account_id": account_id,
+            "error_message": str(e),
+        }
 
 
 # ---------------------------------------------------------------------

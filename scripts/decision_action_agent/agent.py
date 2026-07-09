@@ -6,9 +6,11 @@ Decision & Action Agent — Rules to Real Systems
 WHAT THIS AGENT DOES:
   Reads AllAccountsAnalysisResult from session state (produced by the
   Account & Rep Assessment Agent). Applies fixed decision rules and calls
-  two real-system tools (Gmail API) to notify the manager and message the rep.
-  A third tool (create_salesforce_task) exists as a placeholder but is not
-  used in the current flow.
+  real-system tools: two Gmail API tools (notify the manager, message the
+  rep) and one Salesforce MCP tool (create_salesforce_task, backed by the
+  Salesforce MCP server's create_task). create_salesforce_task fires once
+  per opportunity with opportunity_type "Legacy Contract" (RULE 3 in
+  prompt.py).
 
 SESSION STATE:
   Reads  → ctx.session.state["AllAccountsAnalysisResult"]  (previous agent)
@@ -38,7 +40,7 @@ decision_action_agent = LlmAgent(
     tools=[
         notify_manager_tool,
         message_rep_tool,
-        create_salesforce_task_tool,  # placeholder — not used in flow yet
+        create_salesforce_task_tool,  # MCP-backed (Salesforce create_task) — fires per RULE 3 (opportunity_type == "Legacy Contract")
     ],
 
     output_key="actions_taken",

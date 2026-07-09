@@ -1,10 +1,15 @@
 import asyncio
 import json
+import os
 from datetime import date
+
+import httpx
 from google.adk.agents import BaseAgent
 from google.adk.events import Event
 from google.adk.runners import InMemoryRunner
 from google.cloud import bigquery
+from mcp import ClientSession
+from mcp.client.sse import sse_client
 
 # ─────────────────────────────────────────────
 # CONFIG
@@ -13,11 +18,15 @@ GCP_PROJECT_ID = "atgeir-moae-dev"
 DATASET_ID     = "Agentic_AI_Demo"
 
 TABLE_EVERSTAGE  = f"{GCP_PROJECT_ID}.{DATASET_ID}.Everstage_Data"
-TABLE_SALESFORCE = f"{GCP_PROJECT_ID}.{DATASET_ID}.Salesforce_Sales_Recipe_Data"
 TABLE_GONG       = f"{GCP_PROJECT_ID}.{DATASET_ID}.Gong_Calls_Data"
 
-# Opportunity data window (per requirement: opportunity data from 2026-01-01 only)
-PIPELINE_START_DATE = "2026-01-01"
+# Salesforce data (opportunities, stage benchmarks, rep-name lookup,
+# closed-won attainment) now comes from the custom Salesforce MCP server
+# (salesforce_mcp_server/server.py), deployed as a Cloud Run endpoint,
+# reached over SSE — NOT from BigQuery. No client-side auth token is sent;
+# the Cloud Run endpoint handles authentication itself. Only Gong and
+# Everstage remain on BigQuery.
+MCP_SALESFORCE_SERVER_URL = os.environ.get("MCP_SALESFORCE_SERVER_URL", "https://your-cloud-run-service-url/sse")
 
 # Gong recency window — "last activity 1-2 months backwards"
 GONG_LOOKBACK_DAYS = 60
@@ -28,37 +37,66 @@ MAX_RECENT_CALLS_PER_OPPORTUNITY = 5
 
 
 # ─────────────────────────────────────────────
+# 0) MCP CLIENT — calls to the custom Salesforce MCP server
+# ─────────────────────────────────────────────
+
+async def _call_mcp_tool(tool_name: str, arguments: dict) -> dict:
+    """
+    Opens an SSE session to the Salesforce MCP server, calls one tool, and
+    returns its parsed JSON result. Every Salesforce tool on that server
+    (get_opportunities_by_owner, get_stage_duration_benchmark,
+    get_rep_name_by_owner, get_closed_won_attainment) returns its payload
+    as a single dict-shaped JSON content block — see server.py's tool
+    docstrings for why (FastMCP emits one content block per list item for
+    bare list[...] returns, so every tool wraps its payload in a dict).
+
+    A fresh session per call, rather than one held open across the whole
+    agent run, to keep this a simple drop-in replacement for the old
+    per-call BigQuery client — no shared connection lifecycle to manage
+    across the parallel asyncio.gather() calls below.
+
+    No auth headers are sent — the Cloud Run endpoint handles
+    authentication itself, confirmed by direct testing against it.
+    """
+    async with sse_client(MCP_SALESFORCE_SERVER_URL) as (read, write):
+        async with ClientSession(read, write) as session:
+            await session.initialize()
+            result = await session.call_tool(tool_name, arguments)
+            if result.isError:
+                raise RuntimeError(f"MCP tool '{tool_name}' returned an error: {result.content}")
+            # Tool payloads are a single TextContent block containing JSON
+            # (see server.py — everything is wrapped in a dict for this
+            # reason), so content[0].text is the whole result.
+            return json.loads(result.content[0].text)
+
+
+# ─────────────────────────────────────────────
 # 1) REP IDENTITY  (sales_rep_id -> rep_name, used to join Everstage)
 # ─────────────────────────────────────────────
 
-def _fetch_rep_identity_sync(sales_rep_id: str) -> dict:
+async def _fetch_rep_identity_mcp(sales_rep_id: str) -> dict:
     """
     sales_rep_id is the Salesforce Owner ID (same ID used as Gong
     PRIMARY_USER_ID / SALES_REP_ID). We resolve REP_NAME from Salesforce
-    first (source of truth for ownership), falling back to Gong.
+    first (source of truth for ownership), via the MCP get_rep_name_by_owner
+    tool, falling back to Gong (still BigQuery — Gong isn't MCP-backed).
     REP_NAME is what we use to join into Everstage (Everstage has no rep id).
     """
-    client = bigquery.Client(project=GCP_PROJECT_ID)
-    query = f"""
-        SELECT `Sales Rep Name` AS rep_name
-        FROM `{TABLE_SALESFORCE}`
-        WHERE `Opportunity Owner ID` = @sales_rep_id
-        LIMIT 1
-    """
-    job_config = bigquery.QueryJobConfig(
-        query_parameters=[bigquery.ScalarQueryParameter("sales_rep_id", "STRING", sales_rep_id)]
-    )
-    rows = list(client.query(query, job_config=job_config).result())
-    rep_name = rows[0]["rep_name"] if rows else None
+    mcp_result = await _call_mcp_tool("get_rep_name_by_owner", {"owner_id": sales_rep_id})
+    rep_name = mcp_result.get("rep_name")
 
     if not rep_name:
         # Fallback to Gong if this rep currently owns no Salesforce opps
+        client = bigquery.Client(project=GCP_PROJECT_ID)
         query2 = f"""
             SELECT SALES_REP_NAME AS rep_name
             FROM `{TABLE_GONG}`
             WHERE PRIMARY_USER_ID = @sales_rep_id
             LIMIT 1
         """
+        job_config = bigquery.QueryJobConfig(
+            query_parameters=[bigquery.ScalarQueryParameter("sales_rep_id", "STRING", sales_rep_id)]
+        )
         rows2 = list(client.query(query2, job_config=job_config).result())
         rep_name = rows2[0]["rep_name"] if rows2 else None
 
@@ -119,36 +157,18 @@ def _fetch_everstage_sync(rep_name: str) -> dict:
 # 3) SALESFORCE — closed-won ARR this month (attainment numerator)
 # ─────────────────────────────────────────────
 
-def _fetch_salesforce_attainment_sync(sales_rep_id: str) -> dict:
-    client = bigquery.Client(project=GCP_PROJECT_ID)
-    query = f"""
-    SELECT
-        SUM(CASE
-                WHEN DATE_TRUNC(`Opportunity Close Date`, MONTH) = DATE_TRUNC(CURRENT_DATE(), MONTH)
-                THEN `Opportunity ARR` ELSE 0
-            END) AS closed_won_arr_current_month,
-        SUM(CASE
-                WHEN `Opportunity Close Date` >= DATE_TRUNC(DATE_SUB(CURRENT_DATE(), INTERVAL 3 MONTH), MONTH)
-                THEN `Opportunity ARR` ELSE 0
-            END) AS closed_won_arr_trailing_3_months
-    FROM `{TABLE_SALESFORCE}`
-    WHERE `Opportunity Owner ID` = @sales_rep_id
-      AND `Opportunity is Won` = TRUE
-      AND `Opportunity Created Date` >= DATE(@pipeline_start)
-"""
-    job_config = bigquery.QueryJobConfig(
-        query_parameters=[
-            bigquery.ScalarQueryParameter("sales_rep_id", "STRING", sales_rep_id),
-            bigquery.ScalarQueryParameter("pipeline_start", "DATE", PIPELINE_START_DATE),
-        ]
-    )
-    rows = list(client.query(query, job_config=job_config).result())
-    if not rows:
-        return {"closed_won_arr_current_month": 0, "closed_won_arr_trailing_3_months": 0}
-    r = dict(rows[0])
+async def _fetch_salesforce_attainment_mcp(sales_rep_id: str) -> dict:
+    """
+    Closed-won ARR for this rep, current month + trailing 3 months, via the
+    MCP get_closed_won_attainment tool (see server.py / soql.py for the two
+    SOQL aggregate queries this wraps — SOQL has no SUM(CASE WHEN ...), so
+    the single BigQuery conditional-aggregation query this replaces became
+    two separate SOQL queries server-side).
+    """
+    mcp_result = await _call_mcp_tool("get_closed_won_attainment", {"owner_id": sales_rep_id})
     return {
-        "closed_won_arr_current_month": r.get("closed_won_arr_current_month") or 0,
-        "closed_won_arr_trailing_3_months": r.get("closed_won_arr_trailing_3_months") or 0,
+        "closed_won_arr_current_month": mcp_result.get("closed_won_arr_current_month") or 0,
+        "closed_won_arr_trailing_3_months": mcp_result.get("closed_won_arr_trailing_3_months") or 0,
     }
 
 
@@ -156,79 +176,40 @@ def _fetch_salesforce_attainment_sync(sales_rep_id: str) -> dict:
 # 4) SALESFORCE — open pipeline opportunities (the core per-account/opp data)
 # ─────────────────────────────────────────────
 
-def _fetch_salesforce_pipeline_sync(sales_rep_id: str) -> list[dict]:
+async def _fetch_salesforce_pipeline_mcp(sales_rep_id: str) -> list[dict]:
     """
-    "Still in pipeline" = not closed at all (Opportunity is Closed = FALSE),
-    which excludes both Closed Won and Closed Lost. This is the strict reading
-    of "not closed won, basically still open" — adjust the filter below if you
-    instead want to *include* Closed Lost rows.
+    "Still in pipeline" = not closed at all (is_closed is falsy), which
+    excludes both Closed Won and Closed Lost. This is the strict reading
+    of "not closed won, basically still open" — adjust the filter below if
+    you instead want to *include* Closed Lost rows.
+
+    get_opportunities_by_owner (MCP) returns every opportunity for this
+    owner, open and closed alike, already in this pipeline's clean
+    field-name shape (soql.FIELD_MAP / parse_opportunity_record) — so the
+    open/closed filter that used to live in the SQL WHERE clause is applied
+    here in Python instead.
+
+    Per requirement, the opportunity-created-date pipeline-start-date
+    filter that used to live in the BigQuery WHERE clause is intentionally
+    dropped here — not applied anywhere in this function anymore.
     """
-    client = bigquery.Client(project=GCP_PROJECT_ID)
-    query = f"""
-        SELECT
-            `Opportunity ID`                    AS opportunity_id,
-            `Opportunity Name`                  AS opportunity_name,
-            `Account ID`                        AS account_id,
-            `Account Name`                       AS account_name,
-            `Account Industry`                   AS industry,
-            `Account Segment`                    AS account_segment,
-            `Opportunity Type`                   AS opportunity_type,
-            `Opportunity Stage`                  AS current_stage,
-            `Opportunity Forecast Category`      AS forecast_category,
-            `Opportunity ARR`                    AS deal_value_arr,
-            `Opportunity Discount`               AS discount_pct,
-            `Opportunity Created Date`           AS created_date,
-            `Opportunity Close Date`             AS close_date_target,
-            `Opportunity Days in Pipeline`       AS days_open,
-            `Opportunity Days in Stage`          AS current_stage_duration_days,
-            `Opportunity Days Since Last Activity` AS days_since_last_touch,
-            `Opportunity Next Step`              AS next_step,
-            `Opportunity Risks`                  AS risks,
-            `Opportunity CBIs`                   AS cbi_raw_text,
-            `Opportunity Manager Notes`          AS opportunity_manager_notes,
-            `Sales Rep Name`                     AS sales_rep_name,
-            `Opportunity Previous Solution`      AS opportunity_previous_solution,
-            `Opportunity Contact Name`           AS contact_name,
-            `Opportunity Contact Title`          AS contact_title,
-        FROM `{TABLE_SALESFORCE}`
-        WHERE `Opportunity Owner ID` = @sales_rep_id
-          AND COALESCE(`Opportunity is Closed`, FALSE) = FALSE
-          AND `Opportunity Created Date` >= DATE(@pipeline_start)
-    """
-    job_config = bigquery.QueryJobConfig(
-        query_parameters=[
-            bigquery.ScalarQueryParameter("sales_rep_id", "STRING", sales_rep_id),
-            bigquery.ScalarQueryParameter("pipeline_start", "DATE", PIPELINE_START_DATE),
-        ]
-    )
-    results = client.query(query, job_config=job_config).result()
-    return [dict(row) for row in results]
+    mcp_result = await _call_mcp_tool("get_opportunities_by_owner", {"owner_id": sales_rep_id})
+    opportunities = mcp_result.get("opportunities", [])
+    return [opp for opp in opportunities if not opp.get("is_closed")]
 
 
 # ─────────────────────────────────────────────
 # 5) SALESFORCE — historical stage-duration benchmark (for velocity comparison)
 # ─────────────────────────────────────────────
 
-def _fetch_stage_benchmark_sync() -> dict:
-    """`Opportunity Previous Solution`
-    Benchmark = average `Opportunity Days in Stage` across all historically
-    Closed-Won opportunities, grouped by the stage they were won from.
-    This reuses the existing generic "Opportunity Days in Stage" column
-    rather than the per-stage Days-in-X columns, since that column already
-    captures time-in-current-stage per opportunity.
+async def _fetch_stage_benchmark_mcp() -> dict:
     """
-    client = bigquery.Client(project=GCP_PROJECT_ID)
-    query = f"""
-        SELECT
-            `Opportunity Stage` AS stage,
-            AVG(`Opportunity Days in Stage`) AS avg_days
-        FROM `{TABLE_SALESFORCE}`
-        WHERE `Opportunity is Won` = TRUE
-          AND `Opportunity Days in Stage` IS NOT NULL
-        GROUP BY stage
+    Benchmark = average days-in-stage across all historically Closed-Won
+    opportunities, grouped by the stage they were won from, via the MCP
+    get_stage_duration_benchmark tool. Already returned as {stage: avgDays}
+    (rounded server-side) — see server.py's get_stage_duration_benchmark.
     """
-    results = client.query(query).result()
-    return {row["stage"]: round(row["avg_days"], 1) for row in results if row["stage"]}
+    return await _call_mcp_tool("get_stage_duration_benchmark", {})
 
 
 # ─────────────────────────────────────────────
@@ -506,19 +487,22 @@ class DataCollectionAgent(BaseAgent):
 
         print(f"\n[DataCollectionAgent] Starting for rep: {sales_rep_id}")
 
-        # Step 1: resolve rep_name (needed to join Everstage)
-        identity = await _run(_fetch_rep_identity_sync, sales_rep_id)
+        # Step 1: resolve rep_name (needed to join Everstage) — Salesforce
+        # lookup now goes over MCP; Gong fallback (if any) stays on BigQuery
+        identity = await _fetch_rep_identity_mcp(sales_rep_id)
         rep_name = identity["rep_name"]
         if not rep_name:
             print(f"[DataCollectionAgent] WARNING: could not resolve rep_name for {sales_rep_id}")
 
         # Step 2: fetch Everstage targets, SFDC attainment actuals, SFDC pipeline,
-        #         and the stage benchmark table in parallel
+        #         and the stage benchmark table in parallel — Everstage stays on
+        #         BigQuery (_run sync-wrapped); the three Salesforce fetches are
+        #         now native async MCP calls, no _run wrapping needed
         everstage, attainment_actuals, pipeline_opps, stage_benchmarks = await asyncio.gather(
             _run(_fetch_everstage_sync, rep_name),
-            _run(_fetch_salesforce_attainment_sync, sales_rep_id),
-            _run(_fetch_salesforce_pipeline_sync, sales_rep_id),
-            _run(_fetch_stage_benchmark_sync),
+            _fetch_salesforce_attainment_mcp(sales_rep_id),
+            _fetch_salesforce_pipeline_mcp(sales_rep_id),
+            _fetch_stage_benchmark_mcp(),
         )
 
         # Step 3: fetch Gong calls, scoped to the open opportunities just fetched
