@@ -73,7 +73,13 @@ async def get_salesforce_session() -> tuple[str, str]:
                 "assertion": assertion,
             },
         )
-        response.raise_for_status()
+        if response.is_error:
+            # Salesforce's error body (e.g. {"error": "...", "error_description": "..."})
+            # is far more useful than raise_for_status()'s generic message —
+            # surface it directly rather than losing it.
+            raise RuntimeError(
+                f"Salesforce token exchange failed ({response.status_code}): {response.text}"
+            )
         payload = response.json()
 
     _session_cache["access_token"] = payload["access_token"]
