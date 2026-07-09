@@ -7,7 +7,9 @@ import httpx
 from google.adk.agents import BaseAgent
 from google.adk.events import Event
 from google.adk.runners import InMemoryRunner
+from google.auth.transport import requests as google_auth_requests
 from google.cloud import bigquery
+from google.oauth2 import id_token
 from mcp import ClientSession
 from mcp.client.sse import sse_client
 
@@ -23,9 +25,8 @@ TABLE_GONG       = f"{GCP_PROJECT_ID}.{DATASET_ID}.Gong_Calls_Data"
 # Salesforce data (opportunities, stage benchmarks, rep-name lookup,
 # closed-won attainment) now comes from the custom Salesforce MCP server
 # (salesforce_mcp_server/server.py), deployed as a Cloud Run endpoint,
-# reached over SSE — NOT from BigQuery. No client-side auth token is sent;
-# the Cloud Run endpoint handles authentication itself. Only Gong and
-# Everstage remain on BigQuery.
+# reached over SSE — NOT from BigQuery. Only Gong and Everstage remain on
+# BigQuery.
 MCP_SALESFORCE_SERVER_URL = os.environ.get("MCP_SALESFORCE_SERVER_URL", "https://your-cloud-run-service-url/sse")
 
 # Gong recency window — "last activity 1-2 months backwards"
@@ -39,6 +40,19 @@ MAX_RECENT_CALLS_PER_OPPORTUNITY = 5
 # ─────────────────────────────────────────────
 # 0) MCP CLIENT — calls to the custom Salesforce MCP server
 # ─────────────────────────────────────────────
+
+async def _get_gcp_identity_token(audience: str) -> str:
+    """
+    Fetch a GCP identity token scoped to our own Cloud Run service's URL,
+    using this pipeline's Application Default Credentials — required
+    because salesforce_mcp_server is deployed with --no-allow-unauthenticated
+    (Cloud Run IAM gated, confirmed via a real 403 without this token).
+    """
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(
+        None, id_token.fetch_id_token, google_auth_requests.Request(), audience
+    )
+
 
 async def _call_mcp_tool(tool_name: str, arguments: dict) -> dict:
     """
@@ -55,10 +69,11 @@ async def _call_mcp_tool(tool_name: str, arguments: dict) -> dict:
     per-call BigQuery client — no shared connection lifecycle to manage
     across the parallel asyncio.gather() calls below.
 
-    No auth headers are sent — the Cloud Run endpoint handles
-    authentication itself, confirmed by direct testing against it.
+    Sends a GCP identity token — the Cloud Run endpoint is IAM-gated
+    (--no-allow-unauthenticated), confirmed via a real 403 without one.
     """
-    async with sse_client(MCP_SALESFORCE_SERVER_URL) as (read, write):
+    identity_token = await _get_gcp_identity_token(MCP_SALESFORCE_SERVER_URL)
+    async with sse_client(MCP_SALESFORCE_SERVER_URL, headers={"Authorization": f"Bearer {identity_token}"}) as (read, write):
         async with ClientSession(read, write) as session:
             await session.initialize()
             result = await session.call_tool(tool_name, arguments)
