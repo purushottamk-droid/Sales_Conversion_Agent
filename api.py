@@ -174,6 +174,6 @@ async def get_result(session_id: str, user_id: str):
     return {
         "session_id":               session_id,
         "account_analysis_results": session.state.get("account_analysis_results"),
-        "rep_assessment_result":    session.state.get("rep_assessment_result"),
+        # "rep_assessment_result":    session.state.get("rep_assessment_result"),
         "actions_taken":            session.state.get("actions_taken"),
     }
