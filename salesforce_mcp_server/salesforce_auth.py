@@ -39,7 +39,7 @@ _DEFAULT_SESSION_TTL_SECONDS = 25 * 60
 def _build_jwt_assertion() -> str:
     client_id = os.environ["SALESFORCE_JWT_CLIENT_ID"]
     subject = os.environ["SALESFORCE_JWT_SUBJECT"]
-    private_key = os.environ["SALESFORCE_JWT_PRIVATE_KEY"]
+    private_key = os.environ["SALESFORCE_JWT_PRIVATE_KEY"].replace("\\n", "\n")
     audience = os.environ.get("SALESFORCE_JWT_AUDIENCE", "https://login.salesforce.com")
 
     now = int(time.time())
