@@ -39,7 +39,12 @@ _DEFAULT_SESSION_TTL_SECONDS = 25 * 60
 def _build_jwt_assertion() -> str:
     client_id = os.environ["SALESFORCE_JWT_CLIENT_ID"]
     subject = os.environ["SALESFORCE_JWT_SUBJECT"]
-    private_key = os.environ["SALESFORCE_JWT_PRIVATE_KEY"]
+    # Deployment env vars/secrets commonly flatten a multi-line PEM into a
+    # single line with literal "\n" sequences instead of real line breaks
+    # (e.g. pasting into a Cloud Run env var field) — PyJWT/cryptography
+    # can't parse that as PEM at all, so normalize it back to real newlines.
+    # A no-op for a private key that already has real newlines.
+    private_key = os.environ["SALESFORCE_JWT_PRIVATE_KEY"].replace("\\n", "\n")
     audience = os.environ.get("SALESFORCE_JWT_AUDIENCE", "https://login.salesforce.com")
 
     now = int(time.time())
