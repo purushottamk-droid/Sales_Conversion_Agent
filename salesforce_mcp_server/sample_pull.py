@@ -5,7 +5,7 @@ One-off script: pull a single real Opportunity record and print it, both
 raw and normalized through parse_opportunity_record — using only the
 fields confirmed to exist (verify_field_map.py flagged 4 that don't).
 Useful for sanity-checking the shape of real data before wiring this into
-the actual get_opportunities_by_owner tool.
+the actual get_opportunities_by_rep_name tool.
 
 Run from the repo root:
     python -m salesforce_mcp_server.sample_pull

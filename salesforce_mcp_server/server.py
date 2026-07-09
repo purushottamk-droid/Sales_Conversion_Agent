@@ -30,8 +30,7 @@ from .soql import (
     build_attainment_current_month_soql,
     build_attainment_trailing_3_months_soql,
     build_opportunities_by_account_soql,
-    build_opportunities_by_owner_soql,
-    build_rep_name_by_owner_soql,
+    build_opportunities_by_rep_name_soql,
     build_stage_benchmark_soql,
     parse_opportunity_record,
 )
@@ -71,10 +70,13 @@ async def _run_soql(soql: str) -> list[dict]:
 
 
 @mcp.tool()
-async def get_opportunities_by_owner(owner_id: str) -> dict:
-    """Return every opportunity owned by this Salesforce user ID, in this
-    pipeline's clean field-name shape (see soql.FIELD_MAP), as
-    {"opportunities": [...]}.
+async def get_opportunities_by_rep_name(rep_name: str) -> dict:
+    """Return every opportunity belonging to this rep, in this pipeline's
+    clean field-name shape (see soql.FIELD_MAP), as {"opportunities": [...]}.
+
+    Scoped by Sales_Rep_Name__c, not OwnerId — every Opportunity in this
+    org shares one OwnerId (a shared/integration user), so OwnerId can't
+    identify an individual rep. Sales_Rep_Name__c is the real per-rep field.
 
     Wrapped in a dict rather than returned as a bare list — FastMCP emits
     one MCP content block PER LIST ITEM for bare list[...] return types
@@ -83,7 +85,7 @@ async def get_opportunities_by_owner(owner_id: str) -> dict:
     content[0]). Wrapping in a dict keeps the response as a single JSON
     object/content block regardless of list length.
     """
-    records = await _run_soql(build_opportunities_by_owner_soql(owner_id))
+    records = await _run_soql(build_opportunities_by_rep_name_soql(rep_name))
     return {"opportunities": [parse_opportunity_record(r) for r in records]}
 
 
@@ -92,7 +94,7 @@ async def get_opportunities_by_account(account_id: str) -> dict:
     """Return every opportunity on this Salesforce account ID, regardless
     of owner or open/closed status — used for expansion-whitespace
     detection, a different question than "this rep's own open pipeline."
-    Returns {"opportunities": [...]} — see get_opportunities_by_owner for
+    Returns {"opportunities": [...]} — see get_opportunities_by_rep_name for
     why this is a dict, not a bare list."""
     records = await _run_soql(build_opportunities_by_account_soql(account_id))
     return {"opportunities": [parse_opportunity_record(r) for r in records]}
@@ -111,32 +113,23 @@ async def get_stage_duration_benchmark() -> dict:
 
 
 @mcp.tool()
-async def get_rep_name_by_owner(owner_id: str) -> dict:
-    """Resolve the Sales_Rep_Name__c value for a Salesforce Owner ID, from
-    that owner's own Opportunity records (LIMIT 1 — only one representative
-    value is needed). Used to join into Everstage, which has no rep id,
-    only rep name. Returns {"rep_name": <str-or-None>} — None if this
-    owner currently has no Opportunity records to resolve a name from."""
-    records = await _run_soql(build_rep_name_by_owner_soql(owner_id))
-    rep_name = records[0]["repName"] if records else None
-    return {"rep_name": rep_name}
-
-
-@mcp.tool()
-async def get_closed_won_attainment(owner_id: str) -> dict:
-    """Closed-won ARR for this owner, for quota-attainment calculations:
+async def get_closed_won_attainment(rep_name: str) -> dict:
+    """Closed-won ARR for this rep, for quota-attainment calculations:
     {"closed_won_arr_current_month": <num>, "closed_won_arr_trailing_3_months": <num>}.
 
     current_month = CloseDate in the current calendar month.
     trailing_3_months = CloseDate within the trailing 3 calendar months,
     INCLUSIVE of the current month.
 
+    Scoped by Sales_Rep_Name__c, not OwnerId — see
+    get_opportunities_by_rep_name for why.
+
     Two separate aggregate SOQL queries under the hood (SUM(CASE WHEN...)
     isn't valid SOQL, unlike BigQuery) — see soql.build_attainment_current_month_soql
     and soql.build_attainment_trailing_3_months_soql for details."""
     current_month_records, trailing_records = await asyncio.gather(
-        _run_soql(build_attainment_current_month_soql(owner_id)),
-        _run_soql(build_attainment_trailing_3_months_soql(owner_id)),
+        _run_soql(build_attainment_current_month_soql(rep_name)),
+        _run_soql(build_attainment_trailing_3_months_soql(rep_name)),
     )
     current_month_arr = current_month_records[0]["closedWonArr"] if current_month_records else None
     trailing_3_months_arr = trailing_records[0]["closedWonArr"] if trailing_records else None
