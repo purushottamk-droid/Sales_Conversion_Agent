@@ -172,10 +172,13 @@ async def _get_stage_duration_benchmark() -> dict:
 
 
 # Opportunity types that count as "this account is already being expanded"
-# for whitespace detection below — confirm this set once "Legacy Contract"
-# is live in the real org; inferred from earlier discussion, not yet
-# confirmed against real data.
-EXPANSION_OPPORTUNITY_TYPES = {"Product Migration", "Upsell", "Cross Sell"}
+# for whitespace detection below. Matched against this org's ACTUAL Type
+# values (verified via SOQL GROUP BY — see verify_field_map.py-style checks),
+# not the abstract labels from the original design discussion: this org has
+# no "Product Migration" type at all, and real Upsell/Cross-sell values are
+# numbered-prefix strings, not plain words. Exact string match, so this MUST
+# stay in sync with real data — re-verify if the org's Type values change.
+EXPANSION_OPPORTUNITY_TYPES = {"4 - Upsell", "3 - Cross-sell"}
 
 
 async def _get_opportunities_by_account(account_id: str) -> list[dict]:

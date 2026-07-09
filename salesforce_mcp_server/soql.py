@@ -42,7 +42,7 @@ FIELD_MAP = {
     "risks":                         "Risks__c",                       # confirmed
     "cbi_raw_text":                  "CBIs__c",                        # confirmed
     "opportunity_manager_notes":     "Manager_Notes__c",               # confirmed
-    "sales_rep_name":                "Owner.Name",                     # alt. candidate: Sales_Rep_Name__c (custom, free text) — confirm which
+    "sales_rep_name":                "Sales_Rep_Name__c",              # confirmed — Owner.Name and Sales_Rep_Name__c both 100% populated but disagree on every sampled record; Owner.Name is just the Salesforce login that owns the record (often a shared/admin account), Sales_Rep_Name__c is the actual rep this pipeline is about
     "opportunity_previous_solution": "Previous_Solution__c",           # confirmed
     "contact_name":                  "Contact_Name__c",                # confirmed
     "contact_title":                 "Contact_Title__c",               # confirmed
