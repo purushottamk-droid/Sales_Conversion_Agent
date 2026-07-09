@@ -150,6 +150,20 @@ def main() -> None:
     _wait_until_ready(server_proc)
     print("[run_pipeline_local] Local MCP server ready.")
 
+    # Local-only auth bypass — agent.py/tools.py now mint a real GCP
+    # identity token for Cloud Run IAM (the deployed server is
+    # --no-allow-unauthenticated), which requires service-account or
+    # Cloud-Run-metadata credentials not available with a plain user ADC
+    # login. Our local server has no IAM check to satisfy anyway, so patch
+    # just that one function in-process. Nothing on disk is modified.
+    async def _dummy_identity_token(audience: str) -> str:
+        return "local-dev-dummy-token"
+
+    import scripts.data_collection_custom_agent.agent as dc_agent
+    import scripts.decision_action_agent.tools as da_tools
+    dc_agent._get_gcp_identity_token = _dummy_identity_token
+    da_tools._get_gcp_identity_token = _dummy_identity_token
+
     import asyncio
 
     print(f"[run_pipeline_local] Running pipeline for rep: {rep_name}\n")
