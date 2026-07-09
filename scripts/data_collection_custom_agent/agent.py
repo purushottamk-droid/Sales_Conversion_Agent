@@ -116,8 +116,8 @@ async def _get_opportunities_by_owner(sales_rep_id: str) -> list[dict]:
 
     Calls the get_opportunities_by_owner tool on our own salesforce_mcp_server.
     """
-    raw_rows = await call_salesforce_mcp_tool("get_opportunities_by_owner", {"owner_id": sales_rep_id})
-    return [_normalize_opportunity(r) for r in raw_rows]
+    result = await call_salesforce_mcp_tool("get_opportunities_by_owner", {"owner_id": sales_rep_id})
+    return [_normalize_opportunity(r) for r in result["opportunities"]]
 
 
 async def _get_stage_duration_benchmark() -> dict:
@@ -154,8 +154,8 @@ async def _get_opportunities_by_account(account_id: str) -> list[dict]:
 
     Calls the get_opportunities_by_account tool on our own salesforce_mcp_server.
     """
-    raw_rows = await call_salesforce_mcp_tool("get_opportunities_by_account", {"account_id": account_id})
-    return [_normalize_opportunity(r) for r in raw_rows]
+    result = await call_salesforce_mcp_tool("get_opportunities_by_account", {"account_id": account_id})
+    return [_normalize_opportunity(r) for r in result["opportunities"]]
 
 
 async def _check_expansion_whitespace(account_id: str) -> bool:

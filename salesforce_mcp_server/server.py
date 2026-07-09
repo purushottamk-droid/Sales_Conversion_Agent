@@ -18,6 +18,12 @@ from datetime import date, timedelta
 import httpx
 from mcp.server.fastmcp import FastMCP
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # fine in production — Cloud Run injects real env vars directly, no .env file involved
+
 from .salesforce_auth import get_salesforce_session
 from .soql import (
     build_opportunities_by_account_soql,
@@ -61,20 +67,31 @@ async def _run_soql(soql: str) -> list[dict]:
 
 
 @mcp.tool()
-async def get_opportunities_by_owner(owner_id: str) -> list[dict]:
+async def get_opportunities_by_owner(owner_id: str) -> dict:
     """Return every opportunity owned by this Salesforce user ID, in this
-    pipeline's clean field-name shape (see soql.FIELD_MAP)."""
+    pipeline's clean field-name shape (see soql.FIELD_MAP), as
+    {"opportunities": [...]}.
+
+    Wrapped in a dict rather than returned as a bare list — FastMCP emits
+    one MCP content block PER LIST ITEM for bare list[...] return types
+    (confirmed directly: a 230-record list came back as 230 separate
+    content blocks, silently truncated to 1 by a naive client reading only
+    content[0]). Wrapping in a dict keeps the response as a single JSON
+    object/content block regardless of list length.
+    """
     records = await _run_soql(build_opportunities_by_owner_soql(owner_id))
-    return [parse_opportunity_record(r) for r in records]
+    return {"opportunities": [parse_opportunity_record(r) for r in records]}
 
 
 @mcp.tool()
-async def get_opportunities_by_account(account_id: str) -> list[dict]:
+async def get_opportunities_by_account(account_id: str) -> dict:
     """Return every opportunity on this Salesforce account ID, regardless
     of owner or open/closed status — used for expansion-whitespace
-    detection, a different question than "this rep's own open pipeline."""
+    detection, a different question than "this rep's own open pipeline."
+    Returns {"opportunities": [...]} — see get_opportunities_by_owner for
+    why this is a dict, not a bare list."""
     records = await _run_soql(build_opportunities_by_account_soql(account_id))
-    return [parse_opportunity_record(r) for r in records]
+    return {"opportunities": [parse_opportunity_record(r) for r in records]}
 
 
 @mcp.tool()

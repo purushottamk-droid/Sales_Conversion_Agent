@@ -53,6 +53,17 @@ FIELD_MAP = {
 # Only needed for the WHERE clause itself, not part of the returned shape
 _OWNER_FIELD = "OwnerId"
 
+# clean_names with no backing field in this org — Salesforce rejects the
+# ENTIRE query if the SELECT list references a field that doesn't exist
+# (confirmed directly: a real query against this org 400'd until these
+# were excluded), so these must never appear in a SELECT clause. Downstream
+# code still gets these keys via parse_opportunity_record, just always None.
+KNOWN_MISSING_FIELDS = {"account_segment", "discount_pct", "days_open", "current_stage_duration_days"}
+
+
+def _queryable_fields() -> set[str]:
+    return {v for k, v in FIELD_MAP.items() if k not in KNOWN_MISSING_FIELDS}
+
 
 def _escape_soql_string(value: str) -> str:
     """Minimal SOQL string escaping — Salesforce's REST query endpoint takes
@@ -62,7 +73,7 @@ def _escape_soql_string(value: str) -> str:
 
 
 def build_opportunities_by_owner_soql(owner_id: str) -> str:
-    fields = ", ".join(sorted(set(FIELD_MAP.values())))
+    fields = ", ".join(sorted(_queryable_fields()))
     safe_owner_id = _escape_soql_string(owner_id)
     return f"SELECT {fields} FROM Opportunity WHERE {_OWNER_FIELD} = '{safe_owner_id}'"
 
@@ -74,7 +85,7 @@ def build_opportunities_by_account_soql(account_id: str) -> str:
     Upsell/Cross Sell opportunity exist anywhere for this account), which
     is a different question than "this rep's own open pipeline."
     """
-    fields = ", ".join(sorted(set(FIELD_MAP.values())))
+    fields = ", ".join(sorted(_queryable_fields()))
     safe_account_id = _escape_soql_string(account_id)
     return f"SELECT {fields} FROM Opportunity WHERE AccountId = '{safe_account_id}'"
 
