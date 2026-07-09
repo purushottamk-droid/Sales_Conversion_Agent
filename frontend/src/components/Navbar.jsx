@@ -1,8 +1,17 @@
 import { Layers, Sun, Moon } from 'lucide-react';
 
+const STATUS_LABELS = {
+  idle: 'Idle',
+  'creating-session': 'Creating session',
+  running: 'Running',
+  'fetching-result': 'Fetching results',
+  done: 'Complete',
+  error: 'Error',
+};
+
 export default function Navbar({ theme, toggleTheme, pipelineStatus }) {
-  const statusLabel =
-    pipelineStatus === 'running' ? 'Running' : pipelineStatus === 'done' ? 'Complete' : 'Idle';
+  const statusLabel = STATUS_LABELS[pipelineStatus] || 'Idle';
+  const isBusy = ['creating-session', 'running', 'fetching-result'].includes(pipelineStatus);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-100 flex items-center justify-between px-7 py-3.5 bg-white/80 dark:bg-ink-800/80 backdrop-blur-md border-b border-brand-200 dark:border-ink-500 transition-colors duration-300">
@@ -24,10 +33,12 @@ export default function Navbar({ theme, toggleTheme, pipelineStatus }) {
         <div className="flex items-center gap-1.5 text-[12.5px] font-semibold text-[#55698c] dark:text-[#8ca0c2] px-3 py-1.5 rounded-full border border-brand-200 dark:border-ink-500 bg-brand-100/60 dark:bg-ink-700">
           <span
             className={`w-1.5 h-1.5 rounded-full ${
-              pipelineStatus === 'running'
+              isBusy
                 ? 'bg-brand-500 animate-pulse'
                 : pipelineStatus === 'done'
                 ? 'bg-emerald-500'
+                : pipelineStatus === 'error'
+                ? 'bg-rose-500'
                 : 'bg-slate-300 dark:bg-ink-400'
             }`}
           />

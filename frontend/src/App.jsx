@@ -20,7 +20,7 @@ const MANAGER_EMAIL = 'kakade007k@gmail.com';
 export default function App() {
   const { theme, toggleTheme } = useTheme();
   const pipeline = usePipeline();
-  const [repName, setRepName] = useState('005DMO000000000300000');
+  const [repName, setRepName] = useState();
 
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [toast, setToast] = useState({ message: '', visible: false });
@@ -75,12 +75,17 @@ export default function App() {
           disabled={pipeline.pipelineStatus === 'running'}
         />
 
-        <Pipeline
+        {/* <Pipeline
           nodeStates={pipeline.nodeStates}
           nodeDetails={pipeline.nodeDetails}
           activeSources={pipeline.activeSources}
           keysShown={pipeline.keysShown}
           connectorActive={pipeline.connectorActive}
+          outputStatus={pipeline.outputStatus}
+        /> */}
+        <Pipeline
+          nodeStates={pipeline.nodeStates}
+          nodeDetails={pipeline.nodeDetails}
           outputStatus={pipeline.outputStatus}
         />
 

@@ -1,65 +1,27 @@
 // src/api/pipelineClient.js
 //
 // Thin client around the Cloud Run "sales-conversion-agent" service.
-// Three calls, used in sequence by usePipeline.js:
-//   1. createSession()  -> POST /agent/sessions
-//   2. runPipeline()    -> POST /agent/run       (SSE stream of progress/done events)
-//   3. getResult()      -> GET  /agent/result/:session_id
+//
+// Session-less flow: a single call runs everything in one HTTP request.
+//   runPipeline() -> POST /agent/run
+//     Streams SSE events:
+//       - 'progress' : an agent step is in progress
+//       - 'done'     : an agent step finished
+//       - 'result'   : final consolidated pipeline output (last event)
 //
 // NOTE: /agent/run is a POST endpoint, so the native EventSource API (GET-only)
 // can't be used. We consume the SSE body manually via fetch + ReadableStream.
+//
+// We intentionally do NOT call /agent/sessions or /agent/result separately
+// anymore. Cloud Run can route requests to different container instances,
+// and the backend's session store (InMemorySessionService) only lives in
+// the memory of a single instance. Splitting session-creation, running,
+// and result-fetching into separate requests risked each one landing on a
+// different instance and failing to find the session. Combining
+// everything into one streamed request/response guarantees it all runs
+// on the same instance.
 
 const BASE_URL = 'https://sales-conversion-agent-7dmabce4qq-el.a.run.app';
-
-/**
- * Create a new agent session.
- * @returns {Promise<{session_id: string, [key: string]: any}>}
- */
-export async function createSession({ user_id, sales_rep_id, rep_email, manager_email }) {
-  const res = await fetch(`${BASE_URL}/agent/sessions`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ user_id, sales_rep_id, rep_email, manager_email }),
-  });
-
-  if (!res.ok) {
-    const text = await res.text().catch(() => '');
-    throw new Error(`createSession failed (${res.status}): ${text}`);
-  }
-
-  return res.json();
-}
-
-/**
- * Fetch the final structured result once the pipeline has finished.
- * Also defensively parses `actions_taken` if the backend still returns it
- * as a ```json-fenced string instead of a real object.
- */
-export async function getResult(sessionId, userId) {
-  const url = `${BASE_URL}/agent/result/${encodeURIComponent(sessionId)}?user_id=${encodeURIComponent(
-    userId
-  )}`;
-  const res = await fetch(url);
-
-  if (!res.ok) {
-    const text = await res.text().catch(() => '');
-    throw new Error(`getResult failed (${res.status}): ${text}`);
-  }
-
-  const data = await res.json();
-
-  if (typeof data.actions_taken === 'string') {
-    try {
-      const cleaned = data.actions_taken.replace(/```json\s*|```\s*$/g, '').trim();
-      data.actions_taken = JSON.parse(cleaned);
-    } catch (err) {
-      console.warn('Could not parse actions_taken markdown-fenced JSON:', err);
-      // leave as raw string if parsing fails, caller can handle
-    }
-  }
-
-  return data;
-}
 
 /**
  * Parse a single raw SSE "chunk" (the text between two \n\n separators)
@@ -92,20 +54,29 @@ function parseSSEChunk(chunk) {
 }
 
 /**
- * Kick off a pipeline run and stream progress/done events to onEvent.
+ * Runs the pipeline directly with rep info (no separate session-creation
+ * call). Streams 'progress' / 'done' events live as each agent runs, then
+ * a final 'result' event containing the full consolidated pipeline output.
  * Resolves once the HTTP response stream ends (i.e. the connection closes).
  *
  * @param {Object} opts
  * @param {string} opts.userId
- * @param {string} opts.sessionId
+ * @param {string} opts.salesRepId
+ * @param {string} opts.repEmail
+ * @param {string} opts.managerEmail
  * @param {(evt: {type: string, data: any}) => void} opts.onEvent
  * @param {AbortSignal} [opts.signal]
  */
-export async function runPipeline({ userId, sessionId, onEvent, signal }) {
+export async function runPipeline({ userId, salesRepId, repEmail, managerEmail, onEvent, signal }) {
   const res = await fetch(`${BASE_URL}/agent/run`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ user_id: userId, session_id: sessionId }),
+    body: JSON.stringify({
+      user_id: userId,
+      sales_rep_id: salesRepId,
+      rep_email: repEmail,
+      manager_email: managerEmail,
+    }),
     signal,
   });
 
