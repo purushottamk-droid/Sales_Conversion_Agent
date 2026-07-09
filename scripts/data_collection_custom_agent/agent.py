@@ -170,6 +170,12 @@ async def _fetch_salesforce_pipeline_mcp(sales_rep_name: str) -> list[dict]:
     """
     mcp_result = await _call_mcp_tool("get_opportunities_by_rep_name", {"rep_name": sales_rep_name})
     opportunities = mcp_result.get("opportunities", [])
+    for opp in opportunities:
+        # MCP returns JSON — close_date_target arrives as a plain string,
+        # but build_quota_attainment/build_opportunity_payload below both
+        # call date methods (.strftime/.isoformat) on it.
+        if isinstance(opp.get("close_date_target"), str):
+            opp["close_date_target"] = date.fromisoformat(opp["close_date_target"][:10])
     return [opp for opp in opportunities if not opp.get("is_closed")]
 
 

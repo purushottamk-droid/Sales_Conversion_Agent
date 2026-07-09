@@ -15,7 +15,7 @@ SESSION STATE:
 
 from google.adk.agents import LlmAgent
 from .prompt import ACCOUNT_ANALYSIS_PROMPT
-from .output_schema import AllAccountsAnalysisResult
+from .output_schema import RepAssessmentResult
 
 
 account_analysis_agent = LlmAgent(
@@ -32,10 +32,10 @@ account_analysis_agent = LlmAgent(
     instruction=ACCOUNT_ANALYSIS_PROMPT,
 
     # Pydantic schema — Gemini MUST return output matching this structure
-    # AllAccountsAnalysisResult contains list of AccountAnalysisResult
-    # one result per account — even though it is one Gemini call
+    # RepAssessmentResult holds the rep-level roll-up at its root, plus
+    # accounts: List[AccountAnalysisResult] — one entry per opportunity
     # Defined in output_schema.py
-    output_schema=AllAccountsAnalysisResult,
+    output_schema=RepAssessmentResult,
 
     # Where LlmAgent writes the result in session state
     # Agent 3 reads ctx.session.state["account_analysis_results"]

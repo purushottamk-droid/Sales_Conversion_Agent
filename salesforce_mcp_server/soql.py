@@ -47,7 +47,7 @@ FIELD_MAP = {
     "created_date":                  "CreatedDate",
     "close_date_target":             "CloseDate",
     "days_open":                     "Days_in_Pipeline__c",             # NOT FOUND — no such field in this org
-    "current_stage_duration_days":   "Days_in_Stage__c",                # NOT FOUND — no such field in this org
+    "current_stage_duration_days":   "Days_Since_Last_Activity__c",     # substitute — real Days_in_Stage-equivalent field is 100% null in this org, using Days Since Last Activity as the closest available proxy per user direction
     "days_since_last_touch":         "Days_Since_Last_Activity__c",     # confirmed
     "next_step":                     "Next_Step__c",                   # confirmed via null_check.py — NextStep is 100% null in this org, Next_Step__c is 100% populated
     "risks":                         "Risks__c",                       # confirmed
@@ -73,7 +73,7 @@ _REP_NAME_FIELD = "Sales_Rep_Name__c"
 # (confirmed directly: a real query against this org 400'd until these
 # were excluded), so these must never appear in a SELECT clause. Downstream
 # code still gets these keys via parse_opportunity_record, just always None.
-KNOWN_MISSING_FIELDS = {"account_segment", "discount_pct", "days_open", "current_stage_duration_days"}
+KNOWN_MISSING_FIELDS = {"account_segment", "discount_pct", "days_open"}
 
 
 def _queryable_fields() -> set[str]:
