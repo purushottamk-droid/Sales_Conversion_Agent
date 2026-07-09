@@ -34,8 +34,8 @@ async def test():
                     "pipeline_attainment_pct": 30.0,
                 },
                 "active_pipeline": {
-                    "total_open_pipeline_arr": 18000,
-                    "open_opportunity_count": 1,
+                    "total_open_pipeline_arr": 30000,
+                    "open_opportunity_count": 2,
                 },
                 "assigned_accounts": [
                     {
@@ -43,6 +43,7 @@ async def test():
                         "account_name": "Pioneer Logistics",
                         "industry": "Logistics",
                         "account_segment": "Mid-Market",
+                        "has_expansion_opportunity": False,
                         "opportunity_data": {
                             "opportunity_id": "006DMO000000000100000",
                             "opportunity_name": "Pioneer Logistics - Quality Management",
@@ -91,7 +92,65 @@ async def test():
                                 ],
                             },
                         },
-                    }
+                    },
+                    {
+                        # Legacy Contract expansion-whitespace scenario — no
+                        # Migration/Upsell/Cross Sell opportunity open for
+                        # this account, should trigger expansion_signal.
+                        "account_id": "001DMO000000000300000",
+                        "account_name": "Meridian Health Systems",
+                        "industry": "Healthcare",
+                        "account_segment": "Enterprise",
+                        "has_expansion_opportunity": False,
+                        "opportunity_data": {
+                            "opportunity_id": "006DMO000000000200000",
+                            "opportunity_name": "Meridian Health Systems - Legacy Renewal",
+                            "opportunity_type": "Legacy Contract",
+                            "current_stage": "Closed Won",
+                            "forecast_category": "Closed",
+                            "deal_value_arr": 12000,
+                            "discount_pct": None,
+                            "timeline_and_velocity": {
+                                "days_open": None,
+                                "current_stage_duration_days": None,
+                                "historical_stage_benchmark_days": None,
+                                "close_date_target": "2024-01-15",
+                                "target_date_pushes": None,
+                            },
+                            "critical_business_issue": {
+                                "cbi_identified": None,
+                                "quantified_impact": None,
+                                "buyer_alignment": "Salesforce contact of record: Priya Nair (Director of IT)",
+                                "previous_solution": None,
+                                "manager_notes": None,
+                            },
+                            "engagement_signals": {
+                                "days_since_last_touch": 21,
+                                "next_scheduled_event": None,
+                            },
+                            "risks": None,
+                            "next_step": None,
+                            "gong_interaction_analytics": {
+                                "latest_call_date": "2026-06-15",
+                                "next_scheduled_event": None,
+                                "recent_calls": [
+                                    {
+                                        "title": "Quarterly Check-in - Meridian Health Systems",
+                                        "scheduled_date": "2026-06-15",
+                                        "purpose": "Relationship check-in",
+                                        "meeting_stage_context": "Closed Won",
+                                        "meeting_summary": "Priya confirmed the legacy platform is still running smoothly, no complaints.",
+                                        "key_meeting_discussions": "Business Pain: none raised. Customer satisfied with current setup.",
+                                        "customer_sentiment": "Positive",
+                                        "primary_objection": None,
+                                        "call_outcome_category": "Positive",
+                                        "call_outcome_name": "Relationship maintained",
+                                        "next_step": "none scheduled",
+                                    }
+                                ],
+                            },
+                        },
+                    },
                 ],
             }
         }

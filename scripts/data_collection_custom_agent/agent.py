@@ -171,6 +171,57 @@ async def _get_stage_duration_benchmark() -> dict:
         return {}
 
 
+# Opportunity types that count as "this account is already being expanded"
+# for whitespace detection below — confirm this set once "Legacy Contract"
+# is live in the real org; inferred from earlier discussion, not yet
+# confirmed against real data.
+EXPANSION_OPPORTUNITY_TYPES = {"Product Migration", "Upsell", "Cross Sell"}
+
+
+async def _get_opportunities_by_account(account_id: str) -> list[dict]:
+    """
+    Every opportunity on this account, regardless of owner or open/closed
+    status — used only for expansion-whitespace detection below, a
+    different question than "this rep's own open pipeline."
+
+    Calls the get_opportunities_by_account tool on our own salesforce_mcp_server.
+    """
+    raw_rows = await _call_salesforce_mcp_tool("get_opportunities_by_account", {"account_id": account_id})
+    return [_normalize_opportunity(r) for r in raw_rows]
+
+
+async def _check_expansion_whitespace(account_id: str) -> bool:
+    """
+    True if this account already has a Migration/Upsell/Cross Sell
+    opportunity anywhere (any owner, any status) — i.e. NOT whitespace.
+    False means no such opportunity exists yet, the whitespace signal
+    account_analysis_agent looks for when paired with a Legacy Contract
+    type opportunity.
+    """
+    try:
+        account_opportunities = await _get_opportunities_by_account(account_id)
+    except Exception as e:
+        print(f"[DataCollectionAgent] WARNING: get_opportunities_by_account failed for "
+              f"account {account_id} ({e}) — expansion-whitespace check skipped for this account.")
+        return False
+    return any(o.get("opportunity_type") in EXPANSION_OPPORTUNITY_TYPES for o in account_opportunities)
+
+
+async def _build_expansion_whitespace_map(pipeline_opps: list[dict]) -> dict[str, bool]:
+    """
+    {account_id: has_expansion_opportunity} for every unique account in
+    this rep's open pipeline. Accounts with no account_id (currently every
+    opportunity in the demo org — see plan doc) are skipped and default to
+    False rather than calling the tool with an empty ID.
+    """
+    account_ids = sorted({o["account_id"] for o in pipeline_opps if o.get("account_id")})
+    if not account_ids:
+        return {}
+
+    results = await asyncio.gather(*(_check_expansion_whitespace(account_id) for account_id in account_ids))
+    return dict(zip(account_ids, results))
+
+
 # ─────────────────────────────────────────────
 # CLIENT-SIDE FILTERS — replace the WHERE-clause logic the old Salesforce
 # SQL used to do server-side, now applied to the one fetched opportunity list.
@@ -514,7 +565,7 @@ def build_opportunity_payload(opp: dict, stage_benchmarks: dict, calls_by_opp: d
 
 def build_rep_profile(sales_rep_id: str, everstage: dict, attainment_actuals: dict,
                        pipeline_opps: list[dict], stage_benchmarks: dict,
-                       gong_calls: list[dict]) -> dict:
+                       gong_calls: list[dict], expansion_whitespace_map: dict[str, bool]) -> dict:
 
     historical_targets = build_historical_targets(everstage)
     quota_attainment = build_quota_attainment(everstage, attainment_actuals, pipeline_opps)
@@ -532,6 +583,7 @@ def build_rep_profile(sales_rep_id: str, everstage: dict, attainment_actuals: di
             "account_name": opp.get("account_name"),
             "industry": opp.get("industry"),
             "account_segment": opp.get("account_segment"),
+            "has_expansion_opportunity": expansion_whitespace_map.get(opp.get("account_id"), False),
             "opportunity_data": build_opportunity_payload(opp, stage_benchmarks, calls_by_opp),
         })
 
@@ -599,9 +651,13 @@ class DataCollectionAgent(BaseAgent):
         pipeline_opps = _filter_open_pipeline(opportunities)
 
         # Step 3: Gong calls, scoped to the open opportunities just resolved
-        # (unchanged — still BigQuery).
+        # (unchanged — still BigQuery), and the expansion-whitespace check
+        # per unique account (MCP, not owner-scoped), in parallel.
         opportunity_ids = [o["opportunity_id"] for o in pipeline_opps if o.get("opportunity_id")]
-        gong_calls = await _run(_fetch_gong_sync, opportunity_ids)
+        gong_calls, expansion_whitespace_map = await asyncio.gather(
+            _run(_fetch_gong_sync, opportunity_ids),
+            _build_expansion_whitespace_map(pipeline_opps),
+        )
 
         print(f"[DataCollectionAgent] Fetched → "
               f"open_opps={len(pipeline_opps)} | gong_calls={len(gong_calls)}")
@@ -609,7 +665,7 @@ class DataCollectionAgent(BaseAgent):
         # Step 4: assemble final nested profile
         rep_performance_profile = build_rep_profile(
             sales_rep_id, everstage, attainment_actuals,
-            pipeline_opps, stage_benchmarks, gong_calls,
+            pipeline_opps, stage_benchmarks, gong_calls, expansion_whitespace_map,
         )
 
         # Step 5: save to session state

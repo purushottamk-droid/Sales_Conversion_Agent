@@ -67,6 +67,18 @@ def build_opportunities_by_owner_soql(owner_id: str) -> str:
     return f"SELECT {fields} FROM Opportunity WHERE {_OWNER_FIELD} = '{safe_owner_id}'"
 
 
+def build_opportunities_by_account_soql(account_id: str) -> str:
+    """
+    Every opportunity on this account, regardless of owner or open/closed
+    status — used for expansion-whitespace detection (does a Migration/
+    Upsell/Cross Sell opportunity exist anywhere for this account), which
+    is a different question than "this rep's own open pipeline."
+    """
+    fields = ", ".join(sorted(set(FIELD_MAP.values())))
+    safe_account_id = _escape_soql_string(account_id)
+    return f"SELECT {fields} FROM Opportunity WHERE AccountId = '{safe_account_id}'"
+
+
 def build_stage_benchmark_soql() -> str:
     stage_field = FIELD_MAP["current_stage"]
     duration_field = FIELD_MAP["current_stage_duration_days"]

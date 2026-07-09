@@ -146,6 +146,23 @@ class AccountAnalysisResult(BaseModel):
     )
 
     # ------------------------------------------------------------------
+    # Proactive signals — NOT risk-based, kept separate from risk_action/
+    # opportunity_action above
+    # ------------------------------------------------------------------
+    expansion_signal: Optional[str] = Field(
+        default=None,
+        description=(
+            "Populate ONLY when this opportunity's opportunity_type is "
+            "'Legacy Contract' AND has_expansion_opportunity is false — i.e. "
+            "this account has no Migration/Upsell/Cross Sell opportunity open "
+            "anywhere else. Name the account, state it's on a Legacy Contract "
+            "with no expansion opportunity open, and suggest opening one — cite "
+            "sentiment/tenure signals from gong_interaction_analytics if "
+            "available. Leave null otherwise; this is upside, not risk."
+        )
+    )
+
+    # ------------------------------------------------------------------
     # Summary
     # ------------------------------------------------------------------
     analysis_summary: str = Field(

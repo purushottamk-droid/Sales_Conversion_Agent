@@ -16,6 +16,7 @@ def ACCOUNT_ANALYSIS_PROMPT(ctx) -> str:
         assigned_accounts: [
           {
             account_id, account_name, industry, account_segment,
+            has_expansion_opportunity,
             opportunity_data: {
               opportunity_id, opportunity_name, opportunity_type,
               current_stage, forecast_category, deal_value_arr, discount_pct,
@@ -71,6 +72,9 @@ REP_PERFORMANCE_PROFILE:
 
 ### Salesforce opportunity fields, per assigned_accounts[i] (PRIMARY — reason from these first):
 - account_id, account_name, industry, account_segment
+- has_expansion_opportunity → true if this account already has a Migration/
+  Upsell/Cross Sell opportunity open anywhere (any owner) — used only by
+  STEP 7 (expansion_signal), not a risk signal
 - opportunity_data.opportunity_id / opportunity_name
 - opportunity_data.opportunity_type   → raw type value
 - opportunity_data.current_stage      → current deal stage
@@ -237,6 +241,26 @@ When populated, include:
 
 If conditions are not met, leave opportunity_action as null.
 
+─────────────────────────────────────────────────────
+### STEP 7 — expansion_signal (proactive, NOT risk-based)
+─────────────────────────────────────────────────────
+ONLY populate when BOTH of the following are true:
+  (a) This opportunity's opportunity_type is exactly "Legacy Contract"
+  (b) has_expansion_opportunity (at the account level) is false
+
+When populated:
+  - Name the account.
+  - State plainly that it's on a Legacy Contract with no Migration/Upsell/
+    Cross Sell opportunity currently open elsewhere.
+  - Suggest opening one as a concrete next step.
+  - Cite sentiment/tenure signals from gong_interaction_analytics if
+    available (e.g. sustained positive sentiment across calls supports
+    the timing).
+
+This is upside, not risk — do not let it influence deal_health,
+conversion_score, or risk_action. Leave expansion_signal null if either
+condition is not met.
+
 ═══════════════════════════════════════════════════════
 ## SECTION 3 — PER-OPPORTUNITY CRITICAL RULES
 ═══════════════════════════════════════════════════════
@@ -246,6 +270,7 @@ If conditions are not met, leave opportunity_action as null.
 - Return an AccountAnalysisResult for EVERY entry in assigned_accounts. Do not skip any.
 - Gong fine-tune delta is bounded: -30 to +10 total.
 - Do not force opportunity_action onto deals that do not meet the two conditions in STEP 6.
+- Do not force expansion_signal onto deals that do not meet the two conditions in STEP 7.
 
 ═══════════════════════════════════════════════════════
 ## SECTION 4 — REP-LEVEL ASSESSMENT (root of the output, after per-opportunity work)

@@ -19,6 +19,7 @@ from mcp.server.fastmcp import FastMCP
 
 from .salesforce_auth import get_salesforce_session
 from .soql import (
+    build_opportunities_by_account_soql,
     build_opportunities_by_owner_soql,
     build_stage_benchmark_soql,
     parse_opportunity_record,
@@ -63,6 +64,15 @@ async def get_opportunities_by_owner(owner_id: str) -> list[dict]:
     """Return every opportunity owned by this Salesforce user ID, in this
     pipeline's clean field-name shape (see soql.FIELD_MAP)."""
     records = await _run_soql(build_opportunities_by_owner_soql(owner_id))
+    return [parse_opportunity_record(r) for r in records]
+
+
+@mcp.tool()
+async def get_opportunities_by_account(account_id: str) -> list[dict]:
+    """Return every opportunity on this Salesforce account ID, regardless
+    of owner or open/closed status — used for expansion-whitespace
+    detection, a different question than "this rep's own open pipeline."""
+    records = await _run_soql(build_opportunities_by_account_soql(account_id))
     return [parse_opportunity_record(r) for r in records]
 
 
