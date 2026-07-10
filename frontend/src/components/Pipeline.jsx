@@ -125,7 +125,7 @@ export default function Pipeline({
         <PipelineNode
           number={1}
           title="Data Collection Agent"
-          description="Looks up the rep's profile and pulls the full account list, Gong calls, and Salesforce data."
+          description="Pulls rep's pipeline from Salesforce (open opportunities, stage, close dates), recent Gong call summaries for those same deals, and quota targets from Everstage — assembles it all into one profile for the next agent."
           state={nodeStates[1]}
           detail={nodeDetails?.[1] ?? null}
         />
@@ -134,8 +134,8 @@ export default function Pipeline({
 
         <PipelineNode
           number={2}
-          title="Account Analysis Agent"
-          description="Reads each account one at a time — deal health, missed commitments, objections, sentiment, conversion score."
+          title="Account & Rep Assessment Agent "
+          description="Reads profile and scores every open deal — conversion likelihood, stalling risk, unresolved objections — by cross-referencing Salesforce stage data against Gong call sentiment. "
           state={nodeStates[2]}
           detail={nodeDetails?.[2] ?? null}
         />
@@ -145,7 +145,7 @@ export default function Pipeline({
         <PipelineNode
           number={3}
           title="Decision & Action Agent"
-          description="Judges quota risk from every account score, then notifies the manager and messages the rep."
+          description="Turning the assessment into real system actions:"
           state={nodeStates[3]}
           detail={nodeDetails?.[3] ?? null}
         />

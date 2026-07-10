@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "atgeir-moae-dev"
+  },
+  "targets": {
+    "atgeir-moae-dev": {
+      "hosting": {
+        "sales-conversion-agent-final": [
+          "sales-conversion-agent-final"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

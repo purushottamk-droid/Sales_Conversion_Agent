@@ -9,18 +9,17 @@ import Toast from './components/Toast';
 import { useTheme } from './hooks/useTheme';
 import { usePipeline } from './hooks/usePipeline';
 import { downloadReport, emailReport } from './utils/report';
-import { normalizeRepProfile, normalizeActions } from './utils/adaptResult';
+import { normalizeAccountAnalysis, normalizeActions } from './utils/adaptResult';
 
-// Hardcoded per the current test setup — swap for real rep-picker fields
-// once account selection is wired to actual CRM data.
-const SALES_REP_ID = '005DMO000000000300000';
-const REP_EMAIL = 'kakadetalent@gmail.com';
-const MANAGER_EMAIL = 'kakade007k@gmail.com';
+// Hardcoded per the current test setup — swap for real fields once
+// rep_email / manager_email come from an actual rep-picker/CRM lookup.
+const REP_EMAIL = 'sayali.mahulkar@atgeirsolutions.com';
+const MANAGER_EMAIL = 'sayali.mahulkar@atgeirsolutions.com';
 
 export default function App() {
   const { theme, toggleTheme } = useTheme();
   const pipeline = usePipeline();
-  const [repName, setRepName] = useState();
+  const [repName, setRepName] = useState('');
 
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [toast, setToast] = useState({ message: '', visible: false });
@@ -33,31 +32,35 @@ export default function App() {
   };
 
   const handleRun = () => {
+    if (!repName.trim()) {
+      showToast('Enter a sales rep name first');
+      return;
+    }
     pipeline.run({
       userId: 'test_user',
-      salesRepId: SALES_REP_ID,
+      salesRepName: repName.trim(),
       repEmail: REP_EMAIL,
       managerEmail: MANAGER_EMAIL,
     });
   };
 
-  // Real, confirmed shape from DataCollectionAgent (rep_performance_profile).
-  // This drives the Dashboard's summary stats + account cards.
-  const profile = normalizeRepProfile(pipeline.repProfile);
+  // Real, confirmed shape from GET /agent/result -> account_analysis_results.
+  // Drives the Dashboard's summary stats + account cards.
+  const analysis = normalizeAccountAnalysis(pipeline.result?.account_analysis_results);
 
-  // Guessed shape for the final decision_action_agent output — tighten
-  // once you share a sample of /agent/result's actions_taken.
+  // Real, confirmed shape: actions_taken is a ```json-fenced string;
+  // normalizeActions strips fences and parses it.
   const actionsTaken = normalizeActions(pipeline.result?.actions_taken);
 
   const handleDownload = () => {
-    if (!profile) return;
-    downloadReport(repName, profile.accounts, profile.summary, actionsTaken);
+    if (!analysis) return;
+    downloadReport(repName, analysis.accounts, analysis.summary, actionsTaken);
     showToast('Report downloaded');
   };
 
   const handleEmailSend = (email) => {
-    if (!profile) return;
-    emailReport(email, repName, profile.accounts, profile.summary, actionsTaken);
+    if (!analysis) return;
+    emailReport(email, repName, analysis.accounts, analysis.summary, actionsTaken);
     setEmailModalOpen(false);
     showToast(`Email client opened for ${email}`);
   };
@@ -75,14 +78,6 @@ export default function App() {
           disabled={pipeline.pipelineStatus === 'running'}
         />
 
-        {/* <Pipeline
-          nodeStates={pipeline.nodeStates}
-          nodeDetails={pipeline.nodeDetails}
-          activeSources={pipeline.activeSources}
-          keysShown={pipeline.keysShown}
-          connectorActive={pipeline.connectorActive}
-          outputStatus={pipeline.outputStatus}
-        /> */}
         <Pipeline
           nodeStates={pipeline.nodeStates}
           nodeDetails={pipeline.nodeDetails}
@@ -98,9 +93,8 @@ export default function App() {
         <Dashboard
           visible={pipeline.dashboardVisible}
           repName={repName}
-          summary={profile?.summary}
-          accounts={profile?.accounts ?? []}
-          totalGongCalls={profile?.totalGongCalls ?? 0}
+          summary={analysis?.summary}
+          accounts={analysis?.accounts ?? []}
           actionsTaken={actionsTaken}
           onDownload={handleDownload}
           onEmailClick={() => setEmailModalOpen(true)}
