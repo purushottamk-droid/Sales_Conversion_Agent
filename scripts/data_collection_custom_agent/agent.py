@@ -200,7 +200,7 @@ async def _fetch_salesforce_pipeline_mcp(sales_rep_name: str) -> list[dict]:
         # call date methods (.strftime/.isoformat) on it.
         if isinstance(opp.get("close_date_target"), str):
             opp["close_date_target"] = date.fromisoformat(opp["close_date_target"][:10])
-    return [opp for opp in opportunities if not opp.get("is_closed")]
+    return [opp for opp in opportunities]
 
 
 # ─────────────────────────────────────────────
