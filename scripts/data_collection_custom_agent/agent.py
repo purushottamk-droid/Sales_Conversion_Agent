@@ -6,7 +6,7 @@ from urllib.parse import urlsplit
 
 import httpx
 from google.adk.agents import BaseAgent
-from google.adk.events import Event
+from google.adk.events import Event, EventActions
 from google.adk.runners import InMemoryRunner
 from google.auth.transport import requests as google_auth_requests
 from google.cloud import bigquery
@@ -288,10 +288,12 @@ def build_historical_targets(everstage: dict) -> dict:
 
 def build_quota_attainment(everstage: dict, attainment_actuals: dict, pipeline_opps: list[dict]) -> dict:
     """
-    3 attainment metrics per spec:
+    3 attainment metrics per spec, plus the raw dollar figures behind
+    the first two:
       - monthly_attainment_pct   : this month's closed-won ARR vs this month's own target
       - quarterly_attainment_pct : trailing 3 months closed-won ARR vs trailing 3 months' summed target
       - pipeline_attainment_pct  : open pipeline ARR closing this month vs this month's target
+      - closed_won_arr_current_month / closed_won_arr_trailing_3_months : the raw numerators above
     """
     today = date.today()
     current_month_key = today.strftime("%Y-%m")
@@ -329,6 +331,12 @@ def build_quota_attainment(everstage: dict, attainment_actuals: dict, pipeline_o
         "monthly_attainment_pct": monthly_pct,
         "quarterly_attainment_pct": quarterly_pct,
         "pipeline_attainment_pct": pipeline_pct,
+        # Raw dollar figures — previously computed here but discarded once
+        # the percentages above were derived. Needed by api.py's
+        # forecasted-ARR calculation, and independently useful for a real
+        # "current sales" dollar figure rather than just a percentage.
+        "closed_won_arr_current_month": attainment_actuals["closed_won_arr_current_month"],
+        "closed_won_arr_trailing_3_months": attainment_actuals["closed_won_arr_trailing_3_months"],
     }
 
 
@@ -540,12 +548,25 @@ class DataCollectionAgent(BaseAgent):
         )
 
         # Step 5: save to session state
-        ctx.session.state["rep_performance_profile"] = rep_performance_profile
-
+        #
+        # Must go through actions.state_delta, not a direct
+        # ctx.session.state[...] = ... mutation — session_service.get_session()
+        # always returns a deepcopy of the stored session (see
+        # InMemorySessionService._get_session_impl), so a direct mutation only
+        # ever lives in this run's ephemeral copy. Only the state_delta on a
+        # yielded event gets applied to the actual stored session by
+        # append_event(), which is what any LATER get_session() call (e.g.
+        # /agent/result after this run has finished) reads from.
         print("\n── rep_performance_profile ──")
         print(json.dumps(rep_performance_profile, indent=2, default=str))
 
-        yield Event(author=self.name, content=None)
+        yield Event(
+            author=self.name,
+            content=None,
+            actions=EventActions(
+                state_delta={"rep_performance_profile": rep_performance_profile}
+            ),
+        )
 
 
 # ─────────────────────────────────────────────

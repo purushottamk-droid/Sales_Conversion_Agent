@@ -3,7 +3,9 @@ os.environ["GOOGLE_CLOUD_PROJECT"] = "atgeir-moae-dev"
 os.environ["GOOGLE_CLOUD_LOCATION"] = "us-central1"
 os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "1"
 
+import copy
 import json
+from datetime import date
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -104,6 +106,73 @@ async def stream_events(event_gen):
 
 
 # ─────────────────────────────────────────────
+# Helpers — /agent/result enrichment
+#
+# Both of these are deliberately plain Python, not LLM-computed: the
+# severity->points mapping is a trivial deterministic lookup (no reason to
+# risk the model forgetting/misapplying it on some objections), and the
+# forecast is a multi-deal sum a flash-lite model isn't reliable enough to
+# be trusted with. See account_analysis_agent's conversion_score rubric
+# (output_schema.py / prompt.py STEP 3) — these numbers must stay in sync
+# with it, since this is describing the effect of that same rubric.
+# ─────────────────────────────────────────────
+
+SEVERITY_SCORE_IMPACT = {"high": 10, "medium": 5, "low": 2}
+
+
+def _with_score_impact_if_resolved(account_analysis_results: dict | None) -> dict | None:
+    """Returns a deep copy of account_analysis_results with
+    score_impact_if_resolved set on every customer_objections[] entry,
+    across every account — never mutates session state, so the raw LLM
+    output stays exactly as produced for audit purposes."""
+    if not account_analysis_results:
+        return account_analysis_results
+
+    enriched = copy.deepcopy(account_analysis_results)
+    for account in enriched.get("accounts", []):
+        for objection in account.get("customer_objections", []):
+            objection["score_impact_if_resolved"] = SEVERITY_SCORE_IMPACT.get(
+                objection.get("severity"), 0
+            )
+    return enriched
+
+
+def _compute_forecasted_arr_this_month(
+    rep_performance_profile: dict | None, account_analysis_results: dict | None
+) -> float | None:
+    """Already-closed-won ARR this month + Σ deal_value_arr × conversion_score/100
+    across open deals closing this calendar month — a probability-weighted
+    pipeline forecast. Cross-references the two payloads by opportunity_id."""
+    if not rep_performance_profile or not account_analysis_results:
+        return None
+
+    already_closed = (
+        rep_performance_profile.get("quota_attainment", {}).get("closed_won_arr_current_month") or 0
+    )
+
+    deals_by_opp_id = {
+        acc["opportunity_data"]["opportunity_id"]: acc["opportunity_data"]
+        for acc in rep_performance_profile.get("assigned_accounts", [])
+        if acc.get("opportunity_data", {}).get("opportunity_id")
+    }
+
+    current_month_key = date.today().strftime("%Y-%m")
+    weighted_pipeline = 0.0
+    for account in account_analysis_results.get("accounts", []):
+        deal = deals_by_opp_id.get(account.get("opportunity_id"))
+        if not deal:
+            continue
+        close_date_target = deal.get("timeline_and_velocity", {}).get("close_date_target")
+        if not close_date_target or close_date_target[:7] != current_month_key:
+            continue
+        deal_value_arr = deal.get("deal_value_arr") or 0
+        conversion_score = account.get("conversion_score") or 0
+        weighted_pipeline += deal_value_arr * (conversion_score / 100)
+
+    return round(already_closed + weighted_pipeline, 2)
+
+
+# ─────────────────────────────────────────────
 # ENDPOINT 1 — Health check
 # ─────────────────────────────────────────────
 
@@ -180,9 +249,18 @@ async def get_result(session_id: str, user_id: str):
     Call this AFTER you receive event: done from /agent/run.
 
     Returns:
-    - rep_performance_profile  → rep + quota + pipeline + Gong data (Agent 1)
-    - account_analysis_results → rep-level verdict + per-account analysis (Agent 2)
-    - actions_taken            → real actions executed (Agent 3)
+    - rep_performance_profile   → rep + quota + pipeline + Gong data (Agent 1)
+    - account_analysis_results  → rep-level verdict + per-account analysis
+                                   (Agent 2), with score_impact_if_resolved
+                                   filled in on every customer_objections[]
+                                   entry (deterministic, see helpers above)
+    - actions_taken             → real actions executed (Agent 3)
+    - current_target_arr        → rep's monthly ARR quota target (same
+                                   figure as rep_performance_profile.
+                                   historical_targets.monthly_arr_target_past_3_months,
+                                   surfaced at the top level for convenience)
+    - forecasted_arr_this_month → probability-weighted revenue projection
+                                   for the current month (see helpers above)
     """
     session = await session_service.get_session(
         app_name="sales_rep_pipeline",
@@ -192,11 +270,22 @@ async def get_result(session_id: str, user_id: str):
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
 
+    rep_performance_profile = session.state.get("rep_performance_profile")
+    account_analysis_results = session.state.get("account_analysis_results")
+
     return {
         "session_id":                session_id,
-        "rep_performance_profile":   session.state.get("rep_performance_profile"),
-        "account_analysis_results":  session.state.get("account_analysis_results"),
+        "rep_performance_profile":   rep_performance_profile,
+        "account_analysis_results":  _with_score_impact_if_resolved(account_analysis_results),
         "actions_taken":             session.state.get("actions_taken"),
+        "current_target_arr": (
+            (rep_performance_profile or {})
+            .get("historical_targets", {})
+            .get("monthly_arr_target_past_3_months")
+        ),
+        "forecasted_arr_this_month": _compute_forecasted_arr_this_month(
+            rep_performance_profile, account_analysis_results
+        ),
     }
 
 
