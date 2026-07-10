@@ -14,3 +14,11 @@ pydantic
 python-dotenv
 
 mcp
+
+# ── Gmail/Calendar OAuth — Agent 3 notify_manager/message_rep ──
+# Confirmed missing directly: a fresh install from this file alone
+# crashed api.py's import chain (auth/auth.py -> googleapiclient),
+# which crashed the whole Cloud Run container before it could bind
+# to the health-check port.
+google-api-python-client
+google-auth-oauthlib
