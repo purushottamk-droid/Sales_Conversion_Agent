@@ -10,11 +10,13 @@ be ready, points the pipeline's MCP client at it, runs the pipeline for
 one rep, prints the full final session state, then always tears the
 server subprocess down (success or failure).
 
-Auth note: unlike feature/gunjan, this branch's MCP client
-(scripts/data_collection_custom_agent/agent.py's _call_mcp_tool) sends no
-auth headers at all — Cloud Run IAM is what gates access in production,
-not the server itself, so no identity-token bypass is needed here to hit
-a local, unauthenticated instance.
+Auth note: scripts/data_collection_custom_agent/agent.py's _call_mcp_tool
+mints a real GCP identity token for Cloud Run IAM (the deployed
+salesforce_mcp_server is --no-allow-unauthenticated), which requires
+service-account or Cloud-Run-metadata credentials not available with a
+plain user ADC login. Since our local server has no IAM check to satisfy
+anyway, this script patches that one function in-process to a dummy
+token — see main() below. Nothing on disk is modified.
 
 MCP_SALESFORCE_SERVER_URL is read at MODULE IMPORT TIME by agent.py (a
 module-level constant, not read lazily per-call), so it must be set
