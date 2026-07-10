@@ -11,9 +11,11 @@ from pydantic import BaseModel
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.adk.agents.run_config import RunConfig, StreamingMode
+from google.adk.events import Event, EventActions
 from google.genai import types
 
 from scripts.SequentialAgent import root_agent
+from scripts.chat_agent import chat_agent
 
 # ─────────────────────────────────────────────
 # App setup
@@ -28,6 +30,19 @@ runner = Runner(
     app_name="sales_rep_pipeline",
     session_service=session_service,
 )
+
+# Separate Runner for the chat agent — Runner is bound to one fixed agent,
+# and root_agent is a SequentialAgent permanently wired to the 3-step
+# pipeline, not the conversational chat_agent. Shares the same
+# session_service/app_name as `runner` above so it reads/writes the SAME
+# sessions the pipeline already created — no second state system.
+chat_runner = Runner(
+    agent=chat_agent,
+    app_name="sales_rep_pipeline",
+    session_service=session_service,
+)
+
+CHAT_HISTORY_MAX_TURNS = 20
 
 
 # ─────────────────────────────────────────────
@@ -44,6 +59,12 @@ class CreateSessionRequest(BaseModel):
 class RunRequest(BaseModel):
     user_id: str
     session_id: str
+
+
+class ChatRequest(BaseModel):
+    user_id: str
+    session_id: str
+    message: str
 
 
 # ─────────────────────────────────────────────
@@ -176,4 +197,69 @@ async def get_result(session_id: str, user_id: str):
         "rep_performance_profile":   session.state.get("rep_performance_profile"),
         "account_analysis_results":  session.state.get("account_analysis_results"),
         "actions_taken":             session.state.get("actions_taken"),
+    }
+
+
+# ─────────────────────────────────────────────
+# ENDPOINT 5 — Chat with the completed pipeline result
+# ─────────────────────────────────────────────
+
+@api.post("/agent/chat")
+async def chat(req: ChatRequest):
+    """
+    Free-form Q&A grounded in a completed pipeline run — the rep asks a
+    question, chat_agent answers using only rep_performance_profile /
+    account_analysis_results / actions_taken already in this session's
+    state (no new data fetching, no new actions). Synchronous JSON reply,
+    not SSE — a single grounded LLM turn is fast enough not to need it.
+
+    Must call /agent/sessions + /agent/run first — this reuses that SAME
+    session_id so chat_agent can read what the pipeline already wrote.
+    """
+    session = await session_service.get_session(
+        app_name="sales_rep_pipeline",
+        user_id=req.user_id,
+        session_id=req.session_id,
+    )
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    if session.state.get("account_analysis_results") is None:
+        raise HTTPException(
+            status_code=409,
+            detail="Run the pipeline first via /agent/run before starting a chat.",
+        )
+
+    content = types.Content(role="user", parts=[types.Part(text=req.message)])
+
+    reply_text = ""
+    async for event in chat_runner.run_async(
+        user_id=req.user_id,
+        session_id=req.session_id,
+        new_message=content,
+    ):
+        if event.is_final_response() and event.content and event.content.parts:
+            reply_text = "".join(
+                p.text for p in event.content.parts
+                if hasattr(p, "text") and p.text
+            )
+
+    chat_history = session.state.get("chat_history", []) + [
+        {"role": "rep", "text": req.message},
+        {"role": "assistant", "text": reply_text},
+    ]
+    chat_history = chat_history[-(CHAT_HISTORY_MAX_TURNS * 2):]
+
+    await session_service.append_event(
+        session,
+        Event(
+            author="chat_agent",
+            actions=EventActions(state_delta={"chat_history": chat_history}),
+        ),
+    )
+
+    return {
+        "session_id": req.session_id,
+        "reply": reply_text,
+        "turn_count": len(chat_history) // 2,
     }
