@@ -159,9 +159,9 @@ async def get_result(session_id: str, user_id: str):
     Call this AFTER you receive event: done from /agent/run.
 
     Returns:
-    - account_analysis_results → per-account AI analysis (Agent 2)
-    - rep_assessment_result    → cross-account rep verdict (Agent 3)
-    - actions_taken            → real actions executed (Agent 4)
+    - rep_performance_profile  → rep + quota + pipeline + Gong data (Agent 1)
+    - account_analysis_results → rep-level verdict + per-account analysis (Agent 2)
+    - actions_taken            → real actions executed (Agent 3)
     """
     session = await session_service.get_session(
         app_name="sales_rep_pipeline",
@@ -172,8 +172,8 @@ async def get_result(session_id: str, user_id: str):
         raise HTTPException(status_code=404, detail="Session not found")
 
     return {
-        "session_id":               session_id,
-        "account_analysis_results": session.state.get("account_analysis_results"),
-        # "rep_assessment_result":    session.state.get("rep_assessment_result"),
-        "actions_taken":            session.state.get("actions_taken"),
+        "session_id":                session_id,
+        "rep_performance_profile":   session.state.get("rep_performance_profile"),
+        "account_analysis_results":  session.state.get("account_analysis_results"),
+        "actions_taken":             session.state.get("actions_taken"),
     }
