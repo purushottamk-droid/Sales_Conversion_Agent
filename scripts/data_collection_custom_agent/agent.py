@@ -18,8 +18,8 @@ from mcp.client.sse import sse_client
 # CONFIG
 # ─────────────────────────────────────────────
 GCP_PROJECT_ID = "atgeir-moae-dev"
-#DATASET_ID     = "Agentic_AI_Demo"
-DATASET_ID     = "July26_data"
+DATASET_ID     = "Agentic_AI_Demo"
+
 TABLE_EVERSTAGE  = f"{GCP_PROJECT_ID}.{DATASET_ID}.Everstage_Data"
 TABLE_GONG       = f"{GCP_PROJECT_ID}.{DATASET_ID}.Gong_Calls_Data"
 
