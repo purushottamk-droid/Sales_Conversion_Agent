@@ -337,6 +337,11 @@ def build_quota_attainment(everstage: dict, attainment_actuals: dict, pipeline_o
         # "current sales" dollar figure rather than just a percentage.
         "closed_won_arr_current_month": attainment_actuals["closed_won_arr_current_month"],
         "closed_won_arr_trailing_3_months": attainment_actuals["closed_won_arr_trailing_3_months"],
+        # This month's own Everstage target — distinct from
+        # historical_targets.monthly_arr_target_past_3_months, which is a
+        # 3-month average. Also previously computed here (to derive
+        # monthly_pct/pipeline_pct above) but discarded before returning.
+        "current_month_quota_arr": current_month_target,
     }
 
 

@@ -255,12 +255,16 @@ async def get_result(session_id: str, user_id: str):
                                    filled in on every customer_objections[]
                                    entry (deterministic, see helpers above)
     - actions_taken             → real actions executed (Agent 3)
-    - current_target_arr        → rep's monthly ARR quota target (same
-                                   figure as rep_performance_profile.
-                                   historical_targets.monthly_arr_target_past_3_months,
-                                   surfaced at the top level for convenience)
-    - forecasted_arr_this_month → probability-weighted revenue projection
-                                   for the current month (see helpers above)
+    - current_target_arr         → rep's THIS-MONTH ARR quota (same figure
+                                    as rep_performance_profile.quota_attainment.
+                                    current_month_quota_arr, surfaced at the
+                                    top level for convenience — NOT the
+                                    3-month average from historical_targets)
+    - current_month_arr_achieved → ARR already closed-won this month (same
+                                    figure as rep_performance_profile.
+                                    quota_attainment.closed_won_arr_current_month)
+    - forecasted_arr_this_month  → probability-weighted revenue projection
+                                    for the current month (see helpers above)
     """
     session = await session_service.get_session(
         app_name="sales_rep_pipeline",
@@ -272,17 +276,15 @@ async def get_result(session_id: str, user_id: str):
 
     rep_performance_profile = session.state.get("rep_performance_profile")
     account_analysis_results = session.state.get("account_analysis_results")
+    quota_attainment = (rep_performance_profile or {}).get("quota_attainment", {})
 
     return {
         "session_id":                session_id,
         "rep_performance_profile":   rep_performance_profile,
         "account_analysis_results":  _with_score_impact_if_resolved(account_analysis_results),
         "actions_taken":             session.state.get("actions_taken"),
-        "current_target_arr": (
-            (rep_performance_profile or {})
-            .get("historical_targets", {})
-            .get("monthly_arr_target_past_3_months")
-        ),
+        "current_target_arr":        quota_attainment.get("current_month_quota_arr"),
+        "current_month_arr_achieved": quota_attainment.get("closed_won_arr_current_month"),
         "forecasted_arr_this_month": _compute_forecasted_arr_this_month(
             rep_performance_profile, account_analysis_results
         ),
