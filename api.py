@@ -15,6 +15,8 @@ from google.adk.sessions import InMemorySessionService
 from google.adk.agents.run_config import RunConfig, StreamingMode
 from google.adk.events import Event, EventActions
 from google.genai import types
+from fastapi.middleware.cors import CORSMiddleware
+
 
 from scripts.SequentialAgent import root_agent
 from scripts.chat_agent import chat_agent
@@ -24,6 +26,18 @@ from scripts.chat_agent import chat_agent
 # ─────────────────────────────────────────────
 
 api = FastAPI(title="Sales Rep Performance Agent — SSE API")
+
+api.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:3000",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"],
+)
 
 session_service = InMemorySessionService()
 
