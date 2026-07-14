@@ -5,7 +5,7 @@ export default function Hero({ repName, setRepName, onRun, disabled }) {
   return (
     <section className="text-center mb-14">
       <div className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-wide uppercase text-brand-500 bg-brand-100 dark:bg-brand-500/10 px-3.5 py-1.5 rounded-full mb-[18px]">
-        3-Agent Sequential Pipeline
+        3-Agent Sequential Workflow
       </div>
       <h1 className="text-[clamp(30px,5vw,46px)] font-bold leading-tight mb-3.5 tracking-tight">
         Turn scattered CRM signals
@@ -14,7 +14,7 @@ export default function Hero({ repName, setRepName, onRun, disabled }) {
       </h1>
       <p className="text-base text-[#55698c] dark:text-[#8ca0c2] max-w-[560px] mx-auto mb-[30px] leading-relaxed">
         Enter a sales rep to run the pipeline:pull Salesforce pipeline data &amp; Gong call intelligence
-        &amp;nd Everstage quota targets, then reason over deal health and attainment risk — and act on it automatically.
+        And Everstage quota targets, then reason over deal health and attainment risk — and act on it automatically.
       </p>
 
       <div className="flex gap-2.5 justify-center flex-wrap mb-3.5">
@@ -34,7 +34,7 @@ export default function Hero({ repName, setRepName, onRun, disabled }) {
           className="flex items-center gap-2 bg-gradient-to-br from-brand-500 to-brand-400 text-white border-none rounded-xl px-[22px] text-[14.5px] font-semibold cursor-pointer shadow-[0_8px_22px_-6px_rgba(46,111,224,0.4)] transition-transform hover:-translate-y-px disabled:opacity-55 disabled:cursor-not-allowed disabled:translate-y-0 whitespace-nowrap"
         >
           <Play className="w-[15px] h-[15px]" fill="white" strokeWidth={2} />
-          Run pipeline
+          Run Agentic Workflow
         </button>
       </div>
 

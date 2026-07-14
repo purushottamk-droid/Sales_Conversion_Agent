@@ -272,7 +272,11 @@ export function normalizeAccountAnalysis(raw) {
     conversionScore: acc.conversion_score,
     conversionScoreReasoning: acc.conversion_score_reasoning,
     missedCommitments: acc.missed_commitments ?? [],
-    customerObjections: acc.customer_objections ?? [],
+    customerObjections: (acc.customer_objections ?? []).map((obj) => ({
+      objection: obj.objection,
+      severity: obj.severity,
+      scoreImpactIfResolved: obj.score_impact_if_resolved,
+    })),
     communicationGaps: acc.communication_gaps ?? [],
     riskAction: acc.risk_action,
     opportunityAction: acc.opportunity_action,
@@ -290,6 +294,9 @@ export function normalizeAccountAnalysis(raw) {
     bestDealsToPursue: raw.best_deals_to_pursue ?? [],
     keySuggestions: raw.key_suggestions ?? [],
     risk: deriveRiskFromAttainment(raw.rep_target_attainment_score),
+    currentTargetArr: raw.current_target_arr,
+    currentMonthArrAchieved: raw.current_month_arr_achieved,
+    forecastedArrThisMonth: raw.forecasted_arr_this_month,
   };
 
   return { summary, accounts };

@@ -116,7 +116,7 @@ export default function Pipeline({
     <section className="mb-16">
       <div className="mb-6">
         <div className="text-xs font-bold tracking-wide uppercase text-brand-500 mb-1.5">
-          Pipeline
+          Agent Workflow
         </div>
         <h2 className="text-[23px] font-semibold">Three agents, one run</h2>
       </div>

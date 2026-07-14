@@ -134,6 +134,7 @@
 import { useRef, useEffect } from 'react';
 import { Check, Briefcase, AlertTriangle, TrendingUp, Lightbulb } from 'lucide-react';
 import AccountCard from './AccountCard';
+import { formatCurrency } from '../utils/adaptResult';
 
 const RISK_STYLES = {
   High: 'bg-rose-500/10 text-rose-500',
@@ -216,6 +217,33 @@ export default function Dashboard({
           <div className="font-display text-2xl font-semibold">{accounts.length}</div>
           <div className="text-[11.5px] text-slate-400 dark:text-ink-400 mt-0.5">
             {summary.criticalDeals?.length ?? 0} critical · {summary.bestDealsToPursue?.length ?? 0} best-to-pursue
+          </div>
+        </div>
+      </div>
+            
+      <div className="grid grid-cols-3 max-md:grid-cols-1 gap-3.5 mb-4">
+        <div className="bg-white dark:bg-ink-700 border border-brand-200 dark:border-ink-500 rounded-2xl p-[18px] shadow-[0_10px_30px_-12px_rgba(30,70,140,0.18)]">
+          <div className="text-[11.5px] uppercase tracking-wide text-slate-400 dark:text-ink-400 font-bold mb-2">
+            CURRENT MONTH TARGET ARR
+          </div>
+          <div className="font-display text-2xl font-semibold">
+            {formatCurrency(summary.currentTargetArr)}
+          </div>
+        </div>
+        <div className="bg-white dark:bg-ink-700 border border-brand-200 dark:border-ink-500 rounded-2xl p-[18px] shadow-[0_10px_30px_-12px_rgba(30,70,140,0.18)]">
+          <div className="text-[11.5px] uppercase tracking-wide text-slate-400 dark:text-ink-400 font-bold mb-2">
+            CURRENT MONTH ACHEIVED ARR
+          </div>
+          <div className="font-display text-2xl font-semibold">
+            {formatCurrency(summary.currentMonthArrAchieved)}
+          </div>
+        </div>
+        <div className="bg-white dark:bg-ink-700 border border-brand-200 dark:border-ink-500 rounded-2xl p-[18px] shadow-[0_10px_30px_-12px_rgba(30,70,140,0.18)]">
+          <div className="text-[11.5px] uppercase tracking-wide text-slate-400 dark:text-ink-400 font-bold mb-2">
+            CURRENT MONTH FORECASTED ARR
+          </div>
+          <div className="font-display text-2xl font-semibold">
+            {formatCurrency(summary.forecastedArrThisMonth)}
           </div>
         </div>
       </div>

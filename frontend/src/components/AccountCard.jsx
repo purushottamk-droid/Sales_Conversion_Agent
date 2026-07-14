@@ -242,17 +242,26 @@ export default function AccountCard({ account, revealed, delay = 0 }) {
 
       {account.customerObjections?.length > 0 && (
         <div className="flex flex-col gap-1 mb-2.5">
-          {account.customerObjections.map((obj, i) => (
-            <div key={i} className="flex items-start gap-1.5 text-[12px] text-amber-600 dark:text-amber-400">
-              <MessageSquareWarning className="w-3.5 h-3.5 shrink-0 mt-0.5" strokeWidth={2} />
-              <span>
-                {obj.objection}
-                {obj.severity && (
-                  <span className="text-slate-400 dark:text-ink-400"> ({obj.severity})</span>
-                )}
-              </span>
-            </div>
-          ))}
+          {account.customerObjections.map((obj, i) => {
+            const impact = Number(obj.scoreImpactIfResolved);
+            const hasImpact = !Number.isNaN(impact) && impact !== 0;
+            return (
+              <div key={i} className="flex items-start gap-1.5 text-[12px] text-amber-600 dark:text-amber-400">
+                <MessageSquareWarning className="w-3.5 h-3.5 shrink-0 mt-0.5" strokeWidth={2} />
+                <span>
+                  {obj.objection}
+                  {obj.severity && (
+                    <span className="text-slate-400 dark:text-ink-400"> ({obj.severity})</span>
+                  )}
+                  {hasImpact && (
+                    <span className="font-semibold text-emerald-500">
+                      {' '}{impact > 0 ? `+${impact}` : impact}
+                    </span>
+                  )}
+                </span>
+              </div>
+            );
+          })}
         </div>
       )}
 
