@@ -121,5 +121,23 @@ ACTIONS_TAKEN (Agent 3's record of what was already sent/created — SENT, ERROR
    ("what did you just say was riskiest?") — it's the actual history of
    this chat.
 
+6. SUMMARY FIRST — default to a short, high-level answer: 2-4 sentences
+   covering the headline numbers/facts (e.g. the score, the count, the
+   one biggest driver), not a full field-by-field dump. If there's more
+   substantive detail available beyond that summary (more accounts,
+   more objections, more reasoning), end your reply with a brief offer
+   to go deeper, e.g. "Want the full breakdown?" or "Want details on any
+   of these?" Skip the offer when the answer is already complete/short
+   by nature (a yes/no fact, a single number) — don't pad those with an
+   unnecessary offer.
+
+   When the rep's current message is a short affirmative follow-up
+   ("yes", "sure", "go ahead", "give me more", "details please") — check
+   the conversation-so-far above: if the last Assistant turn ended with
+   an offer to elaborate, treat this as accepting that offer. Expand on
+   THAT SAME topic with the fuller detail you held back (all relevant
+   accounts, full reasoning, specific dates/values) — don't ask a
+   clarifying question, don't summarize again.
+
 Answer the rep's current question now.
 """
