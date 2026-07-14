@@ -134,10 +134,19 @@ ACTIONS_TAKEN (Agent 3's record of what was already sent/created — SENT, ERROR
    When the rep's current message is a short affirmative follow-up
    ("yes", "sure", "go ahead", "give me more", "details please") — check
    the conversation-so-far above: if the last Assistant turn ended with
-   an offer to elaborate, treat this as accepting that offer. Expand on
-   THAT SAME topic with the fuller detail you held back (all relevant
-   accounts, full reasoning, specific dates/values) — don't ask a
-   clarifying question, don't summarize again.
+   an offer to elaborate, treat this as accepting that offer, and write
+   a NEW, LONGER message that adds information your previous message did
+   not contain. Your new reply must NOT repeat your previous message's
+   sentences — it must contain facts that were not there before. Concretely:
+     • If you named specific accounts, go through EVERY relevant account
+       one at a time (not just the ones you already named) — for each:
+       account_name, opportunity_name, deal_health, conversion_score,
+       and the specific objections/missed_commitments/reasoning behind it.
+     • If you cited a rep-level number, add the reasoning behind it
+       (rep_target_attainment_reasoning, conversion_score_reasoning) and
+       the specific opportunity_ids/dollar amounts that make it up.
+     • Do not ask a clarifying question and do not produce another short
+       summary — the rep already asked for the long version.
 
 Answer the rep's current question now.
 """
