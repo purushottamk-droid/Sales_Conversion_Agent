@@ -1,6 +1,7 @@
 import asyncio
 import json
 import os
+import re
 from datetime import date
 from urllib.parse import urlsplit
 
@@ -24,7 +25,7 @@ DATASET_ID     = "July26_data"
 #TABLE_EVERSTAGE  = f"{GCP_PROJECT_ID}.{DATASET_ID}.Everstage_Data"
 #TABLE_GONG       = f"{GCP_PROJECT_ID}.{DATASET_ID}.Gong_Calls_Data"
 TABLE_EVERSTAGE  = f"{GCP_PROJECT_ID}.{DATASET_ID}.everstage_data_latest"
-TABLE_GONG       = f"{GCP_PROJECT_ID}.{DATASET_ID}.gong_calls_data_latest"
+TABLE_GONG       = f"{GCP_PROJECT_ID}.{DATASET_ID}.gong_call_data_latest"
 
 
 # Salesforce data (opportunities, stage benchmarks, rep-name lookup,
@@ -125,8 +126,11 @@ def _fetch_everstage_sync(rep_name: str) -> dict:
         FROM `{TABLE_EVERSTAGE}` e
         WHERE e.REP_NAME = @rep_name
           AND (
-                -- current month + prior 2 months, monthly quota rows
-                (UPPER(e.QUOTA_PERIOD) = 'MONTHLY'
+                -- current month + prior 2 months, monthly quota rows.
+                -- QUOTA_PERIOD identifies a monthly row as 'YYYY-M<n>'
+                -- (e.g. '2026-M7') in this table, not the literal string
+                -- 'MONTHLY' used by the prior dataset's schema.
+                (REGEXP_CONTAINS(e.QUOTA_PERIOD, r'^\d{{4}}-M\d{{1,2}}$')
                  AND DATE_TRUNC(e.SCHEDULE_START, MONTH) BETWEEN
                      DATE_SUB(DATE_TRUNC(CURRENT_DATE(), MONTH), INTERVAL 2 MONTH)
                      AND DATE_TRUNC(CURRENT_DATE(), MONTH))
@@ -138,7 +142,7 @@ def _fetch_everstage_sync(rep_name: str) -> dict:
     )
     rows = [dict(r) for r in client.query(query, job_config=job_config).result()]
 
-    monthly_rows = [r for r in rows if (r.get("QUOTA_PERIOD") or "").upper() == "MONTHLY"]
+    monthly_rows = [r for r in rows if re.match(r"^\d{4}-M\d{1,2}$", r.get("QUOTA_PERIOD") or "")]
     rep_tier = rows[0]["LEVEL"] if rows else None
 
     return {

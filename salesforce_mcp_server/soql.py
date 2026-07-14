@@ -26,37 +26,45 @@ below walks the dotted path to handle that.
 
 # clean_name -> Salesforce API field path (dotted for relationship traversal)
 #
-# NOTE — 4 fields below don't exist anywhere in this org's schema (checked
-# both standard and custom fields on Opportunity/Account via describe):
-# account_segment, discount_pct, days_open, current_stage_duration_days.
-# Kept mapped to a (nonexistent) field name as a placeholder — the SOQL
-# built from these will error until this is resolved. Options: drop them
-# from the output entirely, or confirm the data lives somewhere else.
+# NOTE — re-verified 2026-07-14 against the current org (Solventum data,
+# orgfarm-61908cdb26-dev-ed) via verify_field_map.py — this org's custom
+# field names differ from the org the mapping below was originally built
+# against. 5 fields still have no backing field anywhere in this org:
+# discount_pct, days_open, opportunity_manager_notes,
+# opportunity_previous_solution, days_since_last_touch. Kept mapped to a
+# placeholder field name and excluded from the SELECT list via
+# KNOWN_MISSING_FIELDS below — downstream code still gets these keys via
+# parse_opportunity_record, just always None. opportunity_manager_notes /
+# opportunity_previous_solution / days_since_last_touch DO feed Agent 2's
+# analysis prompt (critical_business_issue.manager_notes/previous_solution,
+# engagement_signals.days_since_last_touch) as supporting context — not
+# part of the core conversion_score rubric, but analysis quality is
+# somewhat reduced without them until a real replacement field is found.
 FIELD_MAP = {
-    "opportunity_id":               "Opportunity_ID__c",               # NOT the Salesforce record Id — Gong's Gong_Calls_Data.OPPORTUNITY_ID joins on this external-ID custom field instead, confirmed against real data (Id 006fj00000HU2x4AAD has Opportunity_ID__c 006DMO000000000100200, which matches 5 real Gong call rows)
+    "opportunity_id":               "Opportunity_ID__c",               # NOT the Salesforce record Id — Gong's OPPORTUNITY_ID joins on this external-ID custom field instead, confirmed against real data (all 20 of Daniel Lee's opportunity_ids matched Gong calls in July26_data.gong_call_data_latest)
     "opportunity_name":              "Name",
     "account_id":                    "AccountId",
     "account_name":                  "Account.Name",
     "industry":                      "Account.Industry",
-    "account_segment":               "Account.Segment__c",              # NOT FOUND — no such field in this org
+    "account_segment":               "Account_Segment__c",             # re-verified 2026-07-14 — lives directly on Opportunity in this org, not a relationship traversal to Account
     "opportunity_type":              "Type",
     "current_stage":                 "StageName",
     "forecast_category":             "ForecastCategoryName",
-    "deal_value_arr":                "ARR__c",                          # confirmed via null_check.py — Amount is 100% null in this org, ARR__c is 100% populated
+    "deal_value_arr":                "Product_ARR__c",                 # re-verified 2026-07-14 — this org's equivalent of the old ARR__c
     "discount_pct":                  "Discount__c",                     # NOT FOUND — no such field in this org
     "created_date":                  "CreatedDate",
     "close_date_target":             "CloseDate",
     "days_open":                     "Days_in_Pipeline__c",             # NOT FOUND — no such field in this org
-    "current_stage_duration_days":   "Days_Since_Last_Activity__c",     # substitute — real Days_in_Stage-equivalent field is 100% null in this org, using Days Since Last Activity as the closest available proxy per user direction
-    "days_since_last_touch":         "Days_Since_Last_Activity__c",     # confirmed
-    "next_step":                     "Next_Step__c",                   # confirmed via null_check.py — NextStep is 100% null in this org, Next_Step__c is 100% populated
-    "risks":                         "Risks__c",                       # confirmed
-    "cbi_raw_text":                  "CBIs__c",                        # confirmed
-    "opportunity_manager_notes":     "Manager_Notes__c",               # confirmed
+    "current_stage_duration_days":   "Opportunity_Days_in_Stage__c",   # re-verified 2026-07-14 — this org has an actual "days in stage" field (no longer a Days_Since_Last_Activity proxy)
+    "days_since_last_touch":         "Days_Since_Last_Activity__c",     # NOT FOUND — no such field in this org; standard LastActivityDate exists but is a date, not a days-count, needs client-side computation if resolved
+    "next_step":                     "NextStep",                       # re-verified 2026-07-14 — this org uses the standard field, not a Next_Step__c custom field
+    "risks":                         "Opportunity_Risks__c",           # re-verified 2026-07-14
+    "cbi_raw_text":                  "Opportunity_CBIs__c",            # re-verified 2026-07-14
+    "opportunity_manager_notes":     "Manager_Notes__c",               # NOT FOUND — no such field in this org; closest candidate Opportunity_Manager_Commit__c looked like a commit-category flag, not free text, so left unmapped pending confirmation
     "sales_rep_name":                "Sales_Rep_Name__c",              # confirmed — Owner.Name and Sales_Rep_Name__c both 100% populated but disagree on every sampled record; Owner.Name is just the Salesforce login that owns the record (often a shared/admin account), Sales_Rep_Name__c is the actual rep this pipeline is about
-    "opportunity_previous_solution": "Previous_Solution__c",           # confirmed
-    "contact_name":                  "Contact_Name__c",                # confirmed
-    "contact_title":                 "Contact_Title__c",               # confirmed
+    "opportunity_previous_solution": "Previous_Solution__c",           # NOT FOUND — no such field in this org; closest candidate CurrentGenerators__c had unclear semantic match, left unmapped pending confirmation
+    "contact_name":                  "Opportunity_Contact_Name__c",    # re-verified 2026-07-14
+    "contact_title":                 "Opportunity_Contact_Title__c",   # re-verified 2026-07-14
     "is_won":                        "IsWon",
     "is_closed":                     "IsClosed",
     "owner_id":                      "OwnerId",                        # NOT usable for per-rep scoping — every Opportunity in this org shares one OwnerId (a shared/integration user). Kept here only so callers can recover a real, valid Salesforce User Id for Task-assignment purposes (see create_task) — Sales_Rep_Name__c has no corresponding Salesforce User record to assign Tasks to instead.
@@ -73,7 +81,10 @@ _REP_NAME_FIELD = "Sales_Rep_Name__c"
 # (confirmed directly: a real query against this org 400'd until these
 # were excluded), so these must never appear in a SELECT clause. Downstream
 # code still gets these keys via parse_opportunity_record, just always None.
-KNOWN_MISSING_FIELDS = {"account_segment", "discount_pct", "days_open"}
+KNOWN_MISSING_FIELDS = {
+    "discount_pct", "days_open",
+    "opportunity_manager_notes", "opportunity_previous_solution", "days_since_last_touch",
+}
 
 
 def _queryable_fields() -> set[str]:
