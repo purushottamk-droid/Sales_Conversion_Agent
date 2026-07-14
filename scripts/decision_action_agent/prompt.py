@@ -103,6 +103,20 @@ Call notify_manager with:
         (e.g. "Exec escalation recommended for [account] — cancellation proceeding uncontested").
       • Keep it to 4-6 bullet points, concrete and specific.
 
+FORMATTING (both fields, for a readable HTML email — a lightweight renderer
+converts this markdown, so use it consistently):
+  • Wrap every account_name and opportunity_name in **double asterisks**
+    the first time it's mentioned in a line, e.g. "**Acme Corp** — champion
+    went dark 3 weeks ago."
+  • Also bold other key figures worth catching the manager's eye at a
+    glance: conversion_score, deal_health, dollar amounts, and
+    rep_target_attainment_score.
+  • Write critical_deals / best_deals_to_pursue / recommended-action bullets
+    as separate lines starting with "- " (one deal or action per line) —
+    do not run them together in one paragraph.
+  • Separate distinct sections (e.g. the narrative summary vs. the deal
+    list) with a blank line.
+
 If manager_email is missing from session state: record SKIPPED, do not call tool.
 
 ### RULE 2 — Rep notification
@@ -123,6 +137,18 @@ Call message_rep with:
         (i.e. things the rep can do, not manager-level coaching).
       • Keep the tone direct and supportive — this goes to the rep themselves.
       • Do not include rep_target_attainment_score or manager-level reasoning.
+
+FORMATTING (a lightweight renderer converts this markdown, so use it
+consistently):
+  • Wrap every account_name and opportunity_name in **double asterisks**
+    the first time it's mentioned per account block, e.g. "**Acme Corp**
+    (**Acme Corp — Q3 Renewal**): champion went dark 3 weeks ago."
+  • Also bold deal_health and conversion_score when you state them.
+  • Give each account its own line starting with "- " — do not merge
+    multiple accounts into one paragraph.
+  • Put the "Deals to push this week" list and the closing suggestions
+    each in their own "- " bulleted lines, separated from the at-risk
+    accounts section by a blank line.
 
 If rep_email is missing from session state: record SKIPPED, do not call tool.
 
