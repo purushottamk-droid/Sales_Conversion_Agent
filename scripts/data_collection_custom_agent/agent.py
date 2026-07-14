@@ -18,10 +18,14 @@ from mcp.client.sse import sse_client
 # CONFIG
 # ─────────────────────────────────────────────
 GCP_PROJECT_ID = "atgeir-moae-dev"
-DATASET_ID     = "Agentic_AI_Demo"
+#DATASET_ID     = "Agentic_AI_Demo"
+DATASET_ID     = "July26_data"
 
-TABLE_EVERSTAGE  = f"{GCP_PROJECT_ID}.{DATASET_ID}.Everstage_Data"
-TABLE_GONG       = f"{GCP_PROJECT_ID}.{DATASET_ID}.Gong_Calls_Data"
+#TABLE_EVERSTAGE  = f"{GCP_PROJECT_ID}.{DATASET_ID}.Everstage_Data"
+#TABLE_GONG       = f"{GCP_PROJECT_ID}.{DATASET_ID}.Gong_Calls_Data"
+TABLE_EVERSTAGE  = f"{GCP_PROJECT_ID}.{DATASET_ID}.everstage_data_latest"
+TABLE_GONG       = f"{GCP_PROJECT_ID}.{DATASET_ID}.gong_calls_data_latest"
+
 
 # Salesforce data (opportunities, stage benchmarks, rep-name lookup,
 # closed-won attainment) now comes from the custom Salesforce MCP server
