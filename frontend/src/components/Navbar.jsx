@@ -79,8 +79,8 @@ const STATUS_LABELS = {
 };
 
 const TABS = [
-  { id: 'sales', label: 'Sales' },
-  { id: 'nps', label: 'NPS' },
+  { id: 'sales', label: 'Sales Agent' },
+  { id: 'nps', label: 'NPS Agent' },
 ];
 
 export default function Navbar({ theme, toggleTheme, pipelineStatus, activeTab, setActiveTab }) {
