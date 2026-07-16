@@ -6,6 +6,7 @@ os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "1"
 import json
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from google.adk.runners import Runner
@@ -20,6 +21,20 @@ from scripts.SequentialAgent import root_agent
 # ─────────────────────────────────────────────
 
 api = FastAPI(title="Sales Rep Performance Agent — SSE API")
+
+
+api.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "https://sales-conversion-agent-final.web.app",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"],
+)
 
 session_service = InMemorySessionService()
 

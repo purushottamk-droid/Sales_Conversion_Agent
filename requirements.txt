@@ -14,3 +14,5 @@ pydantic
 python-dotenv
 
 mcp
+
+google-api-python-client
