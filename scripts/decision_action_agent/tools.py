@@ -16,8 +16,10 @@ by the model.
 
 import asyncio
 import base64
+import html
 import json
 import os
+import re
 from email.mime.text import MIMEText
 from urllib.parse import urlsplit
 

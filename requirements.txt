@@ -16,3 +16,7 @@ python-dotenv
 mcp
 
 google-api-python-client
+
+
+sqlalchemy
+aiosqlite

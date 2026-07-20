@@ -191,6 +191,7 @@ Apply Gong fine-tune — total delta bounded between -30 and +10:
   +5  per call with Positive call_outcome_category (max +10 total)
   -10 per unresolved HIGH severity objection
   -5  per unresolved MEDIUM severity objection
+  -2  per unresolved LOW severity objection
   -5  per missed commitment with status=overdue
   -10 if customer_sentiment trend is Negative (both last 2 calls Negative)
   +5  if customer_sentiment trend is Positive (both last 2 calls Positive)

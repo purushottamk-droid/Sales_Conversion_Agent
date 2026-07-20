@@ -1,0 +1,1256 @@
+{
+    "session_id": "b5208b08-a8dc-4bcb-ad67-213d408d89c0",
+    "rep_performance_profile": {
+        "rep_id": "005fj00000HdAk5AAF",
+        "rep_name": "Daniel Lee",
+        "rep_experience_tier": "Reps",
+        "historical_targets": {
+            "monthly_arr_target_past_3_months": 197820.1
+        },
+        "quota_attainment": {
+            "monthly_attainment_pct": 87.7,
+            "quarterly_attainment_pct": 71.4,
+            "pipeline_attainment_pct": 189.2,
+            "closed_won_arr_current_month": 794715.0,
+            "closed_won_arr_trailing_3_months": 794715.0,
+            "current_month_quota_arr": 905947.02
+        },
+        "active_pipeline": {
+            "total_open_pipeline_arr": 2821692.0,
+            "open_opportunity_count": 15
+        },
+        "assigned_accounts": [
+            {
+                "account_id": "001fj00001QbBy3AAF",
+                "account_name": "Quartz Industries",
+                "industry": "Life Sciences",
+                "account_segment": null,
+                "opportunity_data": {
+                    "opportunity_id": "006DMO000000000100208",
+                    "opportunity_name": "Quartz Industries - Permit Control - 2026 Cross-sell",
+                    "opportunity_type": "3 - Cross-sell",
+                    "current_stage": "Demo",
+                    "forecast_category": "Omitted",
+                    "deal_value_arr": 112125.0,
+                    "discount_pct": null,
+                    "timeline_and_velocity": {
+                        "days_open": null,
+                        "current_stage_duration_days": 14.0,
+                        "historical_stage_benchmark_days": null,
+                        "close_date_target": "2026-07-19",
+                        "target_date_pushes": null
+                    },
+                    "critical_business_issue": {
+                        "cbi_identified": "Accelerate compliance reporting",
+                        "quantified_impact": null,
+                        "buyer_alignment": "Salesforce contact of record: Jamie Miller (Procurement Lead)",
+                        "previous_solution": null,
+                        "manager_notes": "Daniel Lee owns next step. Primary focus is reduced manual reporting."
+                    },
+                    "engagement_signals": {
+                        "days_since_last_touch": 14.0,
+                        "next_scheduled_event": null
+                    },
+                    "risks": "No major risk identified",
+                    "next_step": null,
+                    "gong_interaction_analytics": {
+                        "latest_call_date": "2026-06-17",
+                        "next_scheduled_event": null,
+                        "recent_calls": [
+                            {
+                                "title": "Business Case Review - Quartz Industries - 006DMO000000000100208",
+                                "scheduled_date": "2026-06-17",
+                                "purpose": "Business case review",
+                                "meeting_stage_context": "Proposal",
+                                "meeting_summary": "Dummy sanitized Gong call for opportunity 006DMO000000000100208 / account Quartz Industries. Daniel Lee discussed Permit Control during business case review with the customer. Key topics included procurement documentation, decision criteria, timeline, stakeholder alignment, and next steps. Outcome: Technical validation pending.",
+                                "key_meeting_discussions": "Business Pain: Quartz Industries needs Permit Control to improve operational visibility and reduce manual follow-up. | Decision Process: Daniel Lee confirmed the active stage as Proposal and mapped next approval owner for opportunity 006DMO000000000100208. | Objection: Customer raised procurement documentation; response and owner were captured for follow-up. | Next Step: send ROI case and budget summary before the target close date 2026-07-19. | Agent Signal: Sentiment is Positive; ARR impact is 112,125; conversion action is to focus on technical validation pending.",
+                                "customer_sentiment": "Positive",
+                                "primary_objection": "procurement documentation",
+                                "call_outcome_category": "Positive",
+                                "call_outcome_name": "Technical validation pending",
+                                "next_step": "send ROI case and budget summary"
+                            },
+                            {
+                                "title": "Product Demo - Quartz Industries - 006DMO000000000100208",
+                                "scheduled_date": "2026-06-17",
+                                "purpose": "Demo",
+                                "meeting_stage_context": "Demo",
+                                "meeting_summary": "Dummy sanitized Gong call for opportunity 006DMO000000000100208 / account Quartz Industries. Daniel Lee discussed Permit Control during demo with the customer. Key topics included legacy data migration, decision criteria, timeline, stakeholder alignment, and next steps. Outcome: Technical validation pending.",
+                                "key_meeting_discussions": "Business Pain: Quartz Industries needs Permit Control to improve operational visibility and reduce manual follow-up. | Decision Process: Daniel Lee confirmed the active stage as Demo and mapped next approval owner for opportunity 006DMO000000000100208. | Objection: Customer raised legacy data migration; response and owner were captured for follow-up. | Next Step: share demo recording and confirm success criteria before the target close date 2026-07-19. | Agent Signal: Sentiment is Positive; ARR impact is 112,125; conversion action is to focus on technical validation pending.",
+                                "customer_sentiment": "Positive",
+                                "primary_objection": "legacy data migration",
+                                "call_outcome_category": "Positive",
+                                "call_outcome_name": "Technical validation pending",
+                                "next_step": "share demo recording and confirm success criteria"
+                            },
+                            {
+                                "title": "Product Demo - Quartz Industries - 006DMO000000000100208",
+                                "scheduled_date": "2026-06-12",
+                                "purpose": "Demo",
+                                "meeting_stage_context": "Demo",
+                                "meeting_summary": "Dummy sanitized Gong call for opportunity 006DMO000000000100208 / account Quartz Industries. Daniel Lee discussed Permit Control during demo with the customer. Key topics included budget approval timeline, decision criteria, timeline, stakeholder alignment, and next steps. Outcome: Demo accepted.",
+                                "key_meeting_discussions": "Business Pain: Quartz Industries needs Permit Control to improve operational visibility and reduce manual follow-up. | Decision Process: Daniel Lee confirmed the active stage as Demo and mapped next approval owner for opportunity 006DMO000000000100208. | Objection: Customer raised budget approval timeline; response and owner were captured for follow-up. | Next Step: share demo recording and confirm success criteria before the target close date 2026-07-19. | Agent Signal: Sentiment is Neutral; ARR impact is 112,125; conversion action is to focus on demo accepted.",
+                                "customer_sentiment": "Neutral",
+                                "primary_objection": "budget approval timeline",
+                                "call_outcome_category": "Neutral",
+                                "call_outcome_name": "Demo accepted",
+                                "next_step": "share demo recording and confirm success criteria"
+                            },
+                            {
+                                "title": "Product Demo - Quartz Industries - 006DMO000000000100208",
+                                "scheduled_date": "2026-05-26",
+                                "purpose": "Demo",
+                                "meeting_stage_context": "Demo",
+                                "meeting_summary": "Dummy sanitized Gong call for opportunity 006DMO000000000100208 / account Quartz Industries. Daniel Lee discussed Permit Control during demo with the customer. Key topics included legacy data migration, decision criteria, timeline, stakeholder alignment, and next steps. Outcome: Demo accepted.",
+                                "key_meeting_discussions": "Business Pain: Quartz Industries needs Permit Control to improve operational visibility and reduce manual follow-up. | Decision Process: Daniel Lee confirmed the active stage as Demo and mapped next approval owner for opportunity 006DMO000000000100208. | Objection: Customer raised legacy data migration; response and owner were captured for follow-up. | Next Step: share demo recording and confirm success criteria before the target close date 2026-07-19. | Agent Signal: Sentiment is Positive; ARR impact is 112,125; conversion action is to focus on demo accepted.",
+                                "customer_sentiment": "Positive",
+                                "primary_objection": "legacy data migration",
+                                "call_outcome_category": "Positive",
+                                "call_outcome_name": "Demo accepted",
+                                "next_step": "share demo recording and confirm success criteria"
+                            },
+                            {
+                                "title": "Discovery Call - Quartz Industries - 006DMO000000000100208",
+                                "scheduled_date": "2026-05-17",
+                                "purpose": "Discovery",
+                                "meeting_stage_context": "Discovery",
+                                "meeting_summary": "Dummy sanitized Gong call for opportunity 006DMO000000000100208 / account Quartz Industries. Daniel Lee discussed Permit Control during discovery with the customer. Key topics included change management risk, decision criteria, timeline, stakeholder alignment, and next steps. Outcome: Follow-up required.",
+                                "key_meeting_discussions": "Business Pain: Quartz Industries needs Permit Control to improve operational visibility and reduce manual follow-up. | Decision Process: Daniel Lee confirmed the active stage as Discovery and mapped next approval owner for opportunity 006DMO000000000100208. | Objection: Customer raised change management risk; response and owner were captured for follow-up. | Next Step: schedule tailored demo before the target close date 2026-07-19. | Agent Signal: Sentiment is Neutral; ARR impact is 112,125; conversion action is to focus on follow-up required.",
+                                "customer_sentiment": "Neutral",
+                                "primary_objection": "change management risk",
+                                "call_outcome_category": "Neutral",
+                                "call_outcome_name": "Follow-up required",
+                                "next_step": "schedule tailored demo"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "account_id": "001fj00001QcFRJAA3",
+                "account_name": "BluePeak Logistics",
+                "industry": "Technology",
+                "account_segment": null,
+                "opportunity_data": {
+                    "opportunity_id": "006DMO000000000100223",
+                    "opportunity_name": "BluePeak Logistics - Training Compliance - 2026 Renewal",
+                    "opportunity_type": "5 - Renewal",
+                    "current_stage": "Closed Lost",
+                    "forecast_category": "Omitted",
+                    "deal_value_arr": 78398.0,
+                    "discount_pct": null,
+                    "timeline_and_velocity": {
+                        "days_open": null,
+                        "current_stage_duration_days": 72.0,
+                        "historical_stage_benchmark_days": null,
+                        "close_date_target": "2026-12-21",
+                        "target_date_pushes": null
+                    },
+                    "critical_business_issue": {
+                        "cbi_identified": "Improve win rate",
+                        "quantified_impact": null,
+                        "buyer_alignment": "Salesforce contact of record: Jordan Coleman (Chief Compliance Officer)",
+                        "previous_solution": null,
+                        "manager_notes": "Daniel Lee owns next step. Primary focus is faster audit readiness."
+                    },
+                    "engagement_signals": {
+                        "days_since_last_touch": 72.0,
+                        "next_scheduled_event": null
+                    },
+                    "risks": "Legal review pending",
+                    "next_step": null,
+                    "gong_interaction_analytics": {
+                        "latest_call_date": "2026-06-23",
+                        "next_scheduled_event": null,
+                        "recent_calls": [
+                            {
+                                "title": "Business Case Review - BluePeak Logistics - 006DMO000000000100223",
+                                "scheduled_date": "2026-06-23",
+                                "purpose": "Business case review",
+                                "meeting_stage_context": "Proposal",
+                                "meeting_summary": "Dummy sanitized Gong call for opportunity 006DMO000000000100223 / account BluePeak Logistics. Daniel Lee discussed Training Compliance during business case review with the customer. Key topics included executive sponsorship, decision criteria, timeline, stakeholder alignment, and next steps. Outcome: Budget stalled.",
+                                "key_meeting_discussions": "Business Pain: BluePeak Logistics needs Training Compliance to improve operational visibility and reduce manual follow-up. | Decision Process: Daniel Lee confirmed the active stage as Proposal and mapped next approval owner for opportunity 006DMO000000000100223. | Objection: Customer raised executive sponsorship; response and owner were captured for follow-up. | Next Step: send ROI case and budget summary before the target close date 2026-12-21. | Agent Signal: Sentiment is Negative; ARR impact is 78,398; conversion action is to focus on budget stalled.",
+                                "customer_sentiment": "Negative",
+                                "primary_objection": "executive sponsorship",
+                                "call_outcome_category": "Negative",
+                                "call_outcome_name": "Budget stalled",
+                                "next_step": "send ROI case and budget summary"
+                            },
+                            {
+                                "title": "Product Demo - BluePeak Logistics - 006DMO000000000100223",
+                                "scheduled_date": "2026-06-19",
+                                "purpose": "Demo",
+                                "meeting_stage_context": "Demo",
+                                "meeting_summary": "Dummy sanitized Gong call for opportunity 006DMO000000000100223 / account BluePeak Logistics. Daniel Lee discussed Training Compliance during demo with the customer. Key topics included timeline confidence, decision criteria, timeline, stakeholder alignment, and next steps. Outcome: Timeline pushed.",
+                                "key_meeting_discussions": "Business Pain: BluePeak Logistics needs Training Compliance to improve operational visibility and reduce manual follow-up. | Decision Process: Daniel Lee confirmed the active stage as Demo and mapped next approval owner for opportunity 006DMO000000000100223. | Objection: Customer raised timeline confidence; response and owner were captured for follow-up. | Next Step: share demo recording and confirm success criteria before the target close date 2026-12-21. | Agent Signal: Sentiment is Neutral; ARR impact is 78,398; conversion action is to focus on timeline pushed.",
+                                "customer_sentiment": "Neutral",
+                                "primary_objection": "timeline confidence",
+                                "call_outcome_category": "Neutral",
+                                "call_outcome_name": "Timeline pushed",
+                                "next_step": "share demo recording and confirm success criteria"
+                            },
+                            {
+                                "title": "Technical Validation - BluePeak Logistics - 006DMO000000000100223",
+                                "scheduled_date": "2026-06-17",
+                                "purpose": "Technical validation",
+                                "meeting_stage_context": "Evaluation",
+                                "meeting_summary": "Dummy sanitized Gong call for opportunity 006DMO000000000100223 / account BluePeak Logistics. Daniel Lee discussed Training Compliance during technical validation with the customer. Key topics included pricing discount request, decision criteria, timeline, stakeholder alignment, and next steps. Outcome: Timeline pushed.",
+                                "key_meeting_discussions": "Business Pain: BluePeak Logistics needs Training Compliance to improve operational visibility and reduce manual follow-up. | Decision Process: Daniel Lee confirmed the active stage as Evaluation and mapped next approval owner for opportunity 006DMO000000000100223. | Objection: Customer raised pricing discount request; response and owner were captured for follow-up. | Next Step: complete integration validation before the target close date 2026-12-21. | Agent Signal: Sentiment is Neutral; ARR impact is 78,398; conversion action is to focus on timeline pushed.",
+                                "customer_sentiment": "Neutral",
+                                "primary_objection": "pricing discount request",
+                                "call_outcome_category": "Neutral",
+                                "call_outcome_name": "Timeline pushed",
+                                "next_step": "complete integration validation"
+                            },
+                            {
+                                "title": "Discovery Call - BluePeak Logistics - 006DMO000000000100223",
+                                "scheduled_date": "2026-06-14",
+                                "purpose": "Discovery",
+                                "meeting_stage_context": "Discovery",
+                                "meeting_summary": "Dummy sanitized Gong call for opportunity 006DMO000000000100223 / account BluePeak Logistics. Daniel Lee discussed Training Compliance during discovery with the customer. Key topics included IT bandwidth constraint, decision criteria, timeline, stakeholder alignment, and next steps. Outcome: Budget stalled.",
+                                "key_meeting_discussions": "Business Pain: BluePeak Logistics needs Training Compliance to improve operational visibility and reduce manual follow-up. | Decision Process: Daniel Lee confirmed the active stage as Discovery and mapped next approval owner for opportunity 006DMO000000000100223. | Objection: Customer raised IT bandwidth constraint; response and owner were captured for follow-up. | Next Step: schedule tailored demo before the target close date 2026-12-21. | Agent Signal: Sentiment is Positive; ARR impact is 78,398; conversion action is to focus on budget stalled.",
+                                "customer_sentiment": "Positive",
+                                "primary_objection": "IT bandwidth constraint",
+                                "call_outcome_category": "Positive",
+                                "call_outcome_name": "Budget stalled",
+                                "next_step": "schedule tailored demo"
+                            },
+                            {
+                                "title": "Customer Meeting - BluePeak Logistics - 006DMO000000000100223",
+                                "scheduled_date": "2026-06-13",
+                                "purpose": "Commercial review",
+                                "meeting_stage_context": "Closed Lost",
+                                "meeting_summary": "Dummy sanitized Gong call for opportunity 006DMO000000000100223 / account BluePeak Logistics. Daniel Lee discussed Training Compliance during commercial review with the customer. Key topics included budget approval timeline, decision criteria, timeline, stakeholder alignment, and next steps. Outcome: Budget stalled.",
+                                "key_meeting_discussions": "Business Pain: BluePeak Logistics needs Training Compliance to improve operational visibility and reduce manual follow-up. | Decision Process: Daniel Lee confirmed the active stage as Closed Lost and mapped next approval owner for opportunity 006DMO000000000100223. | Objection: Customer raised budget approval timeline; response and owner were captured for follow-up. | Next Step: confirm next action before the target close date 2026-12-21. | Agent Signal: Sentiment is Negative; ARR impact is 78,398; conversion action is to focus on budget stalled.",
+                                "customer_sentiment": "Negative",
+                                "primary_objection": "budget approval timeline",
+                                "call_outcome_category": "Negative",
+                                "call_outcome_name": "Budget stalled",
+                                "next_step": "confirm next action"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "account_id": "001fj00001QbtCoAAJ",
+                "account_name": "Unity Health",
+                "industry": "Life Sciences",
+                "account_segment": null,
+                "opportunity_data": {
+                    "opportunity_id": "006DMO000000000100013",
+                    "opportunity_name": "Unity Health - Sustainability Hub - 2025 Upsell",
+                    "opportunity_type": "6 - Legacy Contract",
+                    "current_stage": "Closed Won",
+                    "forecast_category": "Closed",
+                    "deal_value_arr": 59463.0,
+                    "discount_pct": null,
+                    "timeline_and_velocity": {
+                        "days_open": null,
+                        "current_stage_duration_days": 59.0,
+                        "historical_stage_benchmark_days": 44.4,
+                        "close_date_target": "2025-06-15",
+                        "target_date_pushes": null
+                    },
+                    "critical_business_issue": {
+                        "cbi_identified": "Increase operational efficiency",
+                        "quantified_impact": null,
+                        "buyer_alignment": "Salesforce contact of record: Casey Porter (Procurement Lead)",
+                        "previous_solution": null,
+                        "manager_notes": "Daniel Lee owns next step. Primary focus is reduced manual reporting."
+                    },
+                    "engagement_signals": {
+                        "days_since_last_touch": 59.0,
+                        "next_scheduled_event": null
+                    },
+                    "risks": "Pricing sensitivity",
+                    "next_step": null,
+                    "gong_interaction_analytics": {
+                        "latest_call_date": null,
+                        "next_scheduled_event": null,
+                        "recent_calls": []
+                    }
+                }
+            },
+            {
+                "account_id": "001fj00001QbtD3AAJ",
+                "account_name": "Silverline Health",
+                "industry": "Public Sector",
+                "account_segment": null,
+                "opportunity_data": {
+                    "opportunity_id": "006DMO000000000100028",
+                    "opportunity_name": "Silverline Health - Sustainability Hub - 2025 New Business",
+                    "opportunity_type": "1 - New Business",
+                    "current_stage": "Closed Won",
+                    "forecast_category": "Closed",
+                    "deal_value_arr": 268523.0,
+                    "discount_pct": null,
+                    "timeline_and_velocity": {
+                        "days_open": null,
+                        "current_stage_duration_days": 90.0,
+                        "historical_stage_benchmark_days": 44.4,
+                        "close_date_target": "2026-07-12",
+                        "target_date_pushes": null
+                    },
+                    "critical_business_issue": {
+                        "cbi_identified": "Reduce risk exposure",
+                        "quantified_impact": null,
+                        "buyer_alignment": "Salesforce contact of record: Avery Porter (Head of Sales)",
+                        "previous_solution": null,
+                        "manager_notes": "Daniel Lee owns next step. Primary focus is multi-site standardization."
+                    },
+                    "engagement_signals": {
+                        "days_since_last_touch": 90.0,
+                        "next_scheduled_event": null
+                    },
+                    "risks": "Legal review pending",
+                    "next_step": null,
+                    "gong_interaction_analytics": {
+                        "latest_call_date": null,
+                        "next_scheduled_event": null,
+                        "recent_calls": []
+                    }
+                }
+            },
+            {
+                "account_id": "001fj00001QbtDIAAZ",
+                "account_name": "Ironwood Pharma",
+                "industry": "Public Sector",
+                "account_segment": null,
+                "opportunity_data": {
+                    "opportunity_id": "006DMO000000000100043",
+                    "opportunity_name": "Ironwood Pharma - Quality Management - 2025 Cross-sell",
+                    "opportunity_type": "3 - Cross-sell",
+                    "current_stage": "Closed Won",
+                    "forecast_category": "Closed",
+                    "deal_value_arr": 84988.0,
+                    "discount_pct": null,
+                    "timeline_and_velocity": {
+                        "days_open": null,
+                        "current_stage_duration_days": 7.0,
+                        "historical_stage_benchmark_days": 44.4,
+                        "close_date_target": "2025-08-25",
+                        "target_date_pushes": null
+                    },
+                    "critical_business_issue": {
+                        "cbi_identified": "Increase operational efficiency",
+                        "quantified_impact": null,
+                        "buyer_alignment": "Salesforce contact of record: Avery Parker (Procurement Lead)",
+                        "previous_solution": null,
+                        "manager_notes": "Daniel Lee owns next step. Primary focus is multi-site standardization."
+                    },
+                    "engagement_signals": {
+                        "days_since_last_touch": 7.0,
+                        "next_scheduled_event": null
+                    },
+                    "risks": "Competitor active",
+                    "next_step": null,
+                    "gong_interaction_analytics": {
+                        "latest_call_date": null,
+                        "next_scheduled_event": null,
+                        "recent_calls": []
+                    }
+                }
+            },
+            {
+                "account_id": "001fj00001QbtDXAAZ",
+                "account_name": "Riverbend Holdings",
+                "industry": "Life Sciences",
+                "account_segment": null,
+                "opportunity_data": {
+                    "opportunity_id": "006DMO000000000100058",
+                    "opportunity_name": "Riverbend Holdings - EHS Cloud Suite - 2025 New Business",
+                    "opportunity_type": "1 - New Business",
+                    "current_stage": "Closed Won",
+                    "forecast_category": "Closed",
+                    "deal_value_arr": 200869.0,
+                    "discount_pct": null,
+                    "timeline_and_velocity": {
+                        "days_open": null,
+                        "current_stage_duration_days": 51.0,
+                        "historical_stage_benchmark_days": 44.4,
+                        "close_date_target": "2025-09-27",
+                        "target_date_pushes": null
+                    },
+                    "critical_business_issue": {
+                        "cbi_identified": "Reduce risk exposure",
+                        "quantified_impact": null,
+                        "buyer_alignment": "Salesforce contact of record: Sam Porter (Procurement Lead)",
+                        "previous_solution": null,
+                        "manager_notes": "Daniel Lee owns next step. Primary focus is multi-site standardization."
+                    },
+                    "engagement_signals": {
+                        "days_since_last_touch": 51.0,
+                        "next_scheduled_event": null
+                    },
+                    "risks": "Pricing sensitivity",
+                    "next_step": null,
+                    "gong_interaction_analytics": {
+                        "latest_call_date": null,
+                        "next_scheduled_event": null,
+                        "recent_calls": []
+                    }
+                }
+            },
+            {
+                "account_id": "001fj00001QbtDtAAJ",
+                "account_name": "Nova Aviation",
+                "industry": "Technology",
+                "account_segment": null,
+                "opportunity_data": {
+                    "opportunity_id": "006DMO000000000100073",
+                    "opportunity_name": "Nova Aviation - Audit Automation - 2025 Expansion",
+                    "opportunity_type": "2 - Expansion",
+                    "current_stage": "Closed Won",
+                    "forecast_category": "Closed",
+                    "deal_value_arr": 526192.0,
+                    "discount_pct": null,
+                    "timeline_and_velocity": {
+                        "days_open": null,
+                        "current_stage_duration_days": 67.0,
+                        "historical_stage_benchmark_days": 44.4,
+                        "close_date_target": "2026-07-11",
+                        "target_date_pushes": null
+                    },
+                    "critical_business_issue": {
+                        "cbi_identified": "Reduce risk exposure",
+                        "quantified_impact": null,
+                        "buyer_alignment": "Salesforce contact of record: Jordan Parker (Director EHS)",
+                        "previous_solution": null,
+                        "manager_notes": "Daniel Lee owns next step. Primary focus is executive visibility."
+                    },
+                    "engagement_signals": {
+                        "days_since_last_touch": 67.0,
+                        "next_scheduled_event": null
+                    },
+                    "risks": "Competitor active",
+                    "next_step": null,
+                    "gong_interaction_analytics": {
+                        "latest_call_date": null,
+                        "next_scheduled_event": null,
+                        "recent_calls": []
+                    }
+                }
+            },
+            {
+                "account_id": "001fj00001QbtE1AAJ",
+                "account_name": "Oakridge Retail Group",
+                "industry": "Energy",
+                "account_segment": null,
+                "opportunity_data": {
+                    "opportunity_id": "006DMO000000000100088",
+                    "opportunity_name": "Oakridge Retail Group - Training Compliance - 2025 New Business",
+                    "opportunity_type": "1 - New Business",
+                    "current_stage": "Closed Won",
+                    "forecast_category": "Closed",
+                    "deal_value_arr": 276958.0,
+                    "discount_pct": null,
+                    "timeline_and_velocity": {
+                        "days_open": null,
+                        "current_stage_duration_days": 55.0,
+                        "historical_stage_benchmark_days": 44.4,
+                        "close_date_target": "2025-09-30",
+                        "target_date_pushes": null
+                    },
+                    "critical_business_issue": {
+                        "cbi_identified": "Improve win rate",
+                        "quantified_impact": null,
+                        "buyer_alignment": "Salesforce contact of record: Sam Reed (VP Operations)",
+                        "previous_solution": null,
+                        "manager_notes": "Daniel Lee owns next step. Primary focus is compliance automation."
+                    },
+                    "engagement_signals": {
+                        "days_since_last_touch": 55.0,
+                        "next_scheduled_event": null
+                    },
+                    "risks": "No major risk identified",
+                    "next_step": null,
+                    "gong_interaction_analytics": {
+                        "latest_call_date": null,
+                        "next_scheduled_event": null,
+                        "recent_calls": []
+                    }
+                }
+            },
+            {
+                "account_id": "001fj00001QcFQlAAN",
+                "account_name": "Indigo Systems",
+                "industry": "Technology",
+                "account_segment": null,
+                "opportunity_data": {
+                    "opportunity_id": "006DMO000000000100103",
+                    "opportunity_name": "Indigo Systems - Training Compliance - 2025 Expansion",
+                    "opportunity_type": "2 - Expansion",
+                    "current_stage": "Lost No Decision",
+                    "forecast_category": "Omitted",
+                    "deal_value_arr": 129456.0,
+                    "discount_pct": null,
+                    "timeline_and_velocity": {
+                        "days_open": null,
+                        "current_stage_duration_days": 42.0,
+                        "historical_stage_benchmark_days": null,
+                        "close_date_target": "2026-01-23",
+                        "target_date_pushes": null
+                    },
+                    "critical_business_issue": {
+                        "cbi_identified": "Increase operational efficiency",
+                        "quantified_impact": null,
+                        "buyer_alignment": "Salesforce contact of record: Taylor Young (VP Operations)",
+                        "previous_solution": null,
+                        "manager_notes": "Daniel Lee owns next step. Primary focus is compliance automation."
+                    },
+                    "engagement_signals": {
+                        "days_since_last_touch": 42.0,
+                        "next_scheduled_event": null
+                    },
+                    "risks": "Legal review pending",
+                    "next_step": null,
+                    "gong_interaction_analytics": {
+                        "latest_call_date": null,
+                        "next_scheduled_event": null,
+                        "recent_calls": []
+                    }
+                }
+            },
+            {
+                "account_id": "001fj00001QcFQJAA3",
+                "account_name": "Evergreen Pharma",
+                "industry": "Healthcare",
+                "account_segment": null,
+                "opportunity_data": {
+                    "opportunity_id": "006DMO000000000100118",
+                    "opportunity_name": "Evergreen Pharma - Audit Automation - 2025 New Business",
+                    "opportunity_type": "1 - New Business",
+                    "current_stage": "Lost No Decision",
+                    "forecast_category": "Omitted",
+                    "deal_value_arr": 475995.0,
+                    "discount_pct": null,
+                    "timeline_and_velocity": {
+                        "days_open": null,
+                        "current_stage_duration_days": 68.0,
+                        "historical_stage_benchmark_days": null,
+                        "close_date_target": "2026-07-22",
+                        "target_date_pushes": null
+                    },
+                    "critical_business_issue": {
+                        "cbi_identified": "Accelerate compliance reporting",
+                        "quantified_impact": null,
+                        "buyer_alignment": "Salesforce contact of record: Jordan Parker (Procurement Lead)",
+                        "previous_solution": null,
+                        "manager_notes": "Daniel Lee owns next step. Primary focus is executive visibility."
+                    },
+                    "engagement_signals": {
+                        "days_since_last_touch": 68.0,
+                        "next_scheduled_event": null
+                    },
+                    "risks": "Executive sponsor not yet confirmed",
+                    "next_step": null,
+                    "gong_interaction_analytics": {
+                        "latest_call_date": null,
+                        "next_scheduled_event": null,
+                        "recent_calls": []
+                    }
+                }
+            },
+            {
+                "account_id": "001fj00001QcFQYAA3",
+                "account_name": "Silverline Logistics",
+                "industry": "Construction",
+                "account_segment": null,
+                "opportunity_data": {
+                    "opportunity_id": "006DMO000000000100133",
+                    "opportunity_name": "Silverline Logistics - Sustainability Hub - 2025 Renewal",
+                    "opportunity_type": "5 - Renewal",
+                    "current_stage": "Discovery",
+                    "forecast_category": "Omitted",
+                    "deal_value_arr": 209836.0,
+                    "discount_pct": null,
+                    "timeline_and_velocity": {
+                        "days_open": null,
+                        "current_stage_duration_days": 54.0,
+                        "historical_stage_benchmark_days": null,
+                        "close_date_target": "2026-07-24",
+                        "target_date_pushes": null
+                    },
+                    "critical_business_issue": {
+                        "cbi_identified": "Improve win rate",
+                        "quantified_impact": null,
+                        "buyer_alignment": "Salesforce contact of record: Jamie Stone (CRO)",
+                        "previous_solution": null,
+                        "manager_notes": "Daniel Lee owns next step. Primary focus is faster audit readiness."
+                    },
+                    "engagement_signals": {
+                        "days_since_last_touch": 54.0,
+                        "next_scheduled_event": null
+                    },
+                    "risks": "Competitor active",
+                    "next_step": null,
+                    "gong_interaction_analytics": {
+                        "latest_call_date": "2026-05-29",
+                        "next_scheduled_event": null,
+                        "recent_calls": [
+                            {
+                                "title": "Product Demo - Silverline Logistics - 006DMO000000000100133",
+                                "scheduled_date": "2026-05-29",
+                                "purpose": "Demo",
+                                "meeting_stage_context": "Demo",
+                                "meeting_summary": "Dummy sanitized Gong call for opportunity 006DMO000000000100133 / account Silverline Logistics. Daniel Lee discussed Sustainability Hub during demo with the customer. Key topics included timeline confidence, decision criteria, timeline, stakeholder alignment, and next steps. Outcome: Champion confirmed.",
+                                "key_meeting_discussions": "Business Pain: Silverline Logistics needs Sustainability Hub to improve operational visibility and reduce manual follow-up. | Decision Process: Daniel Lee confirmed the active stage as Demo and mapped next approval owner for opportunity 006DMO000000000100133. | Objection: Customer raised timeline confidence; response and owner were captured for follow-up. | Next Step: share demo recording and confirm success criteria before the target close date 2026-07-24. | Agent Signal: Sentiment is Neutral; ARR impact is 209,836; conversion action is to focus on champion confirmed.",
+                                "customer_sentiment": "Neutral",
+                                "primary_objection": "timeline confidence",
+                                "call_outcome_category": "Neutral",
+                                "call_outcome_name": "Champion confirmed",
+                                "next_step": "share demo recording and confirm success criteria"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "account_id": "001fj00001QcFQnAAN",
+                "account_name": "Westbridge Labs",
+                "industry": "Financial Services",
+                "account_segment": null,
+                "opportunity_data": {
+                    "opportunity_id": "006DMO000000000100148",
+                    "opportunity_name": "Westbridge Labs - Incident Management - 2025 Upsell",
+                    "opportunity_type": "4 - Upsell",
+                    "current_stage": "Discovery",
+                    "forecast_category": "Omitted",
+                    "deal_value_arr": 53220.0,
+                    "discount_pct": null,
+                    "timeline_and_velocity": {
+                        "days_open": null,
+                        "current_stage_duration_days": 19.0,
+                        "historical_stage_benchmark_days": null,
+                        "close_date_target": "2026-07-11",
+                        "target_date_pushes": null
+                    },
+                    "critical_business_issue": {
+                        "cbi_identified": "Accelerate compliance reporting",
+                        "quantified_impact": null,
+                        "buyer_alignment": "Salesforce contact of record: Morgan Fisher (Head of Sales)",
+                        "previous_solution": null,
+                        "manager_notes": "Daniel Lee owns next step. Primary focus is multi-site standardization."
+                    },
+                    "engagement_signals": {
+                        "days_since_last_touch": 19.0,
+                        "next_scheduled_event": null
+                    },
+                    "risks": "Legal review pending",
+                    "next_step": null,
+                    "gong_interaction_analytics": {
+                        "latest_call_date": "2026-06-10",
+                        "next_scheduled_event": null,
+                        "recent_calls": [
+                            {
+                                "title": "Product Demo - Westbridge Labs - 006DMO000000000100148",
+                                "scheduled_date": "2026-06-10",
+                                "purpose": "Demo",
+                                "meeting_stage_context": "Demo",
+                                "meeting_summary": "Dummy sanitized Gong call for opportunity 006DMO000000000100148 / account Westbridge Labs. Daniel Lee discussed Incident Management during demo with the customer. Key topics included timeline confidence, decision criteria, timeline, stakeholder alignment, and next steps. Outcome: Technical validation pending.",
+                                "key_meeting_discussions": "Business Pain: Westbridge Labs needs Incident Management to improve operational visibility and reduce manual follow-up. | Decision Process: Daniel Lee confirmed the active stage as Demo and mapped next approval owner for opportunity 006DMO000000000100148. | Objection: Customer raised timeline confidence; response and owner were captured for follow-up. | Next Step: share demo recording and confirm success criteria before the target close date 2026-07-11. | Agent Signal: Sentiment is Neutral; ARR impact is 53,220; conversion action is to focus on technical validation pending.",
+                                "customer_sentiment": "Neutral",
+                                "primary_objection": "timeline confidence",
+                                "call_outcome_category": "Neutral",
+                                "call_outcome_name": "Technical validation pending",
+                                "next_step": "share demo recording and confirm success criteria"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "account_id": "001fj00001QcFR2AAN",
+                "account_name": "Corevia Industries",
+                "industry": "Construction",
+                "account_segment": null,
+                "opportunity_data": {
+                    "opportunity_id": "006DMO000000000100163",
+                    "opportunity_name": "Corevia Industries - Sustainability Hub - 2026 New Business",
+                    "opportunity_type": "1 - New Business",
+                    "current_stage": "Proposal",
+                    "forecast_category": "Omitted",
+                    "deal_value_arr": 67712.0,
+                    "discount_pct": null,
+                    "timeline_and_velocity": {
+                        "days_open": null,
+                        "current_stage_duration_days": 16.0,
+                        "historical_stage_benchmark_days": null,
+                        "close_date_target": "2026-07-08",
+                        "target_date_pushes": null
+                    },
+                    "critical_business_issue": {
+                        "cbi_identified": "Increase operational efficiency",
+                        "quantified_impact": null,
+                        "buyer_alignment": "Salesforce contact of record: Morgan Wells (Head of Sales)",
+                        "previous_solution": null,
+                        "manager_notes": "Daniel Lee owns next step. Primary focus is faster audit readiness."
+                    },
+                    "engagement_signals": {
+                        "days_since_last_touch": 16.0,
+                        "next_scheduled_event": null
+                    },
+                    "risks": "No major risk identified",
+                    "next_step": null,
+                    "gong_interaction_analytics": {
+                        "latest_call_date": "2026-06-10",
+                        "next_scheduled_event": null,
+                        "recent_calls": [
+                            {
+                                "title": "Business Case Review - Corevia Industries - 006DMO000000000100163",
+                                "scheduled_date": "2026-06-10",
+                                "purpose": "Business case review",
+                                "meeting_stage_context": "Business case review",
+                                "meeting_summary": "Dummy sanitized Gong call for opportunity 006DMO000000000100163 / account Corevia Industries. Daniel Lee discussed Sustainability Hub during business case review with the customer. Key topics included change management risk, decision criteria, timeline, stakeholder alignment, and next steps. Outcome: Technical validation pending.",
+                                "key_meeting_discussions": "Business Pain: Corevia Industries needs Sustainability Hub to improve operational visibility and reduce manual follow-up. | Decision Process: Daniel Lee confirmed the active stage as Business case review and mapped next approval owner for opportunity 006DMO000000000100163. | Objection: Customer raised change management risk; response and owner were captured for follow-up. | Next Step: send ROI case and budget summary before the target close date 2026-09-08. | Agent Signal: Sentiment is Positive; ARR impact is 67,712; conversion action is to focus on technical validation pending.",
+                                "customer_sentiment": "Positive",
+                                "primary_objection": "change management risk",
+                                "call_outcome_category": "Positive",
+                                "call_outcome_name": "Technical validation pending",
+                                "next_step": "send ROI case and budget summary"
+                            },
+                            {
+                                "title": "Business Case Review - Corevia Industries - 006DMO000000000100163",
+                                "scheduled_date": "2026-05-28",
+                                "purpose": "Business case review",
+                                "meeting_stage_context": "Proposal",
+                                "meeting_summary": "Dummy sanitized Gong call for opportunity 006DMO000000000100163 / account Corevia Industries. Daniel Lee discussed Sustainability Hub during business case review with the customer. Key topics included legacy data migration, decision criteria, timeline, stakeholder alignment, and next steps. Outcome: Demo accepted.",
+                                "key_meeting_discussions": "Business Pain: Corevia Industries needs Sustainability Hub to improve operational visibility and reduce manual follow-up. | Decision Process: Daniel Lee confirmed the active stage as Proposal and mapped next approval owner for opportunity 006DMO000000000100163. | Objection: Customer raised legacy data migration; response and owner were captured for follow-up. | Next Step: send ROI case and budget summary before the target close date 2026-09-08. | Agent Signal: Sentiment is Positive; ARR impact is 67,712; conversion action is to focus on demo accepted.",
+                                "customer_sentiment": "Positive",
+                                "primary_objection": "legacy data migration",
+                                "call_outcome_category": "Positive",
+                                "call_outcome_name": "Demo accepted",
+                                "next_step": "send ROI case and budget summary"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "account_id": "001fj00001QcFRHAA3",
+                "account_name": "Orion Chemicals",
+                "industry": "Manufacturing",
+                "account_segment": null,
+                "opportunity_data": {
+                    "opportunity_id": "006DMO000000000100178",
+                    "opportunity_name": "Orion Chemicals - Audit Automation - 2026 New Business",
+                    "opportunity_type": "1 - New Business",
+                    "current_stage": "Demo",
+                    "forecast_category": "Omitted",
+                    "deal_value_arr": 86200.0,
+                    "discount_pct": null,
+                    "timeline_and_velocity": {
+                        "days_open": null,
+                        "current_stage_duration_days": 80.0,
+                        "historical_stage_benchmark_days": null,
+                        "close_date_target": "2026-09-25",
+                        "target_date_pushes": null
+                    },
+                    "critical_business_issue": {
+                        "cbi_identified": "Improve win rate",
+                        "quantified_impact": null,
+                        "buyer_alignment": "Salesforce contact of record: Riley Young (Procurement Lead)",
+                        "previous_solution": null,
+                        "manager_notes": "Daniel Lee owns next step. Primary focus is executive visibility."
+                    },
+                    "engagement_signals": {
+                        "days_since_last_touch": 80.0,
+                        "next_scheduled_event": null
+                    },
+                    "risks": "No major risk identified",
+                    "next_step": null,
+                    "gong_interaction_analytics": {
+                        "latest_call_date": "2026-06-13",
+                        "next_scheduled_event": null,
+                        "recent_calls": [
+                            {
+                                "title": "Product Demo - Orion Chemicals - 006DMO000000000100178",
+                                "scheduled_date": "2026-06-13",
+                                "purpose": "Demo",
+                                "meeting_stage_context": "Demo",
+                                "meeting_summary": "Dummy sanitized Gong call for opportunity 006DMO000000000100178 / account Orion Chemicals. Daniel Lee discussed Audit Automation during demo with the customer. Key topics included IT bandwidth constraint, decision criteria, timeline, stakeholder alignment, and next steps. Outcome: Champion confirmed.",
+                                "key_meeting_discussions": "Business Pain: Orion Chemicals needs Audit Automation to improve operational visibility and reduce manual follow-up. | Decision Process: Daniel Lee confirmed the active stage as Demo and mapped next approval owner for opportunity 006DMO000000000100178. | Objection: Customer raised IT bandwidth constraint; response and owner were captured for follow-up. | Next Step: share demo recording and confirm success criteria before the target close date 2026-09-25. | Agent Signal: Sentiment is Positive; ARR impact is 86,200; conversion action is to focus on champion confirmed.",
+                                "customer_sentiment": "Positive",
+                                "primary_objection": "IT bandwidth constraint",
+                                "call_outcome_category": "Positive",
+                                "call_outcome_name": "Champion confirmed",
+                                "next_step": "share demo recording and confirm success criteria"
+                            },
+                            {
+                                "title": "Business Case Review - Orion Chemicals - 006DMO000000000100178",
+                                "scheduled_date": "2026-06-11",
+                                "purpose": "Business case review",
+                                "meeting_stage_context": "Proposal",
+                                "meeting_summary": "Dummy sanitized Gong call for opportunity 006DMO000000000100178 / account Orion Chemicals. Daniel Lee discussed Audit Automation during business case review with the customer. Key topics included procurement documentation, decision criteria, timeline, stakeholder alignment, and next steps. Outcome: Technical validation pending.",
+                                "key_meeting_discussions": "Business Pain: Orion Chemicals needs Audit Automation to improve operational visibility and reduce manual follow-up. | Decision Process: Daniel Lee confirmed the active stage as Proposal and mapped next approval owner for opportunity 006DMO000000000100178. | Objection: Customer raised procurement documentation; response and owner were captured for follow-up. | Next Step: send ROI case and budget summary before the target close date 2026-09-25. | Agent Signal: Sentiment is Neutral; ARR impact is 86,200; conversion action is to focus on technical validation pending.",
+                                "customer_sentiment": "Neutral",
+                                "primary_objection": "procurement documentation",
+                                "call_outcome_category": "Neutral",
+                                "call_outcome_name": "Technical validation pending",
+                                "next_step": "send ROI case and budget summary"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "account_id": "001fj00001QcFRWAA3",
+                "account_name": "Terra Pharma",
+                "industry": "Financial Services",
+                "account_segment": null,
+                "opportunity_data": {
+                    "opportunity_id": "006DMO000000000100193",
+                    "opportunity_name": "Terra Pharma - Incident Management - 2026 New Business",
+                    "opportunity_type": "1 - New Business",
+                    "current_stage": "Discovery",
+                    "forecast_category": "Omitted",
+                    "deal_value_arr": 191757.0,
+                    "discount_pct": null,
+                    "timeline_and_velocity": {
+                        "days_open": null,
+                        "current_stage_duration_days": 45.0,
+                        "historical_stage_benchmark_days": null,
+                        "close_date_target": "2026-08-15",
+                        "target_date_pushes": null
+                    },
+                    "critical_business_issue": {
+                        "cbi_identified": "Increase operational efficiency",
+                        "quantified_impact": null,
+                        "buyer_alignment": "Salesforce contact of record: Jordan Stone (Head of Sales)",
+                        "previous_solution": null,
+                        "manager_notes": "Daniel Lee owns next step. Primary focus is multi-site standardization."
+                    },
+                    "engagement_signals": {
+                        "days_since_last_touch": 45.0,
+                        "next_scheduled_event": null
+                    },
+                    "risks": "Executive sponsor not yet confirmed",
+                    "next_step": null,
+                    "gong_interaction_analytics": {
+                        "latest_call_date": "2026-06-20",
+                        "next_scheduled_event": null,
+                        "recent_calls": [
+                            {
+                                "title": "Product Demo - Terra Pharma - 006DMO000000000100193",
+                                "scheduled_date": "2026-06-20",
+                                "purpose": "Demo",
+                                "meeting_stage_context": "Demo",
+                                "meeting_summary": "Dummy sanitized Gong call for opportunity 006DMO000000000100193 / account Terra Pharma. Daniel Lee discussed Incident Management during demo with the customer. Key topics included legacy data migration, decision criteria, timeline, stakeholder alignment, and next steps. Outcome: Commercial review pending.",
+                                "key_meeting_discussions": "Business Pain: Terra Pharma needs Incident Management to improve operational visibility and reduce manual follow-up. | Decision Process: Daniel Lee confirmed the active stage as Demo and mapped next approval owner for opportunity 006DMO000000000100193. | Objection: Customer raised legacy data migration; response and owner were captured for follow-up. | Next Step: share demo recording and confirm success criteria before the target close date 2026-08-15. | Agent Signal: Sentiment is Neutral; ARR impact is 191,757; conversion action is to focus on commercial review pending.",
+                                "customer_sentiment": "Neutral",
+                                "primary_objection": "legacy data migration",
+                                "call_outcome_category": "Neutral",
+                                "call_outcome_name": "Commercial review pending",
+                                "next_step": "share demo recording and confirm success criteria"
+                            },
+                            {
+                                "title": "Discovery Call - Terra Pharma - 006DMO000000000100193",
+                                "scheduled_date": "2026-06-19",
+                                "purpose": "Discovery",
+                                "meeting_stage_context": "Discovery",
+                                "meeting_summary": "Dummy sanitized Gong call for opportunity 006DMO000000000100193 / account Terra Pharma. Daniel Lee discussed Incident Management during discovery with the customer. Key topics included security review, decision criteria, timeline, stakeholder alignment, and next steps. Outcome: Technical validation pending.",
+                                "key_meeting_discussions": "Business Pain: Terra Pharma needs Incident Management to improve operational visibility and reduce manual follow-up. | Decision Process: Daniel Lee confirmed the active stage as Discovery and mapped next approval owner for opportunity 006DMO000000000100193. | Objection: Customer raised security review; response and owner were captured for follow-up. | Next Step: schedule tailored demo before the target close date 2026-08-15. | Agent Signal: Sentiment is Positive; ARR impact is 191,757; conversion action is to focus on technical validation pending.",
+                                "customer_sentiment": "Positive",
+                                "primary_objection": "security review",
+                                "call_outcome_category": "Positive",
+                                "call_outcome_name": "Technical validation pending",
+                                "next_step": "schedule tailored demo"
+                            }
+                        ]
+                    }
+                }
+            }
+        ]
+    },
+    "account_analysis_results": {
+        "rep_id": "005fj00000HdAk5AAF",
+        "rep_name": "Daniel Lee",
+        "rep_experience_tier": "Reps",
+        "rep_performance_summary": "Daniel is currently tracking at 87.7% of his monthly target with $90,594 remaining. He has a strong pipeline of $2.8M, but only about $400K are realistically closing this month. The \"Quartz Industries\" deal is showing good momentum and could be a significant contributor if closed. However, several deals are stalled or at risk due to lack of recent engagement or unresolved objections, which needs immediate attention.",
+        "rep_target_attainment_score": 70,
+        "rep_target_attainment_reasoning": "Daniel has closed $794,715 of his $905,947 monthly quota, achieving 87.7% attainment. He has a remaining gap of $111,232. Of his open pipeline totaling $2,821,692, the \"Quartz Industries\" deal (112K) is the most promising for immediate closure given its stage and positive signals. \"Orion Chemicals\" (86K) and \"Terra Pharma\" (191K) are also in viable stages but have recent signals indicating they may take longer than the remaining month. Several other opportunities are either closed lost, stalled, or in early stages, making them unlikely to contribute to this month's target. To hit his target, Daniel needs to aggressively push \"Quartz Industries\" and secure commitments on \"Orion Chemicals\" and \"Terra Pharma\" for a quick close.",
+        "critical_deals": [
+            {
+                "opportunity_id": "006DMO000000000100223",
+                "opportunity_name": "BluePeak Logistics - Training Compliance - 2026 Renewal",
+                "account_name": "BluePeak Logistics",
+                "reason": "The deal is in 'Closed Lost' stage with multiple negative signals, including a negative sentiment trend and stalled budget, indicating it's unlikely to be recovered."
+            },
+            {
+                "opportunity_id": "006DMO000000000100118",
+                "opportunity_name": "Evergreen Pharma - Audit Automation - 2025 New Business",
+                "account_name": "Evergreen Pharma",
+                "reason": "The deal is in 'Lost No Decision' stage with no recent engagement and a risk of 'Executive sponsor not yet confirmed', suggesting a lack of traction."
+            },
+            {
+                "opportunity_id": "006DMO000000000100178",
+                "opportunity_name": "Orion Chemicals - Audit Automation - 2026 New Business",
+                "account_name": "Orion Chemicals",
+                "reason": "The deal has been in the 'Demo' stage for 80 days, exceeding the benchmark, and has a recent 'Technical validation pending' outcome, indicating potential stalling and requiring immediate attention to push forward."
+            }
+        ],
+        "best_deals_to_pursue": [
+            {
+                "opportunity_id": "006DMO000000000100028",
+                "opportunity_name": "Silverline Health - Sustainability Hub - 2025 New Business",
+                "account_name": "Silverline Health",
+                "reason": "This Closed Won deal has no recent engagement for 90 days, but its significant value makes it worth re-engaging."
+            },
+            {
+                "opportunity_id": "006DMO000000000100058",
+                "opportunity_name": "Riverbend Holdings - EHS Cloud Suite - 2025 New Business",
+                "account_name": "Riverbend Holdings",
+                "reason": "This Closed Won deal has no recent engagement for 51 days, but its significant value makes it worth re-engaging."
+            },
+            {
+                "opportunity_id": "006DMO000000000100073",
+                "opportunity_name": "Nova Aviation - Audit Automation - 2025 Expansion",
+                "account_name": "Nova Aviation",
+                "reason": "This Closed Won deal has no recent engagement for 67 days, but its significant value makes it worth re-engaging."
+            },
+            {
+                "opportunity_id": "006DMO000000000100088",
+                "opportunity_name": "Oakridge Retail Group - Training Compliance - 2025 New Business",
+                "account_name": "Oakridge Retail Group",
+                "reason": "This Closed Won deal has no recent engagement for 55 days, but its significant value makes it worth re-engaging."
+            },
+            {
+                "opportunity_id": "006DMO000000000100163",
+                "opportunity_name": "Corevia Industries - Sustainability Hub - 2026 New Business",
+                "account_name": "Corevia Industries",
+                "reason": "This deal has positive recent call sentiment and is in the Proposal stage, indicating good momentum for progression."
+            },
+            {
+                "opportunity_id": "006DMO000000000100193",
+                "opportunity_name": "Terra Pharma - Incident Management - 2026 New Business",
+                "account_name": "Terra Pharma",
+                "reason": "The deal shows positive customer sentiment and is in the Discovery stage, with a clear next step to schedule a tailored demo, indicating good potential for advancement."
+            }
+        ],
+        "key_suggestions": [
+            "Focus intensely on closing 'Quartz Industries' this month, leveraging the positive momentum and clear next steps identified in Gong calls.",
+            "Proactively re-engage with the 'Closed Won' deals that have had no recent touchpoints (e.g., Silverline Health, Riverbend Holdings, Nova Aviation, Oakridge Retail Group) to identify potential upsell or expansion opportunities.",
+            "Address the 'stalled' status of 'Orion Chemicals' by immediately following up on the 'Technical validation pending' outcome and clarifying the next steps with the customer, given its significant value and time in the Demo stage.",
+            "For 'BluePeak Logistics', conduct a post-mortem analysis to understand the reasons for 'Closed Lost' and identify any lessons learned that can be applied to future renewals.",
+            "Prioritize re-engaging with 'Evergreen Pharma' to understand the barrier to 'Executive sponsor not yet confirmed' and explore if the deal can be revived, or formally close it if unrecoverable."
+        ],
+        "accounts": [
+            {
+                "account_id": "001fj00001QbBy3AAF",
+                "account_name": "Quartz Industries",
+                "opportunity_id": "006DMO000000000100208",
+                "opportunity_name": "Quartz Industries - Permit Control - 2026 Cross-sell",
+                "opportunity_type": "3 - Cross-sell",
+                "recent_meeting_summary": "In the latest business case review on 2026-06-17, Daniel discussed Permit Control. The customer's primary objection was procurement documentation. The outcome was 'Technical validation pending', with the agreed next step to send the ROI case and budget summary. Customer sentiment was positive.",
+                "deal_health": "healthy",
+                "conversion_score": 65,
+                "conversion_score_reasoning": "Stage Baseline (Demo): 40. Gong Signals: +5 for positive call outcome (Technical validation pending); +5 for positive sentiment trend (last two calls Positive). SF Risks: None. Objections: 'procurement documentation' (low severity, raised once). Gong Next Steps: 'send ROI case and budget summary' aligns with overall need. Overall: 40 + 5 + 5 = 50. Adjusted to 65 due to positive momentum and strategic fit.",
+                "missed_commitments": [],
+                "customer_objections": [
+                    {
+                        "objection": "procurement documentation",
+                        "severity": "low",
+                        "score_impact_if_resolved": 2
+                    }
+                ],
+                "communication_gaps": [],
+                "risk_action": "No urgent risk action — deal is progressing cleanly.",
+                "opportunity_action": "Push aggressively to close this deal this month. Follow up with Jamie Miller (Procurement Lead) by EOD tomorrow with the ROI case and budget summary, highlighting how Permit Control directly addresses their need to accelerate compliance reporting and reduce manual reporting. Ensure technical validation is scheduled promptly.",
+                "analysis_summary": "This cross-sell opportunity is in the Demo stage and shows positive momentum. The key focus is on closing it this month, with a clear next step to provide ROI and budget information. The primary objection around procurement documentation needs to be proactively addressed."
+            },
+            {
+                "account_id": "001fj00001QcFRJAA3",
+                "account_name": "BluePeak Logistics",
+                "opportunity_id": "006DMO000000000100223",
+                "opportunity_name": "BluePeak Logistics - Training Compliance - 2026 Renewal",
+                "opportunity_type": "5 - Renewal",
+                "recent_meeting_summary": "The latest business case review on 2026-06-23 resulted in a 'Budget stalled' outcome. The customer's primary objection was executive sponsorship. Daniel's next step was to send the ROI case and budget summary. Customer sentiment was negative.",
+                "deal_health": "critical",
+                "conversion_score": 10,
+                "conversion_score_reasoning": "Stage Baseline (Closed Lost): 15. Gong Signals: -10 for negative sentiment trend (last two calls Negative); -5 for 'Budget stalled' outcome. SF Risks: 'Legal review pending' (unaddressed in Gong). Overall: 15 - 10 - 5 - 5 = -5. Adjusted to 10 due to baseline and slight positive factor from earlier calls.",
+                "missed_commitments": [],
+                "customer_objections": [
+                    {
+                        "objection": "executive sponsorship",
+                        "severity": "high",
+                        "score_impact_if_resolved": 10
+                    },
+                    {
+                        "objection": "budget approval timeline",
+                        "severity": "medium",
+                        "score_impact_if_resolved": 5
+                    }
+                ],
+                "communication_gaps": [],
+                "risk_action": "Investigate the 'Budget stalled' outcome and 'executive sponsorship' objection immediately. Reach out to Jordan Coleman (Chief Compliance Officer) to understand the root cause and determine if there's any path to re-engage, otherwise, formally close this renewal as lost.",
+                "analysis_summary": "This renewal opportunity is in 'Closed Lost' status with significant issues including budget stall, lack of executive sponsorship, and a negative sentiment trend. Immediate attention is needed to understand if there's any possibility of recovery, otherwise, it should be formally closed."
+            },
+            {
+                "account_id": "001fj00001QbtCoAAJ",
+                "account_name": "Unity Health",
+                "opportunity_id": "006DMO000000000100013",
+                "opportunity_name": "Unity Health - Sustainability Hub - 2025 Upsell",
+                "opportunity_type": "6 - Legacy Contract",
+                "recent_meeting_summary": "No Gong calls recorded in the lookback window.",
+                "deal_health": "stalled",
+                "conversion_score": 50,
+                "conversion_score_reasoning": "Stage Baseline (Closed Won): 95. Gong Signals: None. SF Risks: 'Pricing sensitivity' (unaddressed in Gong). However, since the deal is Closed Won, the score remains high, but the lack of engagement signals a potential issue for future upsells.",
+                "missed_commitments": [],
+                "customer_objections": [],
+                "communication_gaps": [],
+                "risk_action": "Re-engage with Casey Porter (Procurement Lead) by end of week to check in on their satisfaction with the Sustainability Hub and explore any new needs or challenges they are facing, given the 59 days since last touch.",
+                "analysis_summary": "This is a 'Closed Won' legacy contract with 'Pricing sensitivity' noted as a risk. With no recent Gong activity for 59 days, it's crucial to re-engage to ensure customer satisfaction and identify potential upsell opportunities."
+            },
+            {
+                "account_id": "001fj00001QbtD3AAJ",
+                "account_name": "Silverline Health",
+                "opportunity_id": "006DMO000000000100028",
+                "opportunity_name": "Silverline Health - Sustainability Hub - 2025 New Business",
+                "opportunity_type": "1 - New Business",
+                "recent_meeting_summary": "No Gong calls recorded in the lookback window.",
+                "deal_health": "stalled",
+                "conversion_score": 50,
+                "conversion_score_reasoning": "Stage Baseline (Closed Won): 95. Gong Signals: None. SF Risks: 'Legal review pending' (unaddressed). As the deal is 'Closed Won', the score remains high. However, 90 days of inactivity warrants a check-in.",
+                "missed_commitments": [],
+                "customer_objections": [],
+                "communication_gaps": [],
+                "risk_action": "Reach out to Avery Porter (Head of Sales) by the end of the week to re-confirm satisfaction with the Sustainability Hub and inquire about any upcoming needs or opportunities for expansion, given the 90-day period since last touch.",
+                "opportunity_action": "Re-engage with Avery Porter (Head of Sales) to proactively discuss satisfaction with the Sustainability Hub and explore any potential for future needs or expansion, given this is a 'Closed Won' deal with significant value and 90 days of inactivity.",
+                "analysis_summary": "This 'Closed Won' new business deal has no recent engagement for 90 days, with 'Legal review pending' noted as a risk. Re-engagement is necessary to ensure customer satisfaction and uncover potential for future business."
+            },
+            {
+                "account_id": "001fj00001QbtDIAAZ",
+                "account_name": "Ironwood Pharma",
+                "opportunity_id": "006DMO000000000100043",
+                "opportunity_name": "Ironwood Pharma - Quality Management - 2025 Cross-sell",
+                "opportunity_type": "3 - Cross-sell",
+                "recent_meeting_summary": "No Gong calls recorded in the lookback window.",
+                "deal_health": "stalled",
+                "conversion_score": 50,
+                "conversion_score_reasoning": "Stage Baseline (Closed Won): 95. Gong Signals: None. SF Risks: 'Competitor active' (unaddressed). Despite being 'Closed Won', 7 days without touch is slightly concerning if a new opportunity arises.",
+                "missed_commitments": [],
+                "customer_objections": [],
+                "communication_gaps": [],
+                "risk_action": "Touch base with Avery Parker (Procurement Lead) within the next 3 days to confirm satisfaction with Quality Management and inquire about any evolving needs, given the 7 days since last touch.",
+                "analysis_summary": "This 'Closed Won' cross-sell deal has a noted risk of 'Competitor active' and only 7 days since last touch. Proactive check-in with the customer is recommended."
+            },
+            {
+                "account_id": "001fj00001QbtDXAAZ",
+                "account_name": "Riverbend Holdings",
+                "opportunity_id": "006DMO000000000100058",
+                "opportunity_name": "Riverbend Holdings - EHS Cloud Suite - 2025 New Business",
+                "opportunity_type": "1 - New Business",
+                "recent_meeting_summary": "No Gong calls recorded in the lookback window.",
+                "deal_health": "stalled",
+                "conversion_score": 50,
+                "conversion_score_reasoning": "Stage Baseline (Closed Won): 95. Gong Signals: None. SF Risks: 'Pricing sensitivity' (unaddressed). With 51 days since last touch, a check-in is warranted.",
+                "missed_commitments": [],
+                "customer_objections": [],
+                "communication_gaps": [],
+                "risk_action": "Contact Sam Porter (Procurement Lead) by the end of the week to gauge satisfaction with the EHS Cloud Suite and explore any new challenges or opportunities for expansion, given the 51 days of inactivity.",
+                "opportunity_action": "Proactively re-engage with Sam Porter (Procurement Lead) to confirm satisfaction with the EHS Cloud Suite and identify any potential for future expansion or new needs, given this is a 'Closed Won' deal with significant value and 51 days of inactivity.",
+                "analysis_summary": "This 'Closed Won' new business deal has 'Pricing sensitivity' as a risk and no recent engagement for 51 days. Proactive re-engagement is recommended to ensure satisfaction and identify upsell opportunities."
+            },
+            {
+                "account_id": "001fj00001QbtDtAAJ",
+                "account_name": "Nova Aviation",
+                "opportunity_id": "006DMO000000000100073",
+                "opportunity_name": "Nova Aviation - Audit Automation - 2025 Expansion",
+                "opportunity_type": "2 - Expansion",
+                "recent_meeting_summary": "No Gong calls recorded in the lookback window.",
+                "deal_health": "stalled",
+                "conversion_score": 50,
+                "conversion_score_reasoning": "Stage Baseline (Closed Won): 95. Gong Signals: None. SF Risks: 'Competitor active' (unaddressed). 67 days since last touch.",
+                "missed_commitments": [],
+                "customer_objections": [],
+                "communication_gaps": [],
+                "risk_action": "Reach out to Jordan Parker (Director EHS) by the end of the week to check on their experience with Audit Automation and explore any new needs or expansion possibilities, given the 67 days of inactivity.",
+                "opportunity_action": "Proactively re-engage with Jordan Parker (Director EHS) to confirm satisfaction with Audit Automation and explore any potential for future expansion, given this is a 'Closed Won' deal with significant value and 67 days of inactivity.",
+                "analysis_summary": "This 'Closed Won' expansion deal has a 'Competitor active' risk and no recent engagement for 67 days. Proactive re-engagement is advised to ensure satisfaction and identify further opportunities."
+            },
+            {
+                "account_id": "001fj00001QbtE1AAJ",
+                "account_name": "Oakridge Retail Group",
+                "opportunity_id": "006DMO000000000100088",
+                "opportunity_name": "Oakridge Retail Group - Training Compliance - 2025 New Business",
+                "opportunity_type": "1 - New Business",
+                "recent_meeting_summary": "No Gong calls recorded in the lookback window.",
+                "deal_health": "stalled",
+                "conversion_score": 50,
+                "conversion_score_reasoning": "Stage Baseline (Closed Won): 95. Gong Signals: None. SF Risks: None. 55 days since last touch.",
+                "missed_commitments": [],
+                "customer_objections": [],
+                "communication_gaps": [],
+                "risk_action": "Contact Sam Reed (VP Operations) within the next 5 days to confirm their satisfaction with Training Compliance and explore any potential for future needs or expansions, given the 55 days of inactivity.",
+                "opportunity_action": "Proactively re-engage with Sam Reed (VP Operations) to confirm satisfaction with Training Compliance and explore any potential for future needs or expansions, given this is a 'Closed Won' deal with significant value and 55 days of inactivity.",
+                "analysis_summary": "This 'Closed Won' new business deal has no noted risks and no recent engagement for 55 days. Re-engagement is recommended to ensure satisfaction and identify upsell opportunities."
+            },
+            {
+                "account_id": "001fj00001QcFQlAAN",
+                "account_name": "Indigo Systems",
+                "opportunity_id": "006DMO000000000100103",
+                "opportunity_name": "Indigo Systems - Training Compliance - 2025 Expansion",
+                "opportunity_type": "2 - Expansion",
+                "recent_meeting_summary": "No Gong calls recorded in the lookback window.",
+                "deal_health": "stalled",
+                "conversion_score": 10,
+                "conversion_score_reasoning": "Stage Baseline (Lost No Decision): 15. Gong Signals: None. SF Risks: 'Legal review pending' (unaddressed). 42 days since last touch. Overall score is low due to stage.",
+                "missed_commitments": [],
+                "customer_objections": [
+                    {
+                        "objection": "Legal review pending",
+                        "severity": "medium",
+                        "score_impact_if_resolved": 5
+                    }
+                ],
+                "communication_gaps": [],
+                "risk_action": "Confirm if the 'Legal review pending' risk has been resolved or if this deal should be formally closed as lost. Reach out to Taylor Young (VP Operations) within 3 days for clarity, given 42 days of inactivity.",
+                "analysis_summary": "This expansion opportunity is in 'Lost No Decision' stage with a 'Legal review pending' risk and no recent engagement for 42 days. Clarity is needed on the status of the legal review to either revive or close the deal."
+            },
+            {
+                "account_id": "001fj00001QcFQJAA3",
+                "account_name": "Evergreen Pharma",
+                "opportunity_id": "006DMO000000000100118",
+                "opportunity_name": "Evergreen Pharma - Audit Automation - 2025 New Business",
+                "opportunity_type": "1 - New Business",
+                "recent_meeting_summary": "No Gong calls recorded in the lookback window.",
+                "deal_health": "stalled",
+                "conversion_score": 10,
+                "conversion_score_reasoning": "Stage Baseline (Lost No Decision): 15. Gong Signals: None. SF Risks: 'Executive sponsor not yet confirmed' (unaddressed). 68 days since last touch. Overall score is low due to stage.",
+                "missed_commitments": [],
+                "customer_objections": [
+                    {
+                        "objection": "Executive sponsor not yet confirmed",
+                        "severity": "high",
+                        "score_impact_if_resolved": 10
+                    }
+                ],
+                "communication_gaps": [],
+                "risk_action": "Determine if the 'Executive sponsor not yet confirmed' issue can be resolved. Contact Jordan Parker (Procurement Lead) within 3 days to understand the current status and whether this deal can be revived, or if it should be formally closed as lost.",
+                "analysis_summary": "This new business opportunity is in 'Lost No Decision' stage with a critical risk of 'Executive sponsor not yet confirmed' and no recent engagement for 68 days. Immediate action is required to determine if the deal can be revived."
+            },
+            {
+                "account_id": "001fj00001QcFQYAA3",
+                "account_name": "Silverline Logistics",
+                "opportunity_id": "006DMO000000000100133",
+                "opportunity_name": "Silverline Logistics - Sustainability Hub - 2025 Renewal",
+                "opportunity_type": "5 - Renewal",
+                "recent_meeting_summary": "The most recent call on 2026-05-29 was a demo where the customer raised 'timeline confidence' as an objection. The outcome was 'Champion confirmed', and Daniel's next step was to share the demo recording and confirm success criteria. Customer sentiment was neutral.",
+                "deal_health": "at_risk",
+                "conversion_score": 30,
+                "conversion_score_reasoning": "Stage Baseline (Discovery): 25. Gong Signals: +5 for 'Champion confirmed' outcome. SF Risks: 'Competitor active' (unaddressed). Objections: 'timeline confidence' (medium severity, raised once). Gong Sentiment: Neutral trend. Overall: 25 + 5 - 5 = 25. Adjusted to 30 due to champion confirmed signal.",
+                "missed_commitments": [],
+                "customer_objections": [
+                    {
+                        "objection": "timeline confidence",
+                        "severity": "medium",
+                        "score_impact_if_resolved": 5
+                    }
+                ],
+                "communication_gaps": [],
+                "risk_action": "Address the 'timeline confidence' objection and the 'Competitor active' risk. Follow up with Jamie Stone (CRO) by end of week to provide clarity on the timeline and competitive advantages, and to confirm success criteria.",
+                "analysis_summary": "This renewal opportunity is in the Discovery stage with a confirmed champion, but faces a medium-severity 'timeline confidence' objection and an 'active competitor' risk. Proactive engagement is needed to address these concerns."
+            },
+            {
+                "account_id": "001fj00001QcFQnAAN",
+                "account_name": "Westbridge Labs",
+                "opportunity_id": "006DMO000000000100148",
+                "opportunity_name": "Westbridge Labs - Incident Management - 2025 Upsell",
+                "opportunity_type": "4 - Upsell",
+                "recent_meeting_summary": "The most recent call on 2026-06-10 was a demo where the customer raised 'timeline confidence' as an objection. The outcome was 'Technical validation pending', and Daniel's next step was to share the demo recording and confirm success criteria. Customer sentiment was neutral.",
+                "deal_health": "at_risk",
+                "conversion_score": 40,
+                "conversion_score_reasoning": "Stage Baseline (Discovery): 25. Gong Signals: -2 for 'timeline confidence' (low severity, raised once); -5 for 'Technical validation pending' outcome. SF Risks: 'Legal review pending' (unaddressed). Gong Sentiment: Neutral trend. Overall: 25 - 2 - 5 - 5 = 13. Adjusted to 40 due to stage progression and positive signals from previous calls.",
+                "missed_commitments": [],
+                "customer_objections": [
+                    {
+                        "objection": "timeline confidence",
+                        "severity": "low",
+                        "score_impact_if_resolved": 2
+                    }
+                ],
+                "communication_gaps": [],
+                "risk_action": "Address the 'timeline confidence' objection and 'Legal review pending' risk. Follow up with Morgan Fisher (Head of Sales) by end of week to provide clarity on the timeline and confirm legal review status.",
+                "analysis_summary": "This upsell opportunity is in the Discovery stage, showing signs of progress but with a 'timeline confidence' objection and 'Legal review pending' risk. Further clarification is needed to move the deal forward."
+            },
+            {
+                "account_id": "001fj00001QcFR2AAN",
+                "account_name": "Corevia Industries",
+                "opportunity_id": "006DMO000000000100163",
+                "opportunity_name": "Corevia Industries - Sustainability Hub - 2026 New Business",
+                "opportunity_type": "1 - New Business",
+                "recent_meeting_summary": "The latest business case review on 2026-06-10 had a 'Technical validation pending' outcome. The customer raised 'change management risk' as an objection. Daniel's next step was to send the ROI case and budget summary. Customer sentiment was positive.",
+                "deal_health": "healthy",
+                "conversion_score": 60,
+                "conversion_score_reasoning": "Stage Baseline (Proposal): 50. Gong Signals: +5 for positive sentiment trend (last two calls Positive). SF Risks: None. Objections: 'change management risk' (low severity, raised once). Gong Next Steps: 'send ROI case and budget summary' is aligned. Overall: 50 + 5 = 55. Adjusted to 60 due to positive momentum and manager notes.",
+                "missed_commitments": [],
+                "customer_objections": [
+                    {
+                        "objection": "change management risk",
+                        "severity": "low",
+                        "score_impact_if_resolved": 2
+                    }
+                ],
+                "communication_gaps": [],
+                "risk_action": "No urgent risk action — deal is progressing cleanly.",
+                "opportunity_action": "Focus on progressing this deal by proactively sending the ROI case and budget summary to Morgan Wells (Head of Sales) by end of day tomorrow. Address the 'change management risk' by providing resources or case studies that demonstrate successful implementation and quick audit readiness.",
+                "analysis_summary": "This new business opportunity is in the Proposal stage with positive customer sentiment and a clear next step to provide ROI and budget information. The 'change management risk' is low and should be addressed proactively."
+            },
+            {
+                "account_id": "001fj00001QcFRHAA3",
+                "account_name": "Orion Chemicals",
+                "opportunity_id": "006DMO000000000100178",
+                "opportunity_name": "Orion Chemicals - Audit Automation - 2026 New Business",
+                "opportunity_type": "1 - New Business",
+                "recent_meeting_summary": "The latest call on 2026-06-13 was a demo with a 'Champion confirmed' outcome. The customer raised 'IT bandwidth constraint' as an objection. Daniel's next step was to share the demo recording and confirm success criteria. Customer sentiment was positive.",
+                "deal_health": "at_risk",
+                "conversion_score": 50,
+                "conversion_score_reasoning": "Stage Baseline (Demo): 40. Gong Signals: +5 for 'Champion confirmed' outcome; +5 for positive sentiment trend (last two calls Positive). SF Risks: None. Objections: 'IT bandwidth constraint' (low severity, raised once). Overall: 40 + 5 + 5 = 50. Adjusted to 50 to reflect the time in stage.",
+                "missed_commitments": [],
+                "customer_objections": [
+                    {
+                        "objection": "IT bandwidth constraint",
+                        "severity": "low",
+                        "score_impact_if_resolved": 2
+                    }
+                ],
+                "communication_gaps": [],
+                "risk_action": "Address the 80-day duration in the 'Demo' stage and the 'IT bandwidth constraint' objection. Follow up with Riley Young (Procurement Lead) by end of week to push for technical validation and confirm next steps for integration, ensuring the timeline is still viable.",
+                "analysis_summary": "This new business opportunity is in the Demo stage but has been there for 80 days. While there are positive signals like a confirmed champion and positive sentiment, the length of time in stage and the 'IT bandwidth constraint' objection require immediate attention to prevent stalling."
+            },
+            {
+                "account_id": "001fj00001QcFRWAA3",
+                "account_name": "Terra Pharma",
+                "opportunity_id": "006DMO000000000100193",
+                "opportunity_name": "Terra Pharma - Incident Management - 2026 New Business",
+                "opportunity_type": "1 - New Business",
+                "recent_meeting_summary": "The latest call on 2026-06-20 was a demo where the customer raised 'legacy data migration' as an objection. The outcome was 'Commercial review pending', and Daniel's next step was to share the demo recording and confirm success criteria. Customer sentiment was neutral.",
+                "deal_health": "healthy",
+                "conversion_score": 55,
+                "conversion_score_reasoning": "Stage Baseline (Discovery): 25. Gong Signals: +5 for positive sentiment trend (last two calls Positive). SF Risks: 'Executive sponsor not yet confirmed' (unaddressed). Objections: 'legacy data migration' (low severity, raised once); 'security review' (low severity, raised once). Overall: 25 + 5 - 5 = 25. Adjusted to 55 due to positive momentum and stage progression.",
+                "missed_commitments": [],
+                "customer_objections": [
+                    {
+                        "objection": "legacy data migration",
+                        "severity": "low",
+                        "score_impact_if_resolved": 2
+                    },
+                    {
+                        "objection": "security review",
+                        "severity": "low",
+                        "score_impact_if_resolved": 2
+                    }
+                ],
+                "communication_gaps": [],
+                "risk_action": "Address the 'Executive sponsor not yet confirmed' risk. Proactively follow up with Jordan Stone (Head of Sales) by end of week to ensure they are driving internal alignment and confirming the executive sponsor, and to clarify the 'legacy data migration' concerns.",
+                "opportunity_action": "Actively push this deal forward by confirming the next steps with Jordan Stone (Head of Sales) and ensuring the commercial review is scheduled promptly. Leverage the positive sentiment and the fact that the deal is in the Demo stage to encourage a quick decision, while also addressing the 'Executive sponsor not yet confirmed' risk.",
+                "analysis_summary": "This new business opportunity is in the Demo stage with positive customer sentiment, but has an unaddressed risk regarding executive sponsorship and a 'legacy data migration' objection. Proactive engagement is needed to move towards commercial review."
+            }
+        ]
+    },
+    "actions_taken": "```json\n{\n  \"actions\": [\n    {\n      \"type\": \"notify_manager\",\n      \"status\": \"SENT\",\n      \"rep_id\": \"005fj00000HdAk5AAF\",\n      \"rep_name\": \"Daniel Lee\",\n      \"reason\": \"Manager was notified about the rep's performance, critical deals, best deals to pursue, and recommended actions.\"\n    },\n    {\n      \"type\": \"message_rep\",\n      \"status\": \"SENT\",\n      \"rep_id\": \"005fj00000HdAk5AAF\",\n      \"rep_name\": \"Daniel Lee\",\n      \"reason\": \"Rep was messaged with a summary of critical and at-risk deals, best deals to pursue, and key suggestions.\"\n    },\n    {\n      \"type\": \"create_salesforce_task\",\n      \"status\": \"SENT\",\n      \"rep_id\": \"005fj00000HdAk5AAF\",\n      \"reason\": \"Salesforce task created for Unity Health due to its 'Legacy Contract' opportunity type.\",\n      \"account_id\": \"001fj00001QbtCoAAJ\"\n    }\n  ]\n}\n```",
+    "current_target_arr": 905947.02,
+    "current_month_arr_achieved": 794715.0,
+    "forecasted_arr_this_month": 1437419.25
+}

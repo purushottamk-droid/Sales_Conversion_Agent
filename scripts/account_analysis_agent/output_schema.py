@@ -28,6 +28,14 @@ class CustomerObjection(BaseModel):
     severity: Literal["low", "medium", "high"] = Field(
         description="How likely this objection is to block the deal"
     )
+    score_impact_if_resolved: int = Field(
+        default=0,
+        description=(
+            "Points conversion_score would gain if this objection is "
+            "resolved. Deterministic — do not compute this carefully, "
+            "it will be overwritten based on severity after you respond."
+        )
+    )
 
 
 class AccountAnalysisResult(BaseModel):
@@ -93,6 +101,7 @@ class AccountAnalysisResult(BaseModel):
             "  +5 per call with Positive call_outcome_category (max +10). "
             "  -10 per unresolved high-severity objection. "
             "  -5  per unresolved medium-severity objection. "
+            "  -2  per unresolved low-severity objection. "
             "  -5  per missed commitment with status=overdue. "
             "  -10 if customer_sentiment trend Negative (last 2 calls both Negative). "
             "  +5  if customer_sentiment trend Positive (last 2 calls both Positive). "
