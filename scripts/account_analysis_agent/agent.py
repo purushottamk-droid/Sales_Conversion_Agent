@@ -14,6 +14,7 @@ SESSION STATE:
 """
 
 from google.adk.agents import LlmAgent
+from google.genai import types
 from .prompt import ACCOUNT_ANALYSIS_PROMPT
 from .output_schema import RepAssessmentResult
 
@@ -44,4 +45,8 @@ account_analysis_agent = LlmAgent(
     #Exclude conversation history from Gemini API call — sends only
     # the current instruction + input, reducing token size and latency
     include_contents='none',    
+    generate_content_config=types.GenerateContentConfig(
+        temperature=0,   # near-deterministic scoring/classification
+        top_p=0.9,
+    ),
 )

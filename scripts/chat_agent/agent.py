@@ -30,7 +30,7 @@ instead, via the chat_history state key rendered into the prompt below.
 
 from google.adk.agents import LlmAgent
 from .prompt import CHAT_PROMPT
-
+# from google.genai import types
 
 chat_agent = LlmAgent(
 

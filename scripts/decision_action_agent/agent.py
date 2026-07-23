@@ -20,7 +20,7 @@ SESSION STATE:
 """
 
 from google.adk.agents import LlmAgent
-
+from google.genai import types
 from .prompt import DECISION_ACTION_PROMPT
 from .tools import (
     notify_manager_tool,
@@ -44,4 +44,7 @@ decision_action_agent = LlmAgent(
     ],
 
     output_key="actions_taken",
+    generate_content_config=types.GenerateContentConfig(
+        temperature=0.0,  # rule-following + tool orchestration — no creativity needed
+    ),
 )

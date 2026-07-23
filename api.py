@@ -41,7 +41,10 @@ api.add_middleware(
     expose_headers=["*"],
 )
 
-db_url = os.environ.get("SESSIONS_DB_URL", "sqlite+aiosqlite:///./sessions.db")
+db_url = os.environ.get(
+    "SESSIONS_DB_URL",
+    "postgresql+asyncpg://sales_agent_user:sales_agent_atgeir-moae-dev@/sessions_db?host=/cloudsql/atgeir-moae-dev:asia-south1:sales-agent-db"
+)
 session_service = DatabaseSessionService(db_url=db_url)
 
 runner = Runner(
@@ -206,15 +209,42 @@ async def healthz():
 @api.post("/agent/sessions")
 async def create_session(req: CreateSessionRequest):
     """
-    Creates a session and seeds rep identity fields upfront:
-    - sales_rep_name → Agent 1 uses this to query Salesforce (Sales_Rep_Name__c)
-                        and Everstage (REP_NAME) — Salesforce OwnerId can't
-                        identify an individual rep in this org, so the rep's
-                        name is the real per-rep key, not an Id.
-    - rep_email     → Agent 4 uses this to message the rep
-    - manager_email → Agent 4 uses this to notify the manager
-    Call this FIRST before /agent/run.
+    Creates a session, OR reuses the rep's existing one if they already
+    have a session under this user_id — this is what makes "rep logs in
+    next day → picks up previous chat_history" actually work. Without
+    this check, every login created a brand new empty session.
     """
+    existing = await session_service.list_sessions(
+        app_name="sales_rep_pipeline",
+        user_id=req.user_id,
+    )
+
+    if existing.sessions:
+        latest = sorted(existing.sessions, key=lambda s: s.last_update_time, reverse=True)[0]
+        session = await session_service.get_session(
+            app_name="sales_rep_pipeline",
+            user_id=req.user_id,
+            session_id=latest.id,
+        )
+        # Refresh identity fields in case email changed since last login.
+        # Direct session.state[...] = x does NOT persist — must go through
+        # append_event's state_delta.
+        refresh_delta = {
+            "sales_rep_name": req.sales_rep_name,
+            "rep_email": req.rep_email,
+            "manager_email": req.manager_email,
+        }
+        await session_service.append_event(
+            session,
+            Event(author="system", actions=EventActions(state_delta=refresh_delta)),
+        )
+        session.state.update(refresh_delta)
+        return {
+            "session_id":    session.id,
+            "user_id":       req.user_id,
+            "initial_state": session.state,
+        }
+
     session = await session_service.create_session(
         app_name="sales_rep_pipeline",
         user_id=req.user_id,
