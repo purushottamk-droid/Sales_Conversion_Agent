@@ -5,7 +5,11 @@ import os
 # =========================
 # CONFIG
 # =========================
+<<<<<<< HEAD
 CLIENT_SECRET_FILE = "client_secret_621913909275-2crq177heh5v7s83j8n260r4s3s15flr.apps.googleusercontent.com.json"
+=======
+CLIENT_SECRET_FILE = "client_secret_621913909275-gds5ve0u63kfuvhb35m03sn30pbkcina.apps.googleusercontent.com.json"
+>>>>>>> a130be202adff6349c5d5beb2ed82a1c4474e182
 OUTPUT_FILE = "oauth_final.json"
 
 SCOPES = [
