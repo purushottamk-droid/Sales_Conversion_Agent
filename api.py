@@ -210,20 +210,34 @@ async def healthz():
 async def create_session(req: CreateSessionRequest):
     """
     Creates a session, OR reuses the rep's existing one if they already
-    have a session under this user_id — this is what makes "rep logs in
-    next day → picks up previous chat_history" actually work. Without
-    this check, every login created a brand new empty session.
+    have one — this is what makes "rep logs in next day → picks up
+    previous chat_history" actually work.
+
+    Sessions are scoped by sales_rep_name (normalized), NOT the
+    caller-supplied user_id. Pipeline results belong to a specific rep,
+    not to whichever opaque user_id a client happens to send — scoping by
+    user_id let two different reps sharing the same user_id see each
+    other's stale rep_performance_profile/account_analysis_results
+    (confirmed: a session created for "Maya Chen" got silently reused and
+    relabeled for "Daniel Lee" on the next call under the same user_id,
+    while the actual analysis data underneath stayed Maya Chen's).
+
+    The response's "user_id" is this normalized rep key, not req.user_id —
+    callers MUST use the returned user_id (paired with session_id) for all
+    subsequent /agent/run, /agent/result, /agent/chat calls.
     """
+    rep_key = req.sales_rep_name.strip().lower()
+
     existing = await session_service.list_sessions(
         app_name="sales_rep_pipeline",
-        user_id=req.user_id,
+        user_id=rep_key,
     )
 
     if existing.sessions:
         latest = sorted(existing.sessions, key=lambda s: s.last_update_time, reverse=True)[0]
         session = await session_service.get_session(
             app_name="sales_rep_pipeline",
-            user_id=req.user_id,
+            user_id=rep_key,
             session_id=latest.id,
         )
         # Refresh identity fields in case email changed since last login.
@@ -241,13 +255,13 @@ async def create_session(req: CreateSessionRequest):
         session.state.update(refresh_delta)
         return {
             "session_id":    session.id,
-            "user_id":       req.user_id,
+            "user_id":       rep_key,
             "initial_state": session.state,
         }
 
     session = await session_service.create_session(
         app_name="sales_rep_pipeline",
-        user_id=req.user_id,
+        user_id=rep_key,
         state={
             "sales_rep_name": req.sales_rep_name,
             "rep_email":     req.rep_email,
@@ -256,7 +270,7 @@ async def create_session(req: CreateSessionRequest):
     )
     return {
         "session_id":    session.id,
-        "user_id":       req.user_id,
+        "user_id":       rep_key,
         "initial_state": session.state,
     }
 
