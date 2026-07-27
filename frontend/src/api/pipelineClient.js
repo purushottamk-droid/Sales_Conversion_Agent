@@ -36,14 +36,18 @@ function parseSSEChunk(chunk) {
 
 /**
  * STEP 1 — Create a session. Must be called before /agent/run.
+ *
+ * Backend currently requires BOTH user_id and sales_rep_name in the body
+ * (confirmed via 422 "Field required" errors on both fields). We send the
+ * rep's name for both, since the UI only collects a single rep name field.
  */
-export async function createSession({ userId, salesRepName, repEmail, managerEmail, signal }) {
+export async function createSession({ repName, repEmail, managerEmail, signal }) {
   const res = await fetch(`${BASE_URL}/agent/sessions`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      user_id: userId,
-      sales_rep_name: salesRepName,
+      user_id: repName,
+      sales_rep_name: repName,
       rep_email: repEmail,
       manager_email: managerEmail,
     }),
@@ -64,12 +68,12 @@ export async function createSession({ userId, salesRepName, repEmail, managerEma
  *
  * @param {(evt: {type: string, data: any}) => void} onEvent
  */
-export async function runPipelineStream({ userId, sessionId, onEvent, signal }) {
+export async function runPipelineStream({ repName, sessionId, onEvent, signal }) {
   const res = await fetch(`${BASE_URL}/agent/run`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      user_id: userId,
+      user_id: repName,
       session_id: sessionId,
     }),
     signal,
@@ -108,8 +112,8 @@ export async function runPipelineStream({ userId, sessionId, onEvent, signal }) 
 /**
  * STEP 3 — Fetch the final structured result once the pipeline is done.
  */
-export async function getResult({ sessionId, userId, signal }) {
-  const url = `${BASE_URL}/agent/result/${sessionId}?user_id=${encodeURIComponent(userId)}`;
+export async function getResult({ sessionId, repName, signal }) {
+  const url = `${BASE_URL}/agent/result/${sessionId}?user_id=${encodeURIComponent(repName)}`;
   const res = await fetch(url, { signal });
 
   if (!res.ok) {
@@ -126,22 +130,21 @@ export async function getResult({ sessionId, userId, signal }) {
  *   sessions -> run (SSE) -> result
  *
  * @param {Object} opts
- * @param {string} opts.userId
- * @param {string} opts.salesRepName
+ * @param {string} opts.repName
  * @param {string} opts.repEmail
  * @param {string} opts.managerEmail
  * @param {(evt: {type: string, data: any}) => void} opts.onEvent - fired for every SSE event
  * @param {AbortSignal} [opts.signal]
  * @returns {Promise<Object>} the final /agent/result payload
  */
-export async function runFullPipeline({ userId, salesRepName, repEmail, managerEmail, onEvent, signal }) {
-  const session = await createSession({ userId, salesRepName, repEmail, managerEmail, signal });
+export async function runFullPipeline({ repName, repEmail, managerEmail, onEvent, signal }) {
+  const session = await createSession({ repName, repEmail, managerEmail, signal });
   const sessionId = session.session_id;
 
   let pipelineFinished = false;
 
   await runPipelineStream({
-    userId,
+    repName,
     sessionId,
     signal,
     onEvent: (evt) => {
@@ -160,7 +163,7 @@ export async function runFullPipeline({ userId, salesRepName, repEmail, managerE
     console.warn('Pipeline stream ended without a decision_action "done" event; fetching result anyway.');
   }
 
-  const finalResult = await getResult({ sessionId, userId, signal });
+  const finalResult = await getResult({ sessionId, repName, signal });
 
   // Guarantee session_id is present on the returned object regardless of
   // whether /agent/result echoes it back — usePipeline.js relies on this
@@ -174,18 +177,18 @@ export async function runFullPipeline({ userId, salesRepName, repEmail, managerE
  * pipeline has completed.
  *
  * @param {Object} opts
- * @param {string} opts.userId
+ * @param {string} opts.repName
  * @param {string} opts.sessionId
  * @param {string} opts.message
  * @param {AbortSignal} [opts.signal]
  * @returns {Promise<Object>} the backend's chat response
  */
-export async function sendChatMessage({ userId, sessionId, message, signal }) {
+export async function sendChatMessage({ repName, sessionId, message, signal }) {
   const res = await fetch(`${BASE_URL}/agent/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      user_id: userId,
+      user_id: repName,
       session_id: sessionId,
       message,
     }),

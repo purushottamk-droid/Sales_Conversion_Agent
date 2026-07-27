@@ -79,7 +79,7 @@ export function normalizeNpsClassifications(raw, nameMap = {}) {
   return list.map((c, i) => ({
     key: `${c.account_id}-${i}`,
     accountId: c.account_id,
-    accountName: nameMap[c.account_id] ?? c.account_id,
+    accountName: c.account_name ?? nameMap[c.account_id] ?? c.account_id,
     riskLevel: c.risk_level,
     npsLabel: c.nps_label,
     drivers: c.drivers ?? [],
