@@ -531,6 +531,19 @@ class DataCollectionAgent(BaseAgent):
             _fetch_stage_benchmark_mcp(),
         )
 
+        # Rep not found in either source — nothing to build a profile from.
+        rep_not_found = not everstage.get("rep_name") and not pipeline_opps
+        if rep_not_found:
+            print(f"[DataCollectionAgent] Rep '{sales_rep_name}' not found — "
+                  f"skipping profile build.")
+            yield Event(
+                author=self.name,
+                content=None,
+                actions=EventActions(
+                    state_delta={"rep_performance_profile": None}
+                ),
+            )
+            return
         # A real Salesforce User Id for decision_action_agent to assign
         # Tasks to — see build_rep_profile's docstring for why this can't
         # be per-rep. Derived from whichever opportunities this rep has.

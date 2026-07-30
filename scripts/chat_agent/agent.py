@@ -39,7 +39,7 @@ chat_agent = LlmAgent(
 
     # Same tier as account_analysis_agent — cheap/fast is fine for
     # grounded Q&A over an already-small JSON snapshot
-    model="gemini-2.5-flash-lite",
+    model="gemini-2.5-flash",
 
     # InstructionProvider — embeds the 3 result payloads + chat_history
     # into the prompt fresh on every turn. Full logic in prompt.py
