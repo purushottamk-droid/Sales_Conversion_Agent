@@ -48,5 +48,13 @@ account_analysis_agent = LlmAgent(
     generate_content_config=types.GenerateContentConfig(
         temperature=0,   # near-deterministic scoring/classification
         top_p=0.9,
+        # Explicit ceiling well above the model default — this agent's
+        # output grows with the rep's account count (one full
+        # AccountAnalysisResult per opportunity), and reps with many
+        # accounts (e.g. 15) were hitting the implicit default and
+        # getting silently truncated mid-JSON, which then failed Pydantic
+        # validation entirely (confirmed reproducible at temperature=0 —
+        # same truncation point every run for the same rep).
+        max_output_tokens=65535,  # API's supported range is 1 to 65536 EXCLUSIVE
     ),
 )
