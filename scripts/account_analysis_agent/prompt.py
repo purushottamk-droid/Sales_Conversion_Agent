@@ -55,6 +55,15 @@ Secondary reasoning source is Gong call data (opportunity_data.gong_interaction_
 — use it to qualify, enrich, and fine-tune the picture built from Salesforce.
 Do NOT let Gong signals override Salesforce fundamentals.
 
+BE TERSE IN EVERY FREE-TEXT FIELD. This response covers EVERY opportunity this
+rep owns in ONE call — length limits per field are hard caps, not suggestions,
+and exist because they get multiplied across every account. Prefer short
+phrases over full sentences when a phrase carries the same information. Never
+restate a fact already captured in a different field on the same account (e.g.
+don't repeat the objection text in risk_action if it's already in
+customer_objections, don't repeat recent_meeting_summary inside
+analysis_summary) — reference it briefly instead.
+
 REP_PERFORMANCE_PROFILE:
 {json.dumps(rep_performance_profile, indent=2, default=str)}
 
@@ -178,8 +187,8 @@ e) POSITIVE SIGNALS — note these explicitly, they feed STEP 4 (opportunity_act
    Record any positive signals found — they are the basis for opportunity_action.
 
 f) RECENT MEETING SUMMARY
-   Write recent_meeting_summary: 2-3 sentences synthesizing the most recent call(s)
-   — what was discussed, the sentiment, and any outcome/next step.
+   Write recent_meeting_summary: MAX 1-2 short sentences synthesizing the most
+   recent call(s) — what was discussed, the sentiment, and any outcome/next step.
    If recent_calls is empty, set to: "No Gong calls recorded in the lookback window."
 
 ─────────────────────────────────────────────────────
@@ -197,7 +206,9 @@ Apply Gong fine-tune — total delta bounded between -30 and +10:
   +5  if customer_sentiment trend is Positive (both last 2 calls Positive)
   -5  per SF risk field entry not addressed in any Gong call
 
-Document every adjustment in conversion_score_reasoning.
+Document adjustments in conversion_score_reasoning — MAX 2 short sentences,
+terse deltas only (e.g. "Baseline 40. +5 sentiment, -10 high objection. Final 35."),
+no narration.
 
 ─────────────────────────────────────────────────────
 ### STEP 4 — Deal health classification
@@ -219,9 +230,10 @@ Priority order:
   5. SF risks not addressed in calls
 
 Rules:
-- Name the person, the action, and the deadline.
+- ONE sentence, max ~25 words. Name the person, the action, and the deadline
+  in that one sentence — no preamble, don't restate the risk itself first.
 - Never say "follow up" — state the specific action.
-- If there are no material risks, set to: "No urgent risk action — deal is progressing cleanly."
+- If there are no material risks, set to exactly: "No urgent risk action — deal is progressing cleanly."
 
 ─────────────────────────────────────────────────────
 ### STEP 6 — opportunity_action (offensive)
@@ -230,11 +242,12 @@ ONLY populate when ALL of the following are true:
   (a) conversion_score >= 55
   (b) At least one positive signal from STEP 2e exists
 
-When populated, include:
+When populated, fold into ONE to two sentences max:
   - The specific positive signal that justifies pushing forward.
   - One concrete offensive action the rep should take NOW.
   - The stakeholder to engage and how.
   - A timeline tied to close_date_target or the next natural stage gate.
+Combine these into a single terse statement — not four separate clauses.
 
 If conditions are not met, leave opportunity_action as null.
 
@@ -258,14 +271,15 @@ a) TARGET ATTAINMENT SCORE + REASONING
      (1 - quota_attainment.current_month_attainment_pct / 100).
    Look at every open opportunity's deal_value_arr, conversion_score, and
    close_date_target. Only opportunities realistically closable THIS MONTH count.
-   Set rep_target_attainment_score (0-100). Write rep_target_attainment_reasoning
-   stating the attainment %, the ARR gap, and naming which specific opportunities
-   can and cannot help close it.
+   Set rep_target_attainment_score (0-100). Write rep_target_attainment_reasoning:
+   MAX 3-4 short sentences, stating the attainment %, the ARR gap, and naming
+   (by account_name only) which opportunities can/cannot help close it — one
+   clause each, not a paragraph per deal.
 
 b) CRITICAL_DEALS
    Any opportunity with deal_health critical or stalled, an unresolved high-severity
    objection, or close_date_target within 30 days with open blockers.
-   One DealReference per deal, reason = the specific triggering signal.
+   One DealReference per deal, reason = the specific triggering signal, one sentence.
 
 c) BEST_DEALS_TO_PURSUE
    Opportunities that received a populated opportunity_action in STEP 6.
@@ -273,11 +287,14 @@ c) BEST_DEALS_TO_PURSUE
 
 d) KEY_SUGGESTIONS
    3-5 concrete, prioritized, actionable suggestions — mix of coaching (patterns
-   repeated across deals) and pipeline-management advice. No generic advice.
+   repeated across deals) and pipeline-management advice. ONE sentence each,
+   max ~20 words. No generic advice.
 
 e) REP_PERFORMANCE_SUMMARY
-   3-5 sentences briefing a sales manager: attainment trajectory, overall pipeline
-   health, and the single biggest swing factor for whether this rep hits target.
+   MAX 3 short sentences briefing a sales manager: attainment trajectory,
+   overall pipeline health, and the single biggest swing factor for whether
+   this rep hits target. Do not list individual deals — critical_deals and
+   best_deals_to_pursue already cover that.
 
 ═══════════════════════════════════════════════════════
 ## SECTION 5 — ROOT-LEVEL CRITICAL RULES
