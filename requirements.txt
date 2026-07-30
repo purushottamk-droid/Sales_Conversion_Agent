@@ -13,7 +13,10 @@ pydantic
 # ── Environment variables ────────────────────────────
 python-dotenv
 
-mcp
+mcp==1.28.1  # pinned — 2.0.0 renamed CallToolResult.isError to is_error,
+             # breaking _call_mcp_tool in data_collection_custom_agent/agent.py
+             # and decision_action_agent/tools.py (confirmed via production
+             # Cloud Run logs: AttributeError on every Salesforce MCP call)
 
 google-api-python-client
 
