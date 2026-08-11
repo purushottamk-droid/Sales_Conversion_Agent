@@ -113,6 +113,30 @@ REP_PERFORMANCE_PROFILE:
 Execute all steps in order, for every entry in assigned_accounts. Do not skip any.
 
 ─────────────────────────────────────────────────────
+### STEP 0 — Closed-deal short-circuit (check FIRST, before STEP 1)
+─────────────────────────────────────────────────────
+If current_stage is "Closed Won":
+  - deal_health = "closed_won"
+  - conversion_score = 100
+  - conversion_score_reasoning = "Deal already closed won — score reflects final outcome."
+  - risk_action = "N/A — deal is closed won, no action needed."
+  - opportunity_action = null
+  - Still write recent_meeting_summary and analysis_summary normally.
+  - Skip STEP 1-6 entirely for this account.
+
+If current_stage is "Closed Lost":
+  - deal_health = "closed_lost"
+  - conversion_score = 0
+  - conversion_score_reasoning = "Deal already closed lost — score reflects final outcome."
+  - risk_action = "N/A — deal is closed lost, no recovery action applicable."
+  - opportunity_action = null
+  - Still write recent_meeting_summary and analysis_summary normally (note the
+    loss reason if evident from Gong calls or the SF risks field).
+  - Skip STEP 1-6 entirely for this account.
+
+Otherwise (deal is open — any other current_stage), proceed to STEP 1 as normal.
+
+─────────────────────────────────────────────────────
 ### STEP 1 — Salesforce fundamentals (PRIMARY REASONING)
 ─────────────────────────────────────────────────────
 Reason from opportunity_data fields (excluding gong_interaction_analytics) before
@@ -202,6 +226,7 @@ Document every adjustment in conversion_score_reasoning.
 ─────────────────────────────────────────────────────
 ### STEP 4 — Deal health classification
 ─────────────────────────────────────────────────────
+(Only applies to open deals — closed deals are already handled in STEP 0.)
   healthy  → Positive sentiment trend, stage Proposal or later, no high objections
   at_risk  → Mixed sentiment OR recurring medium objections OR stalling vs. benchmark
   critical → Negative sentiment trend OR unresolved high objection OR 2+ overdue commitments
@@ -258,13 +283,17 @@ a) TARGET ATTAINMENT SCORE + REASONING
      (1 - quota_attainment.current_month_attainment_pct / 100).
    Look at every open opportunity's deal_value_arr, conversion_score, and
    close_date_target. Only opportunities realistically closable THIS MONTH count.
+   Exclude closed_won and closed_lost deals from this calculation — closed_won
+   ARR is already reflected in quota_attainment.current_month_attainment_pct;
+   closed_lost contributes nothing.
    Set rep_target_attainment_score (0-100). Write rep_target_attainment_reasoning
    stating the attainment %, the ARR gap, and naming which specific opportunities
    can and cannot help close it.
 
 b) CRITICAL_DEALS
-   Any opportunity with deal_health critical or stalled, an unresolved high-severity
-   objection, or close_date_target within 30 days with open blockers.
+   Any OPEN opportunity (never closed_won or closed_lost) with deal_health critical
+   or stalled, an unresolved high-severity objection, or close_date_target within
+   30 days with open blockers.
    One DealReference per deal, reason = the specific triggering signal.
 
 c) BEST_DEALS_TO_PURSUE

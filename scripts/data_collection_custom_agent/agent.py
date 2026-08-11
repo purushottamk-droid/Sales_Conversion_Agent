@@ -41,6 +41,9 @@ MCP_SALESFORCE_SERVER_BASE_URL = f"{_mcp_url_parts.scheme}://{_mcp_url_parts.net
 # Gong recency window — "last activity 1-2 months backwards"
 GONG_LOOKBACK_DAYS = 60
 
+class RepNotFoundError(ValueError):
+    """Raised when sales_rep_name doesn't match any record in Everstage/Salesforce."""
+
 # How many most-recent calls per opportunity to carry into the payload
 # (title / summary / sentiment context for the downstream LLM).
 MAX_RECENT_CALLS_PER_OPPORTUNITY = 5
@@ -86,7 +89,7 @@ async def _call_mcp_tool(tool_name: str, arguments: dict) -> dict:
         async with ClientSession(read, write) as session:
             await session.initialize()
             result = await session.call_tool(tool_name, arguments)
-            if result.isError:
+            if result.is_error:
                 raise RuntimeError(f"MCP tool '{tool_name}' returned an error: {result.content}")
             # Tool payloads are a single TextContent block containing JSON
             # (see server.py — everything is wrapped in a dict for this
@@ -138,7 +141,7 @@ def _fetch_everstage_sync(rep_name: str) -> dict:
     rep_tier = rows[0]["LEVEL"] if rows else None
 
     return {
-        "rep_name": rep_name,
+        "rep_name": rep_name if rows else None,
         "rep_experience_tier": rep_tier,
         "monthly_rows": monthly_rows,
     }
@@ -534,16 +537,17 @@ class DataCollectionAgent(BaseAgent):
         # Rep not found in either source — nothing to build a profile from.
         rep_not_found = not everstage.get("rep_name") and not pipeline_opps
         if rep_not_found:
-            print(f"[DataCollectionAgent] Rep '{sales_rep_name}' not found — "
-                  f"skipping profile build.")
+            error_message = f"No sales rep found matching '{sales_rep_name}'. Please check the name and try again."
+            print(f"[DataCollectionAgent] {error_message}")
             yield Event(
                 author=self.name,
                 content=None,
                 actions=EventActions(
-                    state_delta={"rep_performance_profile": None}
+                    state_delta={"rep_performance_profile": None, "rep_lookup_error": error_message}
                 ),
             )
-            return
+            raise RepNotFoundError(error_message)
+        
         # A real Salesforce User Id for decision_action_agent to assign
         # Tasks to — see build_rep_profile's docstring for why this can't
         # be per-rep. Derived from whichever opportunities this rep has.
@@ -607,15 +611,18 @@ async def test():
         state={"sales_rep_name": "Maya Chen"},
     )
 
-    async for event in runner.run_async(
-        user_id="test_user",
-        session_id=session.id,
-        new_message=types.Content(
-            role="user",
-            parts=[types.Part(text="start")]
-        ),
-    ):
-        print("\nEvent received from:", event.author)
+    try:
+        async for event in runner.run_async(
+            user_id="test_user",
+            session_id=session.id,
+            new_message=types.Content(
+                role="user",
+                parts=[types.Part(text="start")]
+            ),
+        ):
+            print("\nEvent received from:", event.author)
+    except RepNotFoundError as e:
+        print(f"\n[UI-facing error] {e}")
 
 
 if __name__ == "__main__":

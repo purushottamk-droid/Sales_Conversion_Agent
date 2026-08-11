@@ -21,6 +21,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from scripts.SequentialAgent import root_agent
 from scripts.chat_agent import chat_agent
+from scripts.data_collection_custom_agent.agent import RepNotFoundError
 
 # ─────────────────────────────────────────────
 # App setup
@@ -102,27 +103,30 @@ async def stream_events(event_gen):
     Stream all agent events as SSE.
     No confirmation/resume logic — pipeline runs straight through.
     """
-    async for event in event_gen:
+    try:
+        async for event in event_gen:
 
-        # Extract text content if available
-        text = ""
-        if event.content and event.content.parts:
-            text = "".join(
-                p.text for p in event.content.parts
-                if hasattr(p, "text") and p.text
-            )
+            # Extract text content if available
+            text = ""
+            if event.content and event.content.parts:
+                text = "".join(
+                    p.text for p in event.content.parts
+                    if hasattr(p, "text") and p.text
+                )
 
-        yield sse("progress", {
-            "author": event.author,
-            "id":     event.id,
-            "text":   text,
-        })
-
-        if event.is_final_response():
-            yield sse("done", {
+            yield sse("progress", {
                 "author": event.author,
+                "id":     event.id,
                 "text":   text,
             })
+
+            if event.is_final_response():
+                yield sse("done", {
+                    "author": event.author,
+                    "text":   text,
+                })
+    except RepNotFoundError as e:
+        yield sse("error", {"message": str(e)})
 
 
 # ─────────────────────────────────────────────
@@ -359,6 +363,9 @@ async def get_result(session_id: str, user_id: str):
 
     rep_performance_profile = session.state.get("rep_performance_profile")
     account_analysis_results = session.state.get("account_analysis_results")
+
+    if "rep_performance_profile" not in session.state:
+        raise HTTPException(status_code=409, detail="Pipeline has not completed yet. Wait for the 'done' event from /agent/run.")
     quota_attainment = (rep_performance_profile or {}).get("quota_attainment", {})
 
     return {

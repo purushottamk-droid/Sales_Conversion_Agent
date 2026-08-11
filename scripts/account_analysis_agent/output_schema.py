@@ -80,11 +80,12 @@ class AccountAnalysisResult(BaseModel):
     # ------------------------------------------------------------------
     # Deal health
     # ------------------------------------------------------------------
-    deal_health: Literal["healthy", "at_risk", "critical", "stalled"] = Field(
+    deal_health: Literal["healthy", "at_risk", "critical", "stalled", "closed_won", "closed_lost"] = Field(
         description=(
             "Overall health of the deal. "
             "healthy=progressing well, at_risk=has blockers, "
-            "critical=likely to be lost, stalled=no movement."
+            "critical=likely to be lost, stalled=no movement, "
+            "closed_won=deal already won, closed_lost=deal already lost."
         )
     )
 
