@@ -37,19 +37,18 @@ function parseSSEChunk(chunk) {
 /**
  * STEP 1 — Create a session. Must be called before /agent/run.
  *
- * Backend currently requires BOTH user_id and sales_rep_name in the body
- * (confirmed via 422 "Field required" errors on both fields). We send the
- * rep's name for both, since the UI only collects a single rep name field.
+ * Per backend: only user_id is required — its value is the rep's name,
+ * not a placeholder like 'test_user'. No separate sales_rep_name field.
  */
 export async function createSession({ repName, repEmail, managerEmail, signal }) {
   const res = await fetch(`${BASE_URL}/agent/sessions`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      user_id: repName,
-      sales_rep_name: repName,
-      rep_email: repEmail,
-      manager_email: managerEmail,
+       user_id: repName,
+        sales_rep_name: repName,
+        rep_email: repEmail,
+        manager_email: managerEmail,
     }),
     signal,
   });
@@ -140,21 +139,42 @@ export async function getResult({ sessionId, repName, signal }) {
 export async function runFullPipeline({ repName, repEmail, managerEmail, onEvent, signal }) {
   const session = await createSession({ repName, repEmail, managerEmail, signal });
   const sessionId = session.session_id;
+  const userId = session.user_id;
 
   let pipelineFinished = false;
 
+  // Set when the backend streams `event: error` (see stream_events()'s
+  // RepNotFoundError catch in api.py — fired when sales_rep_name doesn't
+  // match anything in Everstage/Salesforce). Captured here instead of
+  // thrown immediately so the raw event still reaches the caller's
+  // onEvent first (e.g. so usePipeline.js can reset node states), and so
+  // we can bail out BEFORE calling /agent/result below — that endpoint
+  // would otherwise 404 or return an empty/stale payload for a rep that
+  // was never actually resolved.
+  let pipelineError = null;
+
   await runPipelineStream({
-    repName,
+    repName : userId,
     sessionId,
     signal,
     onEvent: (evt) => {
       onEvent(evt);
+
+      if (evt.type === 'error') {
+        pipelineError = evt?.data?.message || 'Pipeline failed. Please try again.';
+        return;
+      }
+
       const author = (evt?.data?.author || '').toLowerCase();
       if (evt.type === 'done' && author.includes(FINAL_AGENT_MATCH)) {
         pipelineFinished = true;
       }
     },
   });
+
+  if (pipelineError) {
+    throw new Error(pipelineError);
+  }
 
   if (!pipelineFinished) {
     // Stream closed without seeing the final agent's done event — still
@@ -163,12 +183,13 @@ export async function runFullPipeline({ repName, repEmail, managerEmail, onEvent
     console.warn('Pipeline stream ended without a decision_action "done" event; fetching result anyway.');
   }
 
-  const finalResult = await getResult({ sessionId, repName, signal });
+  const finalResult = await getResult({ sessionId, repName : userId, signal });
 
   // Guarantee session_id is present on the returned object regardless of
   // whether /agent/result echoes it back — usePipeline.js relies on this
-  // to power the follow-up chat widget after the pipeline completes.
-  return { ...finalResult, session_id: sessionId };
+  // to power the follow-up chat widget after the pipeline completes, and
+  // to persist the session for reload/debugging purposes.
+  return { ...finalResult, session_id: sessionId, user_id: userId };
 }
 
 /**

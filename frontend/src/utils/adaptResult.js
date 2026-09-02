@@ -333,3 +333,76 @@ export function normalizeActions(raw) {
     reason: a.reason ?? '',
   }));
 }
+
+/**
+ * Fallback for when account_analysis_results is null (agent 2/3 hasn't
+ * populated it). Builds an equivalent {summary, accounts} shape directly
+ * from rep_performance_profile + the three top-level ARR fields, so the
+ * Dashboard never shows an all-blank/zeroed state when real pipeline
+ * data exists.
+ */
+export function normalizeRepProfileFallback(root) {
+  const rpp = root?.rep_performance_profile;
+  if (!rpp) return null;
+
+  const assigned = rpp.assigned_accounts ?? [];
+  const quota = rpp.quota_attainment ?? {};
+
+  const attainmentPct = quota.monthly_attainment_pct ?? quota.quarterly_attainment_pct;
+
+  const accounts = assigned.map((acc) => {
+    const opp = acc.opportunity_data ?? {};
+    const cbi = opp.critical_business_issue ?? {};
+    const calls = opp.gong_interaction_analytics?.recent_calls ?? [];
+
+    return {
+      id: acc.account_id,
+      name: acc.account_name,
+      opportunityId: opp.opportunity_id,
+      opportunityName: opp.opportunity_name,
+      opportunityType: opp.opportunity_type,
+      recentMeetingSummary: calls[0]?.meeting_summary ?? '',
+      dealHealth:
+        opp.current_stage === 'Closed Won'
+          ? 'healthy'
+          : opp.current_stage?.startsWith('Closed Lost') || opp.current_stage === 'Lost No Decision'
+          ? 'critical'
+          : 'at_risk',
+      conversionScore: null,
+      conversionScoreReasoning: '',
+      missedCommitments: [],
+      customerObjections: calls
+        .filter((c) => c.primary_objection)
+        .map((c) => ({ objection: c.primary_objection, severity: null, scoreImpactIfResolved: null })),
+      communicationGaps: [],
+      riskAction: opp.risks,
+      opportunityAction: opp.next_step ?? cbi.manager_notes,
+      analysisSummary: cbi.cbi_identified,
+    };
+  });
+
+  const summary = {
+    repId: rpp.rep_id,
+    repName: rpp.rep_name,
+    repTier: rpp.rep_experience_tier,
+    performanceSummary: null,
+    attainmentScore: attainmentPct != null ? Math.round(attainmentPct) : null,
+    attainmentReasoning: '',
+    criticalDeals: [],
+    bestDealsToPursue: [],
+    keySuggestions: [],
+    risk: deriveRiskFromAttainmentInternal(attainmentPct),
+    currentTargetArr: root?.current_target_arr,
+    currentMonthArrAchieved: root?.current_month_arr_achieved,
+    forecastedArrThisMonth: root?.forecasted_arr_this_month,
+  };
+
+  return { summary, accounts };
+}
+
+// exported deriveRiskFromAttainment above takes a 0-100 score already;
+// reuse it directly since monthly_attainment_pct/quarterly_attainment_pct
+// already arrive as 0-100 numbers (87.7, 71.4, 0.0 — not fractions).
+function deriveRiskFromAttainmentInternal(pct) {
+  return deriveRiskFromAttainment(pct);
+}

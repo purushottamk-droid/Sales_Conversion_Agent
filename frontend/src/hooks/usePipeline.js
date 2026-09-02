@@ -12,6 +12,10 @@
 // pipeline completes, so the chat widget (POST /agent/chat) can reuse
 // the same session for follow-up Q&A about the rep it just analyzed.
 //
+// sessionId is also persisted to localStorage (SALES_SESSION_ID_KEY) so
+// it survives a page reload and is easy to inspect while debugging
+// "session not found" issues against the backend.
+//
 // Confirmed from real backend output:
 //   - DataCollectionAgent's SSE text is always "" (it works via session
 //     state, not streamed text) — node 1 detail is generic, not data-driven.
@@ -27,6 +31,9 @@ const NODES = [1, 2, 3];
 
 const initialNodeStates = { 1: 'idle', 2: 'idle', 3: 'idle' };
 const initialNodeDetails = { 1: null, 2: null, 3: null };
+
+// localStorage key used to persist the active session id across reloads.
+const SALES_SESSION_ID_KEY = 'salesConversionAgent.sessionId';
 
 // Maps the SSE event's `author` field (the ADK agent's `name`) to one of
 // the 3 real pipeline nodes:
@@ -56,6 +63,21 @@ function tryParseEventText(eventData) {
   }
 }
 
+// Persist (or clear, if null) the session id in localStorage. Wrapped in
+// try/catch since localStorage can throw in some environments (e.g.
+// private browsing mode with storage disabled).
+function persistSessionId(sessionId) {
+  try {
+    if (sessionId) {
+      window.localStorage.setItem(SALES_SESSION_ID_KEY, sessionId);
+    } else {
+      window.localStorage.removeItem(SALES_SESSION_ID_KEY);
+    }
+  } catch (err) {
+    console.warn('Could not persist session id to localStorage:', err);
+  }
+}
+
 export function usePipeline() {
   const [pipelineStatus, setPipelineStatus] = useState('idle'); // idle | running | done | error
   const [nodeStates, setNodeStates] = useState(initialNodeStates);
@@ -64,6 +86,7 @@ export function usePipeline() {
   const [dashboardVisible, setDashboardVisible] = useState(false);
   const [result, setResult] = useState(null); // final /agent/result payload
   const [sessionId, setSessionId] = useState(null); // shared session_id, for the chat widget
+  const [userId, setUserId] = useState(null);
   const [error, setError] = useState(null);
 
   const abortRef = useRef(null);
@@ -75,6 +98,8 @@ export function usePipeline() {
     setDashboardVisible(false);
     setResult(null);
     setSessionId(null);
+    setUserId(null);
+    persistSessionId(null);
     setError(null);
   }, []);
 
@@ -120,6 +145,10 @@ export function usePipeline() {
 
       reset();
       setPipelineStatus('running');
+      // Optimistically show node 1 as running the instant the user clicks
+      // Run — otherwise the UI sits idle during session creation + the
+      // network round trip before the first SSE 'progress' event arrives.
+      markNodeActive(1);
 
       const controller = new AbortController();
       abortRef.current = controller;
@@ -152,9 +181,14 @@ export function usePipeline() {
           return next;
         });
 
+        const finishedSessionId = finalResult?.session_id ?? null;
+        const finishedUserId = finalResult?.user_id ?? null;
+
         setOutputStatus('assembling');
         setResult(finalResult);
-        setSessionId(finalResult?.session_id ?? null);
+        setSessionId(finishedSessionId);
+        setUserId(finishedUserId);
+        persistSessionId(finishedSessionId);
         setOutputStatus('ready');
         setDashboardVisible(true);
         setPipelineStatus('done');
@@ -162,6 +196,8 @@ export function usePipeline() {
         console.error('Pipeline run failed:', err);
         setError(err.message || 'Pipeline failed');
         setPipelineStatus('error');
+        setNodeStates(initialNodeStates);
+        setNodeDetails(initialNodeDetails);
       }
     },
     [reset, markNodeActive, markNodeDone]
@@ -179,6 +215,7 @@ export function usePipeline() {
     dashboardVisible,
     result,
     sessionId,
+    userId,
     error,
     run,
     cancel,

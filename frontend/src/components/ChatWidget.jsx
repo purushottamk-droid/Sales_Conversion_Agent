@@ -551,7 +551,7 @@ function stripMarkdownForSpeech(text) {
     .replace(/"/g, '');                // quote characters
 }
 
-export default function ChatWidget({ sessionId, userId = 'test_user' }) {
+export default function ChatWidget({ sessionId, userId }) {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([]); // { role: 'user' | 'assistant', text: string }
   const [input, setInput] = useState('');
@@ -719,7 +719,7 @@ export default function ChatWidget({ sessionId, userId = 'test_user' }) {
     setError(null);
 
     try {
-      const res = await sendChatMessage({ userId, sessionId, message: text });
+      const res = await sendChatMessage({ repName: userId, sessionId, message: text });
       const replyText =
         res?.reply ?? res?.message ?? res?.text ?? (typeof res === 'string' ? res : JSON.stringify(res));
       setMessages((m) => [...m, { role: 'assistant', text: replyText }]);

@@ -17,29 +17,29 @@ export default function MarketingPipeline({ nodeStates = initialNodeStates, resu
         <MarketingPipelineNode
           number={1}
           title="Campaign Data Agent"
-          description="Pulls campaign performance, audience segments, and engagement metrics from connected channels (email, social, ads)."
+          description="Pulls spend, clicks, impressions, and conversions across every channel — Google, LinkedIn, Microsoft, and Capterra — and cross-references it with Salesforce pipeline data."
           state={nodeStates[1]}
-          detail={nodeStates[1] === 'done' ? 'Campaign performance and audience data loaded.' : null}
+          detail={nodeStates[1] === 'done' ? 'Campaign performance and pipeline data loaded across all channels.' : null}
         />
 
         <MarketingConnector active={nodeStates[1] === 'running' || nodeStates[1] === 'done'} />
 
         <MarketingPipelineNode
           number={2}
-          title="Engagement & Sentiment Agent"
-          description="Reads click-throughs, conversions, and sentiment for each campaign — flags underperformance and drop-off points."
+          title="Growth & Efficiency Agent"
+          description="Scores each campaign's health and efficiency, flags underperformance against target CPL, and forecasts channel-level pipeline and ROI."
           state={nodeStates[2]}
-          detail={nodeStates[2] === 'done' ? 'Engagement scored and drop-off points identified.' : null}
+          detail={nodeStates[2] === 'done' ? 'Campaign health scored and channel forecasts generated.' : null}
         />
 
         <MarketingConnector active={nodeStates[2] === 'running' || nodeStates[2] === 'done'} />
 
         <MarketingPipelineNode
           number={3}
-          title="Optimization & Action Agent"
-          description="Turns the assessment into next-best actions — budget reallocation, audience retargeting, and campaign tweaks."
+          title="Decision & Action Agent"
+          description="Turns the assessment into budget recommendations per campaign and channel, then notifies the manager and report recipients."
           state={nodeStates[3]}
-          detail={nodeStates[3] === 'done' ? 'Recommended actions generated and logged.' : null}
+          detail={nodeStates[3] === 'done' ? 'Budget actions decided and stakeholders notified.' : null}
         />
       </div>
 

@@ -1,95 +1,167 @@
-import { useState, useRef, useCallback } from 'react';
+// src/hooks/useMarketingPipeline.js
+//
+// Same shape as usePipeline.js (sales) / useNpsPipeline.js (NPS), driving
+// the Marketing 3-node pipeline UI from the real marketingClient backend.
+//
+// Full flow (session_id shared across all 3 endpoints via
+// runFullMarketingPipeline in marketingClient.js):
+//   1. POST /agent/sessions   -> session_id
+//   2. POST /agent/run        -> SSE 'progress'/'done' events, live per-agent
+//   3. GET  /agent/result/:id -> final structured JSON
+//
+// agentToNode() below is a BEST-EFFORT GUESS at the SSE author names for
+// the 3 Marketing agents (Campaign Data Collection / Growth & Efficiency
+// Analysis / Decision & Action) — we only have the final /agent/result
+// JSON so far, not a captured SSE stream. The result's top-level keys
+// (marketing_dataset+marketing_payload, campaign_analysis_results+
+// growth_assessment_result, decision_action_results) strongly suggest this
+// 3-stage split, which is what agentToNode() assumes. If live node
+// highlighting looks wrong once you test it, paste the real SSE `author`
+// values here and this is the only function that needs to change. Nothing
+// else (result parsing, dashboard) depends on this guess.
 
-// Dummy result shape — swap this out once a real Marketing Agent backend exists.
-// Kept in the same "raw-ish" shape a real API might return, so
-// normalizeMarketingResult() in adaptMarketingResult.js has something realistic to parse.
-const DUMMY_RAW_RESULT = {
-  campaign_analysis_results: [
-    {
-      campaign_name: 'Q3 Product Launch — Email',
-      campaign_id: 'CMP-1042',
-      channel: 'Email',
-      performance_level: 'High',
-      sentiment: 'Positive',
-      is_underperforming: false,
-      budget_reallocation_suggested: false,
-      recommended_action: 'Scale send volume to lookalike segment; performance is above benchmark.',
-      drivers: ['Open rate 34% above account average', 'Strong CTR on hero CTA', 'Low unsubscribe rate'],
-    },
-    {
-      campaign_name: 'Retargeting — Paid Social',
-      campaign_id: 'CMP-1088',
-      channel: 'Paid Social',
-      performance_level: 'Low',
-      sentiment: 'Negative',
-      is_underperforming: true,
-      budget_reallocation_suggested: true,
-      recommended_action: 'Pause underperforming ad sets and reallocate spend to the Email channel.',
-      drivers: ['CPC up 42% week-over-week', 'Conversion rate below 0.6% threshold', 'Negative comment sentiment on 2 ads'],
-    },
-    {
-      campaign_name: 'Spring Webinar Series',
-      campaign_id: 'CMP-1103',
-      channel: 'Webinar',
-      performance_level: 'Medium',
-      sentiment: 'Neutral',
-      is_underperforming: false,
-      budget_reallocation_suggested: false,
-      recommended_action: 'Send a follow-up nurture sequence to registrants who did not attend.',
-      drivers: ['Registration-to-attendance rate at 48%', 'Average watch time 22 minutes'],
-    },
-    {
-      campaign_name: 'Loyalty Newsletter — Q3',
-      campaign_id: 'CMP-1117',
-      channel: 'Email',
-      performance_level: 'Medium',
-      sentiment: 'Positive',
-      is_underperforming: false,
-      budget_reallocation_suggested: true,
-      recommended_action: 'Test a subject-line variant to lift the current 18% open rate.',
-      drivers: ['Open rate steady but below 25% target', 'Click-through concentrated in 1 CTA block'],
-    },
-  ],
-};
+import { useCallback, useRef, useState } from 'react';
+import { runFullMarketingPipeline } from '../api/marketingClient';
+
+const NODES = [1, 2, 3];
 
 const initialNodeStates = { 1: 'idle', 2: 'idle', 3: 'idle' };
+const initialNodeDetails = { 1: null, 2: null, 3: null };
+
+function agentToNode(author = '') {
+  const a = author.toLowerCase();
+  if (a.includes('data_collection') || a.includes('marketing_data') || a.includes('campaign_data')) return 1;
+  if (a.includes('growth_assessment') || a.includes('campaign_analysis') || a.includes('analysis')) return 2;
+  if (a.includes('decision') || a.includes('action')) return 3;
+  return null; // unrecognized author — ignore rather than mis-bucket
+}
+
+function tryParseEventText(eventData) {
+  if (!eventData || typeof eventData.text !== 'string') return null;
+  const raw = eventData.text.trim();
+  if (!raw) return null;
+
+  const unfenced = raw.replace(/^```(?:json)?\s*/i, '').replace(/```$/, '').trim();
+
+  try {
+    return JSON.parse(unfenced);
+  } catch {
+    return null;
+  }
+}
 
 export function useMarketingPipeline() {
-  const [pipelineStatus, setPipelineStatus] = useState('idle');
+  const [pipelineStatus, setPipelineStatus] = useState('idle'); // idle | running | done | error
   const [nodeStates, setNodeStates] = useState(initialNodeStates);
+  const [nodeDetails, setNodeDetails] = useState(initialNodeDetails);
   const [dashboardVisible, setDashboardVisible] = useState(false);
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState(null); // final /agent/result payload
+  const [sessionId, setSessionId] = useState(null);
   const [error, setError] = useState(null);
-  const timers = useRef([]);
 
-  const clearTimers = () => {
-    timers.current.forEach(clearTimeout);
-    timers.current = [];
-  };
+  const abortRef = useRef(null);
 
-  // Simulated run — no real backend yet. Steps through node 1 -> 2 -> 3,
-  // then reveals a dummy dashboard. Swap the setTimeout choreography for
-  // real session creation / polling once the Marketing Agent API exists.
-  const run = useCallback(() => {
-    clearTimers();
-    setError(null);
-    setResult(null);
-    setDashboardVisible(false);
+  const reset = useCallback(() => {
     setNodeStates(initialNodeStates);
-    setPipelineStatus('running');
-
-    timers.current.push(
-      setTimeout(() => setNodeStates((s) => ({ ...s, 1: 'running' })), 200),
-      setTimeout(() => setNodeStates((s) => ({ ...s, 1: 'done', 2: 'running' })), 1400),
-      setTimeout(() => setNodeStates((s) => ({ ...s, 2: 'done', 3: 'running' })), 2600),
-      setTimeout(() => {
-        setNodeStates((s) => ({ ...s, 3: 'done' }));
-        setResult(DUMMY_RAW_RESULT);
-        setPipelineStatus('done');
-        setDashboardVisible(true);
-      }, 3800)
-    );
+    setNodeDetails(initialNodeDetails);
+    setDashboardVisible(false);
+    setResult(null);
+    setSessionId(null);
+    setError(null);
   }, []);
 
-  return { pipelineStatus, nodeStates, dashboardVisible, result, error, run };
+  const markNodeActive = useCallback((node) => {
+    setNodeStates((prev) => {
+      const next = { ...prev };
+      NODES.forEach((n) => {
+        if (n < node && next[n] !== 'done') next[n] = 'done';
+      });
+      next[node] = 'running';
+      return next;
+    });
+  }, []);
+
+  const markNodeDone = useCallback((node, eventData) => {
+    setNodeStates((prev) => ({ ...prev, [node]: 'done' }));
+
+    if (node === 1) {
+      setNodeDetails((d) => ({ ...d, 1: 'Campaign, spend, and pipeline data loaded across all channels.' }));
+    }
+    if (node === 2) {
+      const parsed = tryParseEventText(eventData);
+      const count = parsed?.campaigns?.length;
+      setNodeDetails((d) => ({
+        ...d,
+        2: count != null ? `Scored ${count} campaign${count === 1 ? '' : 's'} for health and efficiency.` : 'Campaign health and growth risk assessed.',
+      }));
+    }
+    if (node === 3) {
+      setNodeDetails((d) => ({ ...d, 3: 'Budget actions decided and stakeholders notified.' }));
+    }
+  }, []);
+
+  const run = useCallback(
+    async (config = {}) => {
+      const { userId = 'test_user' } = config;
+
+      reset();
+      setPipelineStatus('running');
+      // Same as sales/NPS: show node 1 running immediately on click, don't
+      // wait for the first SSE event.
+      markNodeActive(1);
+
+      const controller = new AbortController();
+      abortRef.current = controller;
+
+      try {
+        const finalResult = await runFullMarketingPipeline({
+          userId,
+          signal: controller.signal,
+          onEvent: (evt) => {
+            const author = evt?.data?.author || '';
+            const node = agentToNode(author);
+            if (node == null) return;
+
+            if (evt.type === 'progress') {
+              markNodeActive(node);
+            } else if (evt.type === 'done') {
+              markNodeDone(node, evt.data);
+            }
+          },
+        });
+
+        setNodeStates((prev) => {
+          const next = { ...prev };
+          NODES.forEach((n) => { next[n] = 'done'; });
+          return next;
+        });
+
+        setResult(finalResult);
+        setSessionId(finalResult?.session_id ?? null);
+        setDashboardVisible(true);
+        setPipelineStatus('done');
+      } catch (err) {
+        console.error('Marketing pipeline run failed:', err);
+        setError(err.message || 'Marketing pipeline failed');
+        setPipelineStatus('error');
+      }
+    },
+    [reset, markNodeActive, markNodeDone]
+  );
+
+  const cancel = useCallback(() => {
+    abortRef.current?.abort();
+  }, []);
+
+  return {
+    pipelineStatus,
+    nodeStates,
+    nodeDetails,
+    dashboardVisible,
+    result,
+    sessionId,
+    error,
+    run,
+    cancel,
+  };
 }

@@ -8,6 +8,12 @@ import {
   ThumbsDown,
   Minus,
   ShieldAlert,
+  Mail,
+  Megaphone,
+  CheckCircle2,
+  XCircle,
+  CircleDashed,
+  MailX,
 } from 'lucide-react';
 
 const RISK_STYLES = {
@@ -28,8 +34,19 @@ const NPS_LABEL_ICONS = {
   Detractor: ThumbsDown,
 };
 
-// classification here is the NORMALIZED shape from adaptNpsResult.js
-// (camelCase fields), not the raw API shape.
+const ACTION_STATUS_STYLES = {
+  SENT: { icon: CheckCircle2, className: 'text-emerald-500', badge: 'bg-emerald-500/10 text-emerald-500' },
+  ERROR: { icon: XCircle, className: 'text-rose-500', badge: 'bg-rose-500/10 text-rose-500' },
+  SKIPPED: { icon: CircleDashed, className: 'text-slate-400 dark:text-ink-400', badge: 'bg-slate-500/10 text-slate-500 dark:text-ink-400' },
+  UNKNOWN: { icon: CircleDashed, className: 'text-slate-400 dark:text-ink-400', badge: 'bg-slate-500/10 text-slate-500 dark:text-ink-400' },
+};
+
+function actionTypeMeta(type) {
+  if (type === 'message_rep') return { icon: Mail, label: 'Message to rep' };
+  if (type === 'notify_manager') return { icon: Megaphone, label: 'Manager notification' };
+  return { icon: Mail, label: type?.replace(/_/g, ' ') || 'Action' };
+}
+
 function NpsAccountCard({ classification, revealed, delay = 0 }) {
   const [expanded, setExpanded] = useState(false);
   const LabelIcon = NPS_LABEL_ICONS[classification.npsLabel] || Minus;
@@ -133,8 +150,68 @@ function NpsAccountCard({ classification, revealed, delay = 0 }) {
   );
 }
 
+// action here is the NORMALIZED shape from adaptNpsResult.js's
+// normalizeNpsActions() — { type, status, repId, repName, reason, detail }.
+// repId/repName are present for message_rep actions and null for
+// notify_manager (a single rollup email with no per-target identifier).
+function NpsActionCard({ action, revealed, delay = 0 }) {
+  const { icon: TypeIcon, label } = actionTypeMeta(action.type);
+  const statusMeta = ACTION_STATUS_STYLES[action.status] || ACTION_STATUS_STYLES.UNKNOWN;
+  const StatusIcon = statusMeta.icon;
+
+  return (
+    <div
+      className={`bg-white dark:bg-ink-700 border border-brand-200 dark:border-ink-500 rounded-2xl p-[16px] shadow-[0_10px_30px_-12px_rgba(30,70,140,0.18)] transition-all duration-500 flex items-start gap-3 ${
+        revealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
+      }`}
+      style={{ transitionDelay: revealed ? `${delay}ms` : '0ms' }}
+    >
+      <div className="w-8 h-8 shrink-0 rounded-full bg-brand-500/10 flex items-center justify-center">
+        <TypeIcon className="w-4 h-4 text-brand-500" strokeWidth={2} />
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center justify-between gap-2 mb-1">
+          <div className="text-[13.5px] font-semibold truncate">
+            {label}
+            {action.repName ? ` — ${action.repName}` : ''}
+          </div>
+          <span
+            className={`shrink-0 inline-flex items-center gap-1 text-[10.5px] font-bold px-2 py-0.5 rounded-full ${statusMeta.badge}`}
+          >
+            <StatusIcon className="w-3 h-3" strokeWidth={2.5} />
+            {action.status}
+          </span>
+        </div>
+        {action.reason && (
+          <div className="text-[12.5px] text-[#55698c] dark:text-[#8ca0c2]">{action.reason}</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Shown in place of the actions grid whenever actions_taken came back
+// null/empty from the backend — so the section never just disappears.
+function NoActionsState({ visible }) {
+  return (
+    <div
+      className={`bg-white dark:bg-ink-700 border border-dashed border-brand-200 dark:border-ink-500 rounded-2xl p-6 flex items-center gap-3 transition-all duration-500 ${
+        visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
+      }`}
+    >
+      <div className="w-9 h-9 shrink-0 rounded-full bg-slate-400/10 flex items-center justify-center">
+        <MailX className="w-4 h-4 text-slate-400 dark:text-ink-400" strokeWidth={2} />
+      </div>
+      <div className="text-[13px] text-[#55698c] dark:text-[#8ca0c2]">
+        No notification actions were triggered for this run — the decision &amp; action agent
+        didn't send any rep or manager emails.
+      </div>
+    </div>
+  );
+}
+
 // `result` is the NORMALIZED shape from normalizeNpsResult() —
-// { classifications, actions, npsPayload } — not the raw API response.
+// { classifications, actions, npsPayload }.
 export default function NpsDashboard({ visible, result }) {
   const ref = useRef(null);
 
@@ -145,6 +222,7 @@ export default function NpsDashboard({ visible, result }) {
   }, [visible]);
 
   const classifications = result?.classifications ?? [];
+  const actions = result?.actions ?? [];
 
   if (!classifications.length) return null;
 
@@ -153,6 +231,7 @@ export default function NpsDashboard({ visible, result }) {
   const passives = classifications.filter((c) => c.npsLabel === 'Passive');
   const highRisk = classifications.filter((c) => c.riskLevel === 'High');
   const upsellCandidates = classifications.filter((c) => c.upsellCandidate);
+  const emailsSent = actions.filter((a) => a.status === 'SENT');
 
   return (
     <section
@@ -205,7 +284,7 @@ export default function NpsDashboard({ visible, result }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-4 mb-16">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-4 mb-10">
         {classifications.map((classification, i) => (
           <NpsAccountCard
             key={classification.key}
@@ -214,6 +293,33 @@ export default function NpsDashboard({ visible, result }) {
             delay={120 + i * 120}
           />
         ))}
+      </div>
+
+      {/* Always rendered — no longer disappears when actions_taken is null. */}
+      <div className="mb-16">
+        <div className="mb-4">
+          <h3 className="text-[17px] font-semibold">Actions taken</h3>
+          <div className="text-[12.5px] text-slate-400 dark:text-ink-400 mt-1">
+            {actions.length > 0
+              ? `${actions.length} action${actions.length === 1 ? '' : 's'} executed · ${emailsSent.length} email${emailsSent.length === 1 ? '' : 's'} sent`
+              : 'No actions executed this run'}
+          </div>
+        </div>
+
+        {actions.length > 0 ? (
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-3.5">
+            {actions.map((action, i) => (
+              <NpsActionCard
+                key={`${action.type}-${action.repId ?? 'rollup'}-${i}`}
+                action={action}
+                revealed={visible}
+                delay={120 + i * 100}
+              />
+            ))}
+          </div>
+        ) : (
+          <NoActionsState visible={visible} />
+        )}
       </div>
     </section>
   );

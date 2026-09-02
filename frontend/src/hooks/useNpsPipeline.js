@@ -103,6 +103,9 @@ export function useNpsPipeline() {
 
       reset();
       setPipelineStatus('running');
+      // Same as sales: show node 1 running immediately on click, don't
+      // wait for the first SSE event.
+      markNodeActive(1);
 
       const controller = new AbortController();
       abortRef.current = controller;

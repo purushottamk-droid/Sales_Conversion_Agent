@@ -4,11 +4,12 @@
 //   { session_id, nps_payload, risk_classification_results: { classifications: [...] }, actions_taken }
 //
 // Confirmed from a live /agent/result capture:
-//   - classifications[] do NOT include account_name, only account_id.
-//   - actions_taken is a ```json-fenced string (same pattern as the sales
-//     agent's actions_taken) — and its entries DO include account_name.
-//     So we build an account_id -> account_name lookup from actions_taken
-//     and use it to label classification cards, instead of a hardcoded map.
+//   - classifications[] DO include account_name directly (no lookup needed).
+//   - actions_taken is a ```json-fenced string (same pattern/shape as the
+//     sales agent's actions_taken): { actions: [{ type, status, rep_id,
+//     rep_name, reason, detail }] } — note this is REP-scoped, not
+//     account-scoped (a "notify_manager" action has no rep_id/rep_name at
+//     all, since it's a single rollup email, not per-rep).
 //   - account_id is NOT guaranteed unique across classifications — some
 //     accounts have multiple survey responses (e.g. an NPS survey + a
 //     separate CSAT survey) and appear as two separate entries with
@@ -34,7 +35,9 @@ function stripFencesAndParse(text) {
 /**
  * Parses actions_taken into a flat array.
  * Confirmed real shape once unfenced:
- *   { "actions": [ { type, status, account_id, account_name, reason, detail }, ... ] }
+ *   { "actions": [ { type, status, rep_id?, rep_name?, reason, detail }, ... ] }
+ * rep_id/rep_name are present for rep-scoped actions (e.g. message_rep) and
+ * absent for rollup actions (e.g. notify_manager) — both are valid.
  */
 export function normalizeNpsActions(raw) {
   if (!raw) return [];
@@ -51,35 +54,26 @@ export function normalizeNpsActions(raw) {
   return list.map((a, i) => ({
     type: a.type ?? `action_${i + 1}`,
     status: a.status ?? 'UNKNOWN', // 'SENT' | 'ERROR' | 'SKIPPED'
-    accountId: a.account_id,
-    accountName: a.account_name,
+    repId: a.rep_id ?? null,
+    repName: a.rep_name ?? null,
     reason: a.reason ?? '',
     detail: a.detail ?? null,
   }));
 }
 
-function buildAccountNameMap(actions) {
-  const map = {};
-  for (const a of actions) {
-    if (a.accountId && a.accountName && !map[a.accountId]) {
-      map[a.accountId] = a.accountName;
-    }
-  }
-  return map;
-}
-
 /**
  * Parses risk_classification_results.classifications[] into what
- * NpsDashboard/NpsAccountCard render.
+ * NpsDashboard/NpsAccountCard render. account_name arrives directly on
+ * each entry — no cross-referencing against actions_taken needed.
  */
-export function normalizeNpsClassifications(raw, nameMap = {}) {
+export function normalizeNpsClassifications(raw) {
   const list = raw?.classifications;
   if (!Array.isArray(list)) return [];
 
   return list.map((c, i) => ({
     key: `${c.account_id}-${i}`,
     accountId: c.account_id,
-    accountName: c.account_name ?? nameMap[c.account_id] ?? c.account_id,
+    accountName: c.account_name ?? c.account_id,
     riskLevel: c.risk_level,
     npsLabel: c.nps_label,
     drivers: c.drivers ?? [],
@@ -98,8 +92,7 @@ export function normalizeNpsResult(raw) {
   if (!raw) return null;
 
   const actions = normalizeNpsActions(raw.actions_taken);
-  const nameMap = buildAccountNameMap(actions);
-  const classifications = normalizeNpsClassifications(raw.risk_classification_results, nameMap);
+  const classifications = normalizeNpsClassifications(raw.risk_classification_results);
 
   return { classifications, actions, npsPayload: raw.nps_payload ?? null };
 }

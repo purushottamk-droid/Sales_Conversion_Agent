@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import AmbientBackground from './components/AmbientBackground';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -18,14 +18,16 @@ import { usePipeline } from './hooks/usePipeline';
 import { useNpsPipeline } from './hooks/useNpsPipeline';
 import { useMarketingPipeline } from './hooks/useMarketingPipeline';
 import { downloadReport, emailReport } from './utils/report';
-import { normalizeAccountAnalysis, normalizeActions } from './utils/adaptResult';
+import { normalizeAccountAnalysis, normalizeActions ,normalizeRepProfileFallback} from './utils/adaptResult';
 import { normalizeNpsResult } from './utils/adaptNpsResult';
 import { normalizeMarketingResult } from './utils/adaptMarketingResult';
+// import { normalizeAccountAnalysis, normalizeActions, normalizeRepProfileFallback } from './utils/adaptResult';
+
 
 // Hardcoded per the current test setup — swap for real fields once
 // rep_email / manager_email come from an actual rep-picker/CRM lookup.
-const REP_EMAIL = 'sayali.mahulkar@atgeirsolutions.com';
-const MANAGER_EMAIL = 'sayali.mahulkar@atgeirsolutions.com';
+const REP_EMAIL = 'info@atgeirsolutions.com';
+const MANAGER_EMAIL = 'info@atgeirsolutions.com';
 const USER_ID = 'test_user';
 
 export default function App() {
@@ -37,14 +39,33 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('sales'); // 'sales' | 'nps' | 'marketing'
 
   const [emailModalOpen, setEmailModalOpen] = useState(false);
-  const [toast, setToast] = useState({ message: '', visible: false });
+  const [toast, setToast] = useState({ message: '', visible: false, type: 'success' });
   const toastTimer = useRef(null);
+  // Tracks the last pipeline.error string we've already toasted, so the
+  // effect below doesn't re-fire the same toast on every unrelated
+  // re-render — only when the error value actually changes.
+  const lastShownPipelineError = useRef(null);
 
-  const showToast = (message) => {
+  const showToast = (message, type = 'success') => {
     clearTimeout(toastTimer.current);
-    setToast({ message, visible: true });
+    setToast({ message, visible: true, type });
     toastTimer.current = setTimeout(() => setToast((t) => ({ ...t, visible: false })), 3200);
   };
+
+  // Surfaces backend pipeline errors (e.g. RepNotFoundError — "No sales
+  // rep found matching '...'" — streamed as an `event: error` SSE event
+  // from /agent/run, caught in pipelineClient.js's runFullPipeline and
+  // set here via usePipeline's `error` state) as an error toast, the
+  // same way every other user-facing message in this app is shown.
+  useEffect(() => {
+    if (pipeline.error && pipeline.error !== lastShownPipelineError.current) {
+      lastShownPipelineError.current = pipeline.error;
+      showToast(pipeline.error, 'error');
+    }
+    if (!pipeline.error) {
+      lastShownPipelineError.current = null;
+    }
+  }, [pipeline.error]);
 
   const handleRun = () => {
     if (!repName.trim()) {
@@ -66,13 +87,17 @@ export default function App() {
     marketingPipeline.run();
   };
 
+  const accountAnalysisRaw = pipeline.result?.account_analysis_results;
+
   // --- Sales tab data ---
-  const analysis = normalizeAccountAnalysis({
-    ...pipeline.result?.account_analysis_results,
-    current_target_arr: pipeline.result?.current_target_arr,
-    current_month_arr_achieved: pipeline.result?.current_month_arr_achieved,
-    forecasted_arr_this_month: pipeline.result?.forecasted_arr_this_month,
-  });
+  const analysis = accountAnalysisRaw
+    ? normalizeAccountAnalysis({
+        ...accountAnalysisRaw,
+        current_target_arr: pipeline.result?.current_target_arr,
+        current_month_arr_achieved: pipeline.result?.current_month_arr_achieved,
+        forecasted_arr_this_month: pipeline.result?.forecasted_arr_this_month,
+      })
+    : normalizeRepProfileFallback(pipeline.result);
   const actionsTaken = normalizeActions(pipeline.result?.actions_taken);
 
   const handleDownload = () => {
@@ -104,6 +129,18 @@ export default function App() {
       ? npsPipeline.pipelineStatus
       : marketingPipeline.pipelineStatus;
 
+
+  // const accountAnalysisRaw = pipeline.result?.account_analysis_results;
+
+  // const analysis = accountAnalysisRaw
+  //   ? normalizeAccountAnalysis({
+  //       ...accountAnalysisRaw,
+  //       current_target_arr: pipeline.result?.current_target_arr,
+  //       current_month_arr_achieved: pipeline.result?.current_month_arr_achieved,
+  //       forecasted_arr_this_month: pipeline.result?.forecasted_arr_this_month,
+  //     })
+  //   : normalizeRepProfileFallback(pipeline.result);
+
   return (
     <>
       <AmbientBackground />
@@ -130,12 +167,6 @@ export default function App() {
               nodeDetails={pipeline.nodeDetails}
               outputStatus={pipeline.outputStatus}
             />
-
-            {pipeline.error && (
-              <div className="mt-4 text-sm text-red-500 text-center">
-                Pipeline error: {pipeline.error}
-              </div>
-            )}
 
             <Dashboard
               visible={pipeline.dashboardVisible}
@@ -200,9 +231,9 @@ export default function App() {
         onSend={handleEmailSend}
       />
 
-      <Toast message={toast.message} visible={toast.visible} />
+      <Toast message={toast.message} visible={toast.visible} type={toast.type} />
 
-      {chatAvailable && <ChatWidget sessionId={pipeline.sessionId} userId={USER_ID} />}
+      {chatAvailable && <ChatWidget sessionId={pipeline.sessionId} userId={pipeline.userId} />}
     </>
   );
 }
