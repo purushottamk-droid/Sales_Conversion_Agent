@@ -1,4 +1,4 @@
-const BASE_URL = 'https://sales-conversion-agent-621913909275.asia-south1.run.app';
+const BASE_URL = 'https://sales-agent-backend.wittysand-62b86862.australiaeast.azurecontainerapps.io';
 
 // The last agent in the sequence — its 'done' event is our signal that
 // the whole pipeline has finished and it's safe to call /agent/result.

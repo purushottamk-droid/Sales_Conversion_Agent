@@ -26,8 +26,8 @@ import { normalizeMarketingResult } from './utils/adaptMarketingResult';
 
 // Hardcoded per the current test setup — swap for real fields once
 // rep_email / manager_email come from an actual rep-picker/CRM lookup.
-const REP_EMAIL = 'info@atgeirsolutions.com';
-const MANAGER_EMAIL = 'info@atgeirsolutions.com';
+const REP_EMAIL = 'sayali.mahulkar@atgeirsolutions.com';
+const MANAGER_EMAIL = 'sayali.mahulkar@atgeirsolutions.com';
 const USER_ID = 'test_user';
 
 export default function App() {

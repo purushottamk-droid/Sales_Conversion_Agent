@@ -5,7 +5,7 @@
 // separate client — different base URL, own session/result handling —
 // so Sales/NPS integrations can never be affected by Marketing changes.
 
-const BASE_URL = 'https://sales-marketing-agent-621913909275.us-central1.run.app';
+const BASE_URL = 'https://app-atg-pipeline.wittysand-62b86862.australiaeast.azurecontainerapps.io';
 
 // ASSUMPTION — not yet confirmed from a live SSE capture (only /agent/result's
 // final JSON has been shared so far, not the streamed events). The sales and
@@ -104,6 +104,10 @@ export async function runPipelineStream({ userId, sessionId, onEvent, signal }) 
   }
 }
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 /**
  * STEP 3 — Fetch the final structured result once the pipeline is done.
  * Confirmed real shape:
@@ -117,17 +121,47 @@ export async function runPipelineStream({ userId, sessionId, onEvent, signal }) 
  *       executive_summary, needs_manager_attention, ... },
  *     decision_action_results: "```json\n{ notifications: [...] }\n```" (fenced string)
  *   }
+ *
+ * NOTE: the endpoint can return a stub while the backend is still working:
+ *   { "status": "PROCESSING", marketing_dataset: null, ... "error": null }
+ * confirmed live in DevTools (session 816285fc-1dba-4f68-b9c...). We poll
+ * until status stops being "PROCESSING" instead of returning that stub as
+ * if it were the final result.
  */
-export async function getResult({ sessionId, userId, signal }) {
+export async function getResult({
+  sessionId,
+  userId,
+  signal,
+  pollIntervalMs = 3000,
+  timeoutMs = 5 * 60 * 1000, // adjust to whatever the backend's realistic ceiling is
+}) {
   const url = `${BASE_URL}/agent/result/${sessionId}?user_id=${encodeURIComponent(userId)}`;
-  const res = await fetch(url, { signal });
+  const startedAt = Date.now();
 
-  if (!res.ok) {
-    const text = await res.text().catch(() => '');
-    throw new Error(`getResult failed (${res.status}): ${text}`);
+  while (true) {
+    const res = await fetch(url, { signal });
+
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      throw new Error(`getResult failed (${res.status}): ${text}`);
+    }
+
+    const body = await res.json();
+
+    if (body.status === 'PROCESSING') {
+      if (Date.now() - startedAt > timeoutMs) {
+        throw new Error(`getResult timed out after ${timeoutMs}ms while status stayed PROCESSING`);
+      }
+      await sleep(pollIntervalMs);
+      continue;
+    }
+
+    if (body.status === 'ERROR' || body.error) {
+      throw new Error(body.error || 'Marketing pipeline reported an error status');
+    }
+
+    return body;
   }
-
-  return res.json();
 }
 
 /**
