@@ -4,7 +4,7 @@
 // NPS Improvement Agent's own backend. Kept as a fully separate client —
 // different base URL, different session payload, different result shape.
 
-const BASE_URL = 'https://nps-agent-backend.wittysand-62b86862.australiaeast.azurecontainerapps.io';
+const BASE_URL = 'https://nps-improvement-agent-621913909275.asia-south1.run.app';
 
 // ASSUMPTION — not yet confirmed from a live SSE capture (only /agent/run's
 // final JSON result has been shared so far, not the streamed events).

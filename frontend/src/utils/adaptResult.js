@@ -1,203 +1,22 @@
-// // src/utils/adaptResult.js
-// //
-// // Two generations of adapters live here:
-// //
-// // 1. normalizeRepProfile() — parses the REAL, confirmed shape returned by
-// //    DataCollectionAgent (see rep_performance_profile in main.py output).
-// //    This is what currently drives the Dashboard.
-// //
-// // 2. normalizeAccounts / normalizeSummary / normalizeActions — defensive
-// //    guesses for the LATER agents (AccountAnalysisAgent, SalesRepAgent,
-// //    decision_action_agent) whose real output shape we don't have yet.
-// //    Once you share a sample of account_analysis_results /
-// //    rep_assessment_result / actions_taken, replace these with exact
-// //    field mappings the same way normalizeRepProfile below is exact.
-
-// export function formatCurrency(value) {
-//   if (value === null || value === undefined || value === '') return '—';
-//   const num = Number(value);
-//   if (Number.isNaN(num)) return String(value);
-//   return num.toLocaleString('en-US', {
-//     style: 'currency',
-//     currency: 'USD',
-//     maximumFractionDigits: 0,
-//   });
-// }
-
-// export function formatPercent(value) {
-//   if (value === null || value === undefined || value === '') return '—';
-//   const num = Number(value);
-//   if (Number.isNaN(num)) return String(value);
-//   // quota_attainment.current_month_attainment_pct arrives as a fraction (0.0 = 0%)
-//   return `${Math.round(num * 100)}%`;
-// }
-
-// // Heuristic only — the real risk verdict will come from SalesRepAgent
-// // (rep_assessment_result) once we have a sample of it. Until then this
-// // derives a rough risk label purely from current attainment so the
-// // dashboard isn't blank.
-// function deriveRiskFromAttainment(attainmentPct) {
-//   const pct = Number(attainmentPct) * 100;
-//   if (Number.isNaN(pct)) return 'Medium';
-//   if (pct < 40) return 'High';
-//   if (pct < 75) return 'Medium';
-//   return 'Low';
-// }
-
-// function extractCallTags(calls = []) {
-//   // Unique primary objections across an account's recent calls — used as
-//   // the "issues" list on the account card.
-//   const seen = new Set();
-//   const tags = [];
-//   for (const call of calls) {
-//     if (call.primary_objection && !seen.has(call.primary_objection)) {
-//       seen.add(call.primary_objection);
-//       tags.push(call.primary_objection);
-//     }
-//   }
-//   return tags;
-// }
-
-// /**
-//  * Parses the exact rep_performance_profile shape emitted by
-//  * DataCollectionAgent into what the Dashboard/AccountCard components render.
-//  */
-// export function normalizeRepProfile(raw) {
-//   if (!raw) return null;
-
-//   const assignedAccounts = raw.assigned_accounts ?? [];
-
-//   const accounts = assignedAccounts.map((acc) => {
-//     const opp = acc.opportunity_data ?? {};
-//     const timeline = opp.timeline_and_velocity ?? {};
-//     const cbi = opp.critical_business_issue ?? {};
-//     const engagement = opp.engagement_signals ?? {};
-//     const gong = opp.gong_interaction_analytics ?? {};
-//     const calls = gong.recent_calls ?? [];
-
-//     return {
-//       id: acc.account_id,
-//       name: acc.account_name,
-//       industry: acc.industry,
-//       segment: acc.account_segment,
-
-//       opportunityName: opp.opportunity_name,
-//       opportunityType: opp.opportunity_type,
-//       stage: opp.current_stage,
-//       forecastCategory: opp.forecast_category,
-//       dealValueArr: opp.deal_value_arr,
-//       discountPct: opp.discount_pct,
-
-//       daysOpen: timeline.days_open,
-//       stageDurationDays: timeline.current_stage_duration_days,
-//       closeDateTarget: timeline.close_date_target,
-
-//       cbiIdentified: cbi.cbi_identified,
-//       previousSolution: cbi.previous_solution,
-//       managerNotes: cbi.manager_notes,
-
-//       risks: opp.risks,
-//       nextStep: opp.next_step,
-//       daysSinceLastTouch: engagement.days_since_last_touch,
-
-//       latestCallDate: gong.latest_call_date,
-//       calls: calls.map((c) => ({
-//         title: c.title,
-//         date: c.scheduled_date,
-//         purpose: c.purpose,
-//         summary: c.meeting_summary,
-//         sentiment: c.customer_sentiment,
-//         objection: c.primary_objection,
-//         outcome: c.call_outcome_name,
-//         nextStep: c.next_step,
-//       })),
-//       issues: extractCallTags(calls),
-//     };
-//   });
-
-//   const totalGongCalls = accounts.reduce((sum, a) => sum + (a.calls?.length ?? 0), 0);
-
-//   const attainmentPct = raw.quota_attainment?.current_month_attainment_pct;
-
-//   const summary = {
-//     repName: raw.rep_name,
-//     repTier: raw.rep_experience_tier,
-//     quarterTarget: formatCurrency(raw.historical_targets?.monthly_arr_target_past_3_months),
-//     currentAttainment: formatPercent(attainmentPct),
-//     openPipelineArr: formatCurrency(raw.active_pipeline?.total_open_pipeline_arr),
-//     openOpportunityCount: raw.active_pipeline?.open_opportunity_count ?? accounts.length,
-//     risk: deriveRiskFromAttainment(attainmentPct),
-//   };
-
-//   return { summary, accounts, totalGongCalls };
-// }
-
-// // ---------------------------------------------------------------------
-// // Guesses for later-stage agents — tighten once real samples are shared.
-// // ---------------------------------------------------------------------
-
-// function normalizeRisk(value) {
-//   const v = String(value ?? '').toLowerCase();
-//   if (v.includes('high')) return 'High';
-//   if (v.includes('low')) return 'Low';
-//   if (v.includes('med')) return 'Medium';
-//   return value || 'Medium';
-// }
-
-// export function normalizeAccounts(raw) {
-//   if (!Array.isArray(raw)) return [];
-//   return raw.map((a, i) => ({
-//     name: a.name ?? a.account_name ?? a.accountName ?? `Account ${i + 1}`,
-//     score: a.score ?? a.health_score ?? a.deal_score ?? a.overall_score ?? '—',
-//     health: a.health ?? a.deal_health ?? a.status ?? a.rating ?? 'Unknown',
-//     issues: a.issues ?? a.objections ?? a.flags ?? a.missed_commitments ?? [],
-//   }));
-// }
-
-// export function normalizeSummary(raw) {
-//   if (!raw) return null;
-//   return {
-//     quarterTarget: raw.quarterTarget ?? raw.quarter_target ?? raw.target ?? '—',
-//     currentSales: raw.currentSales ?? raw.current_sales ?? raw.sales_to_date ?? '—',
-//     forecast: raw.forecast ?? raw.forecast_percentage ?? raw.forecast_pct ?? '—',
-//     risk: normalizeRisk(raw.risk ?? raw.risk_level ?? raw.overall_risk),
-//   };
-// }
-
-// export function normalizeActions(raw) {
-//   if (!raw) return [];
-//   if (Array.isArray(raw)) {
-//     return raw.map((a, i) => {
-//       if (typeof a === 'string') return { title: `Action ${i + 1}`, detail: a };
-//       return {
-//         title: a.title ?? a.action ?? a.name ?? `Action ${i + 1}`,
-//         detail: a.detail ?? a.description ?? a.reason ?? '',
-//       };
-//     });
-//   }
-//   return Object.entries(raw).map(([key, value]) => ({
-//     title: key.replace(/_/g, ' '),
-//     detail: typeof value === 'string' ? value : JSON.stringify(value),
-//   }));
-// }
-
 // src/utils/adaptResult.js
 //
 // Normalizes the REAL, confirmed backend output shapes (captured from
 // live SSE + /agent/result responses) into what the Dashboard/AccountCard
 // components render.
 //
-// Two real shapes to handle:
+// Real shapes handled:
 //
 // 1. account_analysis_results (from GET /agent/result) — a single object
-//    with rep-level summary fields plus a nested `accounts` array. This
-//    replaces the old, incorrect normalizeRepProfile (which was built
-//    around a different, unused DataCollectionAgent payload shape that
-//    never actually streams).
+//    with rep-level summary fields plus a nested `accounts` array.
 //
 // 2. actions_taken (from GET /agent/result) — a STRING wrapped in
-//    ```json ... ``` markdown fences, not parsed JSON. Must be
-//    fence-stripped and JSON.parse'd before use.
+//    ```json ... ``` markdown fences, not parsed JSON.
+//
+// 3. buyer_persona_profiles.personas[] — one entry per account, each with a
+//    `profile_360` object (account_profile, company_profile,
+//    customer_profile, salesrep_profile). Attached to each account as
+//    `account.profile360`, matched by opportunity_id, then account_id,
+//    then account name.
 
 export function formatCurrency(value) {
   if (value === null || value === undefined || value === '') return '—';
@@ -244,21 +63,148 @@ function deriveRiskFromAttainment(score) {
   return 'Low';
 }
 
+// ---------------------------------------------------------------------
+// 360° profile
+// ---------------------------------------------------------------------
+
+// News items arrive as "Headline: long scraped body...". Split on the first
+// ": " into a headline and a short, whitespace-collapsed snippet.
+function splitNewsItem(item) {
+  if (typeof item !== 'string') return { title: '', snippet: '' };
+  const idx = item.indexOf(': ');
+  const hasTitle = idx > 0 && idx < 160;
+  const title = (hasTitle ? item.slice(0, idx) : item.slice(0, 100)).trim();
+  let snippet = hasTitle ? item.slice(idx + 2) : '';
+  snippet = snippet.replace(/\s+/g, ' ').trim();
+  if (snippet.length > 160) snippet = snippet.slice(0, 160).trimEnd() + '…';
+  return { title, snippet };
+}
+
+// descriptive_summary is a "•"-bulleted string with a header line. Return the
+// bullet lines only, without the bullet character.
+function splitNarrative(text) {
+  return String(text ?? '')
+    .split('\n')
+    .map((l) => l.replace(/^\s*\u2022\s*/, '').trim())
+    .filter(Boolean)
+    .filter((l, i) => !(i === 0 && /^360/.test(l)));
+}
+
+// key_interests entries are one long " | "-separated string per call.
+function splitInterests(list) {
+  const out = [];
+  for (const entry of list ?? []) {
+    if (typeof entry !== 'string') continue;
+    entry
+      .split(' | ')
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .forEach((s) => out.push(s));
+  }
+  return out;
+}
+
+function normalizeProfile360(persona) {
+  const p = persona?.profile_360;
+  if (!p) return null;
+
+  const company = p.company_profile ?? {};
+  const account = p.account_profile ?? {};
+  const customer = p.customer_profile ?? {};
+  const rep = p.salesrep_profile ?? {};
+
+  const news = (company.company_recent_news ?? []).map(splitNewsItem);
+
+  // strategic_initiatives are mostly the same headlines as the news list —
+  // only keep the ones that add something, and drop duplicates.
+  const newsTitles = new Set(news.map((n) => n.title.toLowerCase()));
+  const seen = new Set();
+  const initiatives = (company.strategic_initiatives ?? []).filter((s) => {
+    const key = String(s).trim().toLowerCase();
+    if (!key || newsTitles.has(key) || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  const dept = customer.department;
+
+  return {
+    narrative: splitNarrative(p.descriptive_summary),
+    company: {
+      name: company.company_name,
+      industry: company.industry,
+      segment: company.account_segment,
+      news,
+      initiatives,
+    },
+    account: {
+      opportunityName: account.opportunity_name,
+      opportunityType: account.opportunity_type,
+      currentStage: account.current_stage,
+      dealValueArr: account.deal_value_arr,
+      closeDateTarget: account.close_date_target,
+      cbi: account.cbi_identified,
+      sentiment: account.customer_sentiment,
+      objections: account.primary_objections ?? [],
+      keyInterests: splitInterests(account.key_interests),
+    },
+    customer: {
+      name: customer.contact_name,
+      title: customer.contact_title,
+      email: customer.contact_email,
+      linkedinUrl: customer.linkedin_url,
+      seniority: customer.seniority,
+      department: Array.isArray(dept) ? dept.join(', ') : dept,
+      enrichmentStatus: customer.enrichment_status,
+    },
+    salesRep: {
+      name: rep.rep_name,
+      tier: rep.rep_experience_tier,
+      attainmentPct: rep.current_month_attainment_pct,
+    },
+  };
+}
+
+/**
+ * Builds lookups from buyer_persona_profiles and returns accounts with a
+ * `profile360` field (null when nothing matches). Accepts the raw object,
+ * a bare personas array, or a fenced JSON string.
+ */
+function attachProfiles360(accounts, buyerPersonaProfiles) {
+  let bpp = buyerPersonaProfiles;
+  if (typeof bpp === 'string') bpp = stripFencesAndParse(bpp);
+
+  const personas = Array.isArray(bpp) ? bpp : bpp?.personas;
+  if (!Array.isArray(personas) || personas.length === 0) {
+    return accounts.map((a) => ({ ...a, profile360: null }));
+  }
+
+  const byOpp = new Map();
+  const byAccount = new Map();
+  const byName = new Map();
+  for (const persona of personas) {
+    if (persona?.opportunity_id) byOpp.set(persona.opportunity_id, persona);
+    if (persona?.account_id) byAccount.set(persona.account_id, persona);
+    if (persona?.account_name) byName.set(persona.account_name.trim().toLowerCase(), persona);
+  }
+
+  return accounts.map((a) => {
+    const persona =
+      byOpp.get(a.opportunityId) ??
+      byAccount.get(a.id) ??
+      byName.get(String(a.name ?? '').trim().toLowerCase());
+    return { ...a, profile360: normalizeProfile360(persona) };
+  });
+}
+
 /**
  * Parses the exact account_analysis_results shape returned by
  * GET /agent/result into what the Dashboard/AccountCard components render.
  *
- * Confirmed real fields (from live capture):
- *   rep_id, rep_name, rep_experience_tier, rep_performance_summary,
- *   rep_target_attainment_score, rep_target_attainment_reasoning,
- *   critical_deals[], best_deals_to_pursue[], key_suggestions[],
- *   accounts[] — each with account_id, account_name, opportunity_id,
- *   opportunity_name, opportunity_type, recent_meeting_summary,
- *   deal_health ('healthy'|'at_risk'|'critical'), conversion_score,
- *   conversion_score_reasoning, missed_commitments[], customer_objections[],
- *   communication_gaps[], risk_action, opportunity_action, analysis_summary
+ * Pass result.buyer_persona_profiles as the second argument to attach the
+ * 360° profile to each account.
  */
-export function normalizeAccountAnalysis(raw) {
+export function normalizeAccountAnalysis(raw, buyerPersonaProfiles) {
   if (!raw) return null;
 
   const accounts = (raw.accounts ?? []).map((acc) => ({
@@ -299,7 +245,7 @@ export function normalizeAccountAnalysis(raw) {
     forecastedArrThisMonth: raw.forecasted_arr_this_month,
   };
 
-  return { summary, accounts };
+  return { summary, accounts: attachProfiles360(accounts, buyerPersonaProfiles) };
 }
 
 /**
@@ -308,10 +254,6 @@ export function normalizeAccountAnalysis(raw) {
  *
  * Confirmed real shape once unfenced:
  *   { "actions": [ { type, status, rep_id, rep_name, reason }, ... ] }
- *
- * Also defensively handles the case where the backend later starts
- * returning already-parsed JSON (array or {actions:[...]}) instead of a
- * fenced string.
  */
 export function normalizeActions(raw) {
   if (!raw) return [];
@@ -327,7 +269,7 @@ export function normalizeActions(raw) {
 
   return list.map((a, i) => ({
     type: a.type ?? `action_${i + 1}`,
-    status: a.status ?? 'UNKNOWN', // 'SENT' | 'ERROR' | 'SKIPPED', confirmed from log
+    status: a.status ?? 'UNKNOWN', // 'SENT' | 'ERROR' | 'SKIPPED'
     repId: a.rep_id,
     repName: a.rep_name,
     reason: a.reason ?? '',
@@ -335,11 +277,10 @@ export function normalizeActions(raw) {
 }
 
 /**
- * Fallback for when account_analysis_results is null (agent 2/3 hasn't
- * populated it). Builds an equivalent {summary, accounts} shape directly
- * from rep_performance_profile + the three top-level ARR fields, so the
- * Dashboard never shows an all-blank/zeroed state when real pipeline
- * data exists.
+ * Fallback for when account_analysis_results is null. Builds an equivalent
+ * {summary, accounts} shape from rep_performance_profile + the top-level ARR
+ * fields. Reads root.buyer_persona_profiles itself, so no extra argument is
+ * needed to get 360° profiles here.
  */
 export function normalizeRepProfileFallback(root) {
   const rpp = root?.rep_performance_profile;
@@ -391,18 +332,11 @@ export function normalizeRepProfileFallback(root) {
     criticalDeals: [],
     bestDealsToPursue: [],
     keySuggestions: [],
-    risk: deriveRiskFromAttainmentInternal(attainmentPct),
+    risk: deriveRiskFromAttainment(attainmentPct),
     currentTargetArr: root?.current_target_arr,
     currentMonthArrAchieved: root?.current_month_arr_achieved,
     forecastedArrThisMonth: root?.forecasted_arr_this_month,
   };
 
-  return { summary, accounts };
-}
-
-// exported deriveRiskFromAttainment above takes a 0-100 score already;
-// reuse it directly since monthly_attainment_pct/quarterly_attainment_pct
-// already arrive as 0-100 numbers (87.7, 71.4, 0.0 — not fractions).
-function deriveRiskFromAttainmentInternal(pct) {
-  return deriveRiskFromAttainment(pct);
+  return { summary, accounts: attachProfiles360(accounts, root?.buyer_persona_profiles) };
 }

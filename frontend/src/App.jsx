@@ -91,14 +91,22 @@ export default function App() {
 
   // --- Sales tab data ---
   const analysis = accountAnalysisRaw
-    ? normalizeAccountAnalysis({
+  ? normalizeAccountAnalysis(
+      {
         ...accountAnalysisRaw,
         current_target_arr: pipeline.result?.current_target_arr,
         current_month_arr_achieved: pipeline.result?.current_month_arr_achieved,
         forecasted_arr_this_month: pipeline.result?.forecasted_arr_this_month,
-      })
-    : normalizeRepProfileFallback(pipeline.result);
+      },
+      pipeline.result?.buyer_persona_profiles   // <-- new
+    )
+  : normalizeRepProfileFallback(pipeline.result);
   const actionsTaken = normalizeActions(pipeline.result?.actions_taken);
+
+   // ---- TEMP DEBUG: remove after checking ----
+  console.log('RESULT KEYS:', Object.keys(pipeline.result ?? {}));
+  console.log('PERSONAS:', pipeline.result?.buyer_persona_profiles);
+  console.log('ANALYSIS ACCOUNTS:', analysis?.accounts?.map(a => ({ id: a.id, opp: a.opportunityId, name: a.name, has360: !!a.profile360 })));
 
   const handleDownload = () => {
     if (!analysis) return;

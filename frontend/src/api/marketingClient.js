@@ -5,7 +5,7 @@
 // separate client — different base URL, own session/result handling —
 // so Sales/NPS integrations can never be affected by Marketing changes.
 
-const BASE_URL = 'https://app-atg-pipeline.wittysand-62b86862.australiaeast.azurecontainerapps.io';
+const BASE_URL = ' https://sales-marketing-agent-621913909275.us-central1.run.app';
 
 // ASSUMPTION — not yet confirmed from a live SSE capture (only /agent/result's
 // final JSON has been shared so far, not the streamed events). The sales and
