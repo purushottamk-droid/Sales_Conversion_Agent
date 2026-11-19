@@ -179,6 +179,83 @@ export default function Profile360({ profile }) {
             Lusha returned no verified match, so the email and LinkedIn link are unverified.
           </div>
         )}
+
+        <div className={`mt-1.5 pt-2 border-t border-brand-200 dark:border-ink-500 font-semibold ${STRONG}`}>
+          Lusha profile
+        </div>
+        {!customer.lusha ? (
+          <Row label="Details">Not available</Row>
+        ) : (
+          <>
+            <Row label="Email">
+              {customer.lusha.emails.length > 0 && (
+                <span className="flex flex-col gap-0.5">
+                  {customer.lusha.emails.map((e) => (
+                    <a key={e} href={`mailto:${e}`} className="text-brand-500 hover:underline">
+                      {e}
+                    </a>
+                  ))}
+                </span>
+              )}
+            </Row>
+            <Row label="Phone">
+              {customer.lusha.phones.length > 0 && (
+                <span className="flex flex-col gap-0.5">
+                  {customer.lusha.phones.map((p) => (
+                    <span key={p}>{p}</span>
+                  ))}
+                </span>
+              )}
+            </Row>
+            <Row label="Seniority">{customer.lusha.seniority.join(', ')}</Row>
+            <Row label="Department">{customer.lusha.departments.join(', ')}</Row>
+            <Row label="Social links">
+              {customer.lusha.socialLinks.length > 0 && (
+                <span className="flex flex-wrap gap-x-3 gap-y-0.5">
+                  {customer.lusha.socialLinks.map((s) => (
+                    <a
+                      key={s.url}
+                      href={s.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-brand-500 hover:underline capitalize"
+                    >
+                      <ExternalLink className="w-3 h-3 shrink-0" strokeWidth={2} />
+                      {s.label}
+                    </a>
+                  ))}
+                </span>
+              )}
+            </Row>
+            <Row label="Skills">
+              {customer.lusha.skills.length > 0 && (
+                <span className="flex flex-wrap gap-1">
+                  {customer.lusha.skills.map((s) => (
+                    <span
+                      key={s}
+                      className="text-[10.5px] font-semibold px-2 py-0.5 rounded-full bg-brand-500/10 text-brand-500"
+                    >
+                      {s}
+                    </span>
+                  ))}
+                </span>
+              )}
+            </Row>
+            <Row label="Previous jobs">
+              {customer.lusha.previousEmployment.length > 0 && (
+                <ul className="flex flex-col gap-1">
+                  {customer.lusha.previousEmployment.map((j, i) => (
+                    <li key={i}>
+                      <span className={`font-semibold ${STRONG}`}>{j.company}</span>
+                      {j.title && <span> — {j.title}</span>}
+                      {j.period && <span className="text-slate-400 dark:text-ink-400"> ({j.period})</span>}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Row>
+          </>
+        )}
       </Section>
 
       <Section icon={Target} title="Sales rep profile">
